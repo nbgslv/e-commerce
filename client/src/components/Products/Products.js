@@ -2,19 +2,9 @@ import React from 'react';
 import ReactRouterPropTpes from 'react-router-prop-types';
 import styled from 'styled-components';
 import { Query } from 'react-apollo';
-import gql from 'graphql-tag';
 import SubHeader from '../Header/SubHeader';
 import ProductItem from './ProductItem';
-
-const GET_PRODUCTS = gql`
-  query getProducts {
-    products {
-      id
-      title
-      thumbnail
-    }
-  }
-`;
+import { GET_PRODUCTS } from "../../constants";
 
 const ProductItemsWrapper = styled.div`
   display: flex;
