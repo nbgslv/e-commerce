@@ -1,8 +1,24 @@
 import React from 'react';
+import ReactRouterPropTypes from 'react-router-prop-types';
 import styled from 'styled-components';
+import { Query } from 'react-apollo';
+import gql from 'graphql-tag';
 import SubHeader from '../Header/SubHeader';
 import ProductItem from '../Products/ProductItem';
 import Totals from './Totals';
+
+const GET_CART = gql`
+  query getCart {
+    cart {
+      total
+      products {
+        id
+        title
+        thumbnail
+      }
+    }
+  }
+`;
 
 const CartWrapper = styled.div`
   display: flex;
@@ -22,34 +38,30 @@ const Alert = styled.span`
   text-align: center;
 `;
 
-const Cart = ({ history, loading, error, cart }) => (
+const Cart = ({ history }) => (
   <>
-    {history && (
-      <SubHeader title='Cart' goToCart={() => history.push('/cart')} />
-    )}
-    {!loading && !error ? (
-      <CartWrapper>
-        <CartItemsWrapper>
-          {cart.products &&
-            cart.products.map(product => (
-              <ProductItem key={product.id} data={product} />
-            ))}
-        </CartItemsWrapper>
-        <Totals count={cart.total} />
-      </CartWrapper>
-    ) : (
-      <Alert>{loading ? 'Loading...' : error}</Alert>
-    )}
+    {history && <SubHeader title="Cart" goToCart={() => history.push('/cart')} />}
+    <Query query={GET_CART}>
+      {({ loading, error, data }) => {
+        if (loading || error) {
+          return <Alert>{loading ? 'Loading...' : error}</Alert>
+        }
+        return (
+          <CartWrapper>
+            <CartItemsWrapper>
+              {data.cart &&
+                data.cart.products.map(product => <ProductItem key={product.id} data={product} />)}
+            </CartItemsWrapper>
+            <Totals count={data.cart.total} />
+          </CartWrapper>
+        );
+      }}
+    </Query>
   </>
 );
 
-Cart.defaultProps = {
-  loading: false,
-  erorr: '',
-  cart: {
-    products: [],
-    total: 0,
-  },
+Cart.propTypes = {
+  history: ReactRouterPropTypes.history.isRequired,
 };
 
 export default Cart;
