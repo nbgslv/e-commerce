@@ -1,9 +1,20 @@
 import React from 'react';
 import styled, { createGlobalStyle } from 'styled-components';
 import { Route, Switch } from 'react-router-dom';
-import Header from './Header/Header';
-import Products from './Products/Products';
+import ApolloClient from 'apollo-client';
+import { InMemoryCache } from 'apollo-cache-inmemory';
+import { HttpLink } from 'apollo-link-http';
+import { ApollorProvider } from 'react-apollo';
 import Cart from './Cart/Cart';
+import Products from './Products/Products';
+import Header from './Header/Header';
+
+const client = () =>
+  new ApolloClient({
+    link: new HttpLink({
+      uri: 'http://localhost:6000',
+    }),
+  });
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -22,16 +33,16 @@ const AppWrapper = styled.div`
 `;
 
 const App = () => (
-  <>
+  <ApollorProvider client={client}>
     <GlobalStyle />
     <AppWrapper>
       <Header />
       <Switch>
-        <Route exact path='/' component={Products} />
-        <Route path='/cart' component={Cart} />
+        <Route exact path="/" component={Products} />
+        <Route path="/cart" component={Cart} />
       </Switch>
     </AppWrapper>
-  </>
+  </ApollorProvider>
 );
 
 export default App;
