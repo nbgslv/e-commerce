@@ -1,5 +1,13 @@
 import gql from 'graphql-tag';
 
+export const COMPLETE_CART = gql`
+  mutation completeCart {
+    completeCart {
+      complete
+    }
+  }
+`;
+
 export const LOGIN_USER = gql`
   mutation loginUser($username: String!, $password: String!) {
     loginUser(userName: $username, password: $password) {
