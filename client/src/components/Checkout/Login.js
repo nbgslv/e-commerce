@@ -46,14 +46,14 @@ const Login = ({ history }) => {
         color="royalBlue"
         onClick={async () => {
           const { data } = await loginUser({
-            variables: { userName, password },
+            variables: { username: userName, password },
           });
 
           if (data.loginUser && data.loginUser.token) {
             sessionStorage.setItem('token', data.loginUser.token);
             return history.push('/checkout');
           }
-          alert('Please provide (valid) authentication details.');
+          return alert('Please provide (valid) authentication details.');
         }}>
         Login
       </Button>

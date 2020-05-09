@@ -5,6 +5,7 @@ import ApolloClient from 'apollo-client';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import { HttpLink } from 'apollo-link-http';
 import { ApolloProvider } from 'react-apollo';
+import { setContext } from 'apollo-link-context';
 import Cart from './Cart/Cart';
 import Products from './Products/Products';
 import Header from './Header/Header';
@@ -15,12 +16,23 @@ const isAuthenticated = sessionStorage.getItem('token');
 
 const cache = new InMemoryCache();
 
-const link = new HttpLink({
+const httpLink = new HttpLink({
   uri: 'http://localhost:4000/graphql',
 });
 
+const authLink = setContext((_, { headers }) => {
+  const token = isAuthenticated;
+
+  return {
+    headers: {
+      ...headers,
+      authorization: token ? `Bearer ${token}` : '',
+    }
+  }
+})
+
 const client = new ApolloClient({
-  link,
+  link: authLink.concat(httpLink),
   cache,
   resolvers: {},
   typeDefs: `
