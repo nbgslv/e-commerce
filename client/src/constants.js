@@ -1,5 +1,14 @@
 import gql from 'graphql-tag';
 
+export const LOGIN_USER = gql`
+  mutation loginUser($username: String!, $password: String!) {
+    loginUser(userName: $username, password: $password) {
+      userName
+      token
+    }
+  }
+`;
+
 export const GET_LIMIT = gql`
   query getLimit {
     limit @client
