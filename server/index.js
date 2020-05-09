@@ -1,11 +1,16 @@
 const express = require('express');
 const { createServer } = require('http');
+const cors = require('cors');
 const { ApolloServer } = require('apollo-server-express');
 
 const resolvers = require('./resolvers.js');
 const typeDefs = require('./typeDefs.js');
 
 const app = express();
+
+app.use(cors({
+  credentials: true,
+}));
 
 const server = new ApolloServer({
   typeDefs,

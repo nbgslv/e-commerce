@@ -1,7 +1,11 @@
 import React from 'react';
+import ReactRouterPropTpes from 'react-router-prop-types';
 import styled from 'styled-components';
+import { Query } from 'react-apollo';
 import SubHeader from '../Header/SubHeader';
 import ProductItem from './ProductItem';
+import Filter from './Filter';
+import { GET_PRODUCTS, GET_LIMIT } from '../../constants';
 
 const ProductItemsWrapper = styled.div`
   display: flex;
@@ -16,35 +20,36 @@ const Alert = styled.span`
   text-align: center;
 `;
 
-const Products = ({ history, loading, error, products }) => {
-  const isEmpty = products.length === 0 ? 'No products available' : false;
-
-  return (
-    <>
-      {history && (
-        <SubHeader
-          title='Available products'
-          goToCart={() => history.push('/cart')}
-        />
+const Products = ({ history }) => (
+  <>
+    {history && <SubHeader title="Available products" goToCart={() => history.push('/cart')} />}
+    <Query query={GET_LIMIT}>
+      {({ data }) => (
+        <>
+          <Filter limit={parseInt(data.limit, 10)} />
+          <Query query={GET_PRODUCTS} variables={{ limit: parseInt(data.limit, 10) }}>
+            {({ loading, error, data: productData }) => {
+              if (loading || error) {
+                return <Alert>{loading ? 'Loading...' : error}</Alert>;
+              }
+              return (
+                <ProductItemsWrapper>
+                  {productData.products &&
+                    productData.products.map(product => (
+                      <ProductItem key={product.id} data={product} />
+                    ))}
+                </ProductItemsWrapper>
+              );
+            }}
+          </Query>
+        </>
       )}
-      {!loading && !error && !isEmpty ? (
-        <ProductItemsWrapper>
-          {products &&
-            products.map(product => (
-              <ProductItem key={product.id} data={product} />
-            ))}
-        </ProductItemsWrapper>
-      ) : (
-        <Alert>{loading ? 'Loading' : error || isEmpty}</Alert>
-      )}
-    </>
-  );
-};
+    </Query>
+  </>
+);
 
-Products.defaultProps = {
-  loading: false,
-  error: '',
-  products: [],
+Products.propTypes = {
+  history: ReactRouterPropTpes.history.isRequired,
 };
 
 export default Products;

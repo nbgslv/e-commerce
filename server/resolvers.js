@@ -29,11 +29,7 @@ const mockCategory = () => ({
 const mockProduct = (id = false) => ({
   id: id || faker.random.number,
   title: faker.commerce.productName,
-  thumbnail: faker.image.imageUrl(
-    400,
-    400,
-    faker.random.arrayElement(['fashion', 'transport', 'technics', 'food']),
-  ),
+  thumbnail: `https://loremflickr.com/400/400/${faker.random.arrayElement(['fashion', 'transport', 'technics', 'food'])}`,
   price: faker.commerce.price(),
   category: mockCategory(),
 });

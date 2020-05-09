@@ -1,0 +1,56 @@
+# This file was generated based on ".graphqlconfig". Do not edit manually.
+
+schema {
+    query: Query
+    mutation: Mutation
+}
+
+type Cart {
+    complete: Boolean
+    products: [Product]
+    total: Float
+}
+
+type Category {
+    id: Int!
+    title: String!
+}
+
+type Mutation {
+    addToCart(input: CartInput!): Cart
+    completeCart: Cart
+    loginUser(password: String!, userName: String!): User
+}
+
+type Product {
+    category: Category
+    id: Int!
+    price: Float
+    thumbnail: String!
+    title: String!
+}
+
+type Query {
+    cart: Cart
+    categories: [Category]
+    product: Product
+    products(limit: Int): [Product]
+}
+
+type User {
+    token: String!
+    userName: String!
+}
+
+enum CacheControlScope {
+    PRIVATE
+    PUBLIC
+}
+
+input CartInput {
+    productId: Int!
+}
+
+
+"The `Upload` scalar type represents a file upload."
+scalar Upload
