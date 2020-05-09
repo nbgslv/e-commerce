@@ -16,8 +16,20 @@ const link = new HttpLink({
 });
 
 const client = new ApolloClient({
-  cache,
   link,
+  cache,
+  resolvers: {},
+  typeDefs: `
+    extend type Query {
+      limit: Int!
+    }
+  `,
+});
+
+cache.writeData({
+  data: {
+    limit: 5,
+  },
 });
 
 const GlobalStyle = createGlobalStyle`
