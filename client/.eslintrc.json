@@ -5,9 +5,11 @@
     },
     "extends": [
         "airbnb",
+        "prettier",
         "plugin:prettier/recommended",
         "prettier/react",
-        "plugin:react/recommended"
+        "plugin:react/recommended",
+        "eslint-config-prettier"
     ],
     "globals": {
         "Atomics": "readonly",
@@ -31,6 +33,16 @@
                 "exceptions": [
                     "WrappedComponent"
                 ]
+            }
+        ],
+        "prettier/prettier": [
+            "error",
+            {
+                "trailingComma": "es5",
+                "singleQuote": true,
+                "printWidth": 100,
+                "endOfLine": "crlf",
+                "arrowParens": "avoid"
             }
         ]
     },
