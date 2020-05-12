@@ -1,4 +1,6 @@
 import React from 'react';
+import { ThemeProvider } from '@material-ui/core';
+import 'normalize.css';
 import styled, { createGlobalStyle } from 'styled-components';
 import { Route, Switch, Redirect } from 'react-router-dom';
 import ApolloClient from 'apollo-client';
@@ -6,6 +8,7 @@ import { InMemoryCache } from 'apollo-cache-inmemory';
 import { HttpLink } from 'apollo-link-http';
 import { ApolloProvider } from 'react-apollo';
 import { setContext } from 'apollo-link-context';
+import * as Theme from '../ui/theme/index';
 import Cart from './Cart/Cart';
 import Products from './Products/Products';
 import Header from './Header/Header';
@@ -27,9 +30,9 @@ const authLink = setContext((_, { headers }) => {
     headers: {
       ...headers,
       authorization: token ? `Bearer ${token}` : '',
-    }
-  }
-})
+    },
+  };
+});
 
 const client = new ApolloClient({
   link: authLink.concat(httpLink),
@@ -66,8 +69,7 @@ const AppWrapper = styled.div`
 
 const App = () => (
   <ApolloProvider client={client}>
-    <GlobalStyle />
-    <AppWrapper>
+    <ThemeProvider theme={Theme.default}>
       <Header />
       <Switch>
         <Route exact path="/" component={Products} />
@@ -78,7 +80,7 @@ const App = () => (
         />
         <Route path="/login/" component={Login} />
       </Switch>
-    </AppWrapper>
+    </ThemeProvider>
   </ApolloProvider>
 );
 
