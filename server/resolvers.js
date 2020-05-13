@@ -45,7 +45,7 @@ const resolvers = {
     product: () => mockProduct(),
     products: (_, { limit = 10 }) =>
       Array.from(Array(limit), () => mockProduct()),
-    categories: (_, { limit = 10 }) =>
+    categories: (_, { limit = 5 }) =>
       Array.from(Array(limit), () => mockCategory()),
     cart: () => cart,
   },

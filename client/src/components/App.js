@@ -59,6 +59,7 @@ const App = () => (
       <Header />
       <Switch>
         <Route exact path="/" component={Products} />
+        <Route path="/products/category/:id" component={Products} />
         <Route path="/cart" component={Cart} />
         <Route
           path="/checkout"

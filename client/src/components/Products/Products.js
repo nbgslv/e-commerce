@@ -2,7 +2,6 @@ import React from 'react';
 import ReactRouterPropTpes from 'react-router-prop-types';
 import styled from 'styled-components';
 import { Query } from 'react-apollo';
-import SubHeader from '../Header/SubHeader';
 import ProductItem from './ProductItem';
 import Filter from './Filter';
 import { GET_PRODUCTS, GET_LIMIT } from '../../constants';
@@ -22,7 +21,6 @@ const Alert = styled.span`
 
 const Products = ({ history }) => (
   <>
-    {history && <SubHeader title="Available products" goToCart={() => history.push('/cart')} />}
     <Query query={GET_LIMIT}>
       {({ data }) => (
         <>
