@@ -1,0 +1,22 @@
+{
+  "files": {
+    "main.js": "/static/js/main.ac1d0a68.chunk.js",
+    "main.js.map": "/static/js/main.ac1d0a68.chunk.js.map",
+    "runtime-main.js": "/static/js/runtime-main.a05a08be.js",
+    "runtime-main.js.map": "/static/js/runtime-main.a05a08be.js.map",
+    "static/js/2.9e5dea9a.chunk.js": "/static/js/2.9e5dea9a.chunk.js",
+    "static/js/2.9e5dea9a.chunk.js.map": "/static/js/2.9e5dea9a.chunk.js.map",
+    "index.html": "/index.html",
+    "precache-manifest.388f879bdd47aeb70cd2ec3b5ef5a08f.js": "/precache-manifest.388f879bdd47aeb70cd2ec3b5ef5a08f.js",
+    "service-worker.js": "/service-worker.js",
+    "static/js/2.9e5dea9a.chunk.js.LICENSE.txt": "/static/js/2.9e5dea9a.chunk.js.LICENSE.txt",
+    "static/media/NotoSans-Bold.ttf": "/static/media/NotoSans-Bold.98f0cacc.ttf",
+    "static/media/NotoSans-Regular.ttf": "/static/media/NotoSans-Regular.5a87cce8.ttf",
+    "static/media/header-bg.png": "/static/media/header-bg.08aaf026.png"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.a05a08be.js",
+    "static/js/2.9e5dea9a.chunk.js",
+    "static/js/main.ac1d0a68.chunk.js"
+  ]
+}

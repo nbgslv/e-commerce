@@ -61,7 +61,6 @@
   "typography": {
     "headline": {
       "color": "rgba(0, 0, 0, 0.87)",
-      "fontFamily": "\"Roboto\", \"Helvetica\", \"Arial\", sans-serif",
       "lineHeight": "1.35417em",
       "fontSize": "1.5rem",
       "fontWeight": 400

@@ -1,7 +1,6 @@
 import React from 'react';
 import { ThemeProvider } from '@material-ui/core';
-import 'normalize.css';
-import styled, { createGlobalStyle } from 'styled-components';
+import CssBaseline from '@material-ui/core/CssBaseline';
 import { Route, Switch, Redirect } from 'react-router-dom';
 import ApolloClient from 'apollo-client';
 import { InMemoryCache } from 'apollo-cache-inmemory';
@@ -11,6 +10,7 @@ import { setContext } from 'apollo-link-context';
 import * as Theme from '../ui/theme/index';
 import Cart from './Cart/Cart';
 import Products from './Products/Products';
+import Appbar from './Appbar/Appbar';
 import Header from './Header/Header';
 import Login from './Checkout/Login';
 import Checkout from './Checkout/Checkout';
@@ -51,25 +51,11 @@ cache.writeData({
   },
 });
 
-const GlobalStyle = createGlobalStyle`
-  body {
-    margin: 0;
-    padding: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-      "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-      sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-`;
-
-const AppWrapper = styled.div`
-  text-align: center;
-`;
-
 const App = () => (
   <ApolloProvider client={client}>
+    <CssBaseline />
     <ThemeProvider theme={Theme.default}>
+      <Appbar />
       <Header />
       <Switch>
         <Route exact path="/" component={Products} />
