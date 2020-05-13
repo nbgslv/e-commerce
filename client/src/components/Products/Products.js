@@ -1,53 +1,43 @@
 import React from 'react';
-import ReactRouterPropTpes from 'react-router-prop-types';
 import styled from 'styled-components';
-import { Query } from 'react-apollo';
+import { Query, useQuery } from 'react-apollo';
+import Grid from '@material-ui/core/Grid';
 import ProductItem from './ProductItem';
+import SkeletonProducts from './SkeletonProducts';
 import Filter from './Filter';
 import { GET_PRODUCTS, GET_LIMIT } from '../../constants';
-
-const ProductItemsWrapper = styled.div`
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  flex-direction: column;
-  margin: 2% 5%;
-`;
 
 const Alert = styled.span`
   width: 100%;
   text-align: center;
 `;
 
-const Products = ({ history }) => (
+const Products = () => (
   <>
     <Query query={GET_LIMIT}>
       {({ data }) => (
-        <>
-          <Filter limit={parseInt(data.limit, 10)} />
+        <Grid container spacing={3}>
+          <Grid item md={12}>
+            <Filter limit={parseInt(data.limit, 10)} />
+          </Grid>
           <Query query={GET_PRODUCTS} variables={{ limit: parseInt(data.limit, 10) }}>
-            {({ loading, error, data: productData }) => {
-              if (loading || error) {
-                return <Alert>{loading ? 'Loading...' : error}</Alert>;
-              }
-              return (
-                <ProductItemsWrapper>
-                  {productData.products &&
-                    productData.products.map(product => (
+            {({ loading, error, data: productData }) => (
+              <>
+                {error && <Alert>{error}</Alert>}
+                {loading && <SkeletonProducts />}
+                {!loading &&
+                  productData.products.map(product => (
+                    <Grid item md={3} key={product.id}>
                       <ProductItem key={product.id} data={product} />
-                    ))}
-                </ProductItemsWrapper>
-              );
-            }}
+                    </Grid>
+                  ))}
+              </>
+            )}
           </Query>
-        </>
+        </Grid>
       )}
     </Query>
   </>
 );
-
-Products.propTypes = {
-  history: ReactRouterPropTpes.history.isRequired,
-};
 
 export default Products;

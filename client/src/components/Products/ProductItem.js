@@ -1,36 +1,62 @@
+import Skeleton from '@material-ui/lab/Skeleton';
 import React from 'react';
 import PropTypes from 'prop-types';
-import styled from 'styled-components';
-import AddToCartButton from '../Cart/AddToCartButton';
+import { makeStyles } from '@material-ui/core/styles';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import CardActions from '@material-ui/core/CardActions';
+import Button from '@material-ui/core/Button';
+import Typography from '@material-ui/core/Typography';
+import Rating from '@material-ui/lab/Rating';
+// TODO add to cart action - move to here
 
-const ProductItemWrapper = styled.div`
-  display: flex;
-  text-align: left;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1%;
-  background: lightGray;
-  border-radius: 5px;
-  padding: 10px;
-  margin-bottom: 2%;
-  text-decoration: none;
-`;
+const useStyles = makeStyles({
+  media: {
+    width: '350px',
+  },
+  content: {
+    paddingBottom: '0',
+  },
+  actions: {
+    display: 'flex',
+    justifyContent: 'space-between',
+  },
+});
 
-const Title = styled.h3`
-  margin-left: 2%;
-`;
-
-const Thumbnail = styled.img`
-  border-radius: 5px;
-`;
-
-const ProductItem = ({ data }) => (
-  <ProductItemWrapper>
-    <Thumbnail src={data.thumbnail} width={200} />
-    <Title>{data.title}</Title>
-    <AddToCartButton productId={data.id} />
-  </ProductItemWrapper>
-);
+const ProductItem = ({ data }) => {
+  const [imageLoading, setImageLoading] = React.useState(true);
+  const classes = useStyles();
+  return (
+    <Card>
+      {imageLoading && (
+        <Skeleton
+          animation="wave"
+          variant="rect"
+          className={classes.media}
+          style={{ height: '350px' }}
+        />
+      )}
+      <img
+        onLoad={() => setImageLoading(false)}
+        src={data.thumbnail}
+        className={classes.media}
+        alt={data.title}
+      />
+      <CardContent className={classes.content}>
+        <Typography gutterBottom variant="h6" align="center">
+          {data.title}
+        </Typography>
+        <Typography gutterBottom variant="subtitle1" align="center" color="primary">
+          {data.price}$
+        </Typography>
+      </CardContent>
+      <CardActions className={classes.actions}>
+        <Rating name="simple-controlled" size="small" value={3} />
+        <Button productId={data.id}>+ Add to cart</Button>
+      </CardActions>
+    </Card>
+  );
+};
 
 ProductItem.propTypes = {
   data: PropTypes.shape({
