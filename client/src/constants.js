@@ -43,6 +43,16 @@ export const GET_PRODUCTS = gql`
   }
 `;
 
+export const ADD_RATING = gql`
+  mutation updateProductRating($id: Int!, $rating: Int!) {
+    updateProductRating(id: $id, rating: $rating) {
+      id
+      rating
+      voters
+    }
+  }
+`;
+
 export const GET_CART_TOTAL = gql`
   query getCartTotal {
     cart {
