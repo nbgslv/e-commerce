@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Query, useQuery } from 'react-apollo';
+import { Query } from 'react-apollo';
 import Grid from '@material-ui/core/Grid';
 import ProductItem from './ProductItem';
 import SkeletonProducts from './SkeletonProducts';
@@ -27,8 +27,8 @@ const Products = () => (
                 {loading && <SkeletonProducts />}
                 {!loading &&
                   productData.products.map(product => (
-                    <Grid item md={3} key={product.id}>
-                      <ProductItem key={product.id} data={product} />
+                    <Grid item md={3} key={product.id.toString()}>
+                      <ProductItem key={product.id.toString()} data={product} />
                     </Grid>
                   ))}
               </>

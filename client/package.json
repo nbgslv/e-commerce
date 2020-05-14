@@ -23,6 +23,7 @@
     "apollo-link-http": "1.5.15",
     "graphql": "14.5.8",
     "graphql-tag": "^2.10.1",
+    "material-ui-rating": "^4.2.0",
     "normalize.css": "^8.0.1",
     "prop-types": "^15.7.2",
     "react": "16.10.2",

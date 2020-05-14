@@ -27,7 +27,7 @@ const typeDefs = gql`
     productId: Int!
   }
   type Query {
-    product: Product
+    product(id: Int): Product
     products(limit: Int): [Product]
     categories: [Category]
     cart: Cart

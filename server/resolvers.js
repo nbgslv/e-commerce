@@ -49,7 +49,6 @@ const mockProduct = (id = false) => {
     voters,
   };
   products[productId] = product;
-  console.log(products);
   return product;
 };
 
@@ -61,7 +60,7 @@ let cart = {
 
 const resolvers = {
   Query: {
-    product: () => mockProduct(),
+    product: (_, { id }) => id ? products[id] : mockProduct(),
     products: (_, { limit = 10 }) =>
       Array.from(Array(limit), () => mockProduct()),
     categories: (_, { limit = 5 }) =>
@@ -70,7 +69,6 @@ const resolvers = {
   },
   Mutation: {
     updateProductRating: (_, { id, rating }) => {
-      console.log(products);
       if (!products[id])
         throw new Error(`A Product with the id ${id} doesn't exists`);
 
@@ -86,9 +84,9 @@ const resolvers = {
       cart = {
         ...cart,
         total: cart.total + 1,
-        products: [...cart.products, mockProduct(id)],
+        products: [...cart.products, products[id]],
       };
-
+      console.log(products);
       return cart;
     },
     completeCart: (_, {}, { token }) => {
