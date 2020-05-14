@@ -10,7 +10,7 @@ const useStyles = makeStyles(theme => ({
   root: {
     padding: '0 1% 0 2%',
     color: theme.palette.grey['400'],
-    fontSize: '1rem',
+    fontSize: '1.5rem',
     '-o-transition': '.5s',
     '-ms-transition': '.5s',
     '-moz-transition': '.5s',
@@ -20,7 +20,7 @@ const useStyles = makeStyles(theme => ({
       paddingLeft: 0,
     },
     '&:hover': {
-      color: theme.palette.secondary.main,
+      color: theme.palette.primary.main,
     },
   },
 }));
