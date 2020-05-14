@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactRouterPropTypes from 'react-router-prop-types';
 import { Query } from 'react-apollo';
 import { makeStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
@@ -9,17 +10,17 @@ const useStyles = makeStyles(theme => ({
   root: {
     padding: '0 1% 0 2%',
     color: theme.palette.grey['400'],
-    fontSize: '1rem',
+    fontSize: '1.5rem',
     '-o-transition': '.5s',
     '-ms-transition': '.5s',
     '-moz-transition': '.5s',
     '-webkit-transition': '.5s',
     transition: '.5s',
     '&:first-child': {
-      paddingLeft: theme.spacing(6),
+      paddingLeft: 0,
     },
     '&:hover': {
-      color: theme.palette.secondary.main,
+      color: theme.palette.primary.main,
     },
   },
 }));
@@ -52,6 +53,10 @@ const SubHeader = ({ history }) => {
       </Box>
     </>
   );
+};
+
+SubHeader.protoTypes = {
+  history: ReactRouterPropTypes.history.isRequired,
 };
 
 export default SubHeader;

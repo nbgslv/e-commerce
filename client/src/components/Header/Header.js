@@ -5,7 +5,6 @@ import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import Link from '@material-ui/core/Link';
 import HeaderBgImg from './header-bg.png';
-import SubHeader from './SubHeader';
 
 const useStyles = makeStyles(theme => ({
   gridItem: {
@@ -56,9 +55,6 @@ const Header = props => {
       </Grid>
       <Grid item md={6}>
         <HeaderBg />
-      </Grid>
-      <Grid item md={12}>
-        <SubHeader />
       </Grid>
     </Grid>
   );
