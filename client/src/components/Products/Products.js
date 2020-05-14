@@ -1,55 +1,57 @@
 import React from 'react';
-import ReactRouterPropTpes from 'react-router-prop-types';
-import styled from 'styled-components';
 import { Query } from 'react-apollo';
+import Grid from '@material-ui/core/Grid';
+import { makeStyles, styled } from '@material-ui/core/styles';
 import SubHeader from '../Header/SubHeader';
 import ProductItem from './ProductItem';
+import SkeletonProducts from './SkeletonProducts';
 import Filter from './Filter';
 import { GET_PRODUCTS, GET_LIMIT } from '../../constants';
 
-const ProductItemsWrapper = styled.div`
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  flex-direction: column;
-  margin: 2% 5%;
-`;
+const useStyles = makeStyles(theme => ({
+  root: {
+    margin: theme.spacing(6),
+  },
+}));
 
-const Alert = styled.span`
+const Alert = styled('span')`
   width: 100%;
   text-align: center;
 `;
 
-const Products = ({ history }) => (
-  <>
-    {history && <SubHeader title="Available products" goToCart={() => history.push('/cart')} />}
-    <Query query={GET_LIMIT}>
-      {({ data }) => (
-        <>
-          <Filter limit={parseInt(data.limit, 10)} />
-          <Query query={GET_PRODUCTS} variables={{ limit: parseInt(data.limit, 10) }}>
-            {({ loading, error, data: productData }) => {
-              if (loading || error) {
-                return <Alert>{loading ? 'Loading...' : error}</Alert>;
-              }
-              return (
-                <ProductItemsWrapper>
-                  {productData.products &&
-                    productData.products.map(product => (
-                      <ProductItem key={product.id} data={product} />
-                    ))}
-                </ProductItemsWrapper>
-              );
-            }}
-          </Query>
-        </>
-      )}
-    </Query>
-  </>
-);
+const Products = () => {
+  const classes = useStyles();
 
-Products.propTypes = {
-  history: ReactRouterPropTpes.history.isRequired,
+  return (
+    <>
+      <Query query={GET_LIMIT}>
+        {({ data }) => (
+          <Grid container spacing={3} className={classes.root}>
+            <Grid item md={12}>
+              <SubHeader />
+            </Grid>
+            <Grid item md={12}>
+              <Filter limit={parseInt(data.limit, 10)} />
+            </Grid>
+            <Query query={GET_PRODUCTS} variables={{ limit: parseInt(data.limit, 10) }}>
+              {({ loading, error, data: productData }) => (
+                <>
+                  {error && <Alert>{error}</Alert>}
+                  {loading && <SkeletonProducts />}
+                  {!loading &&
+                    productData.products.map(product => (
+                      <Grid item md={3} key={product.id.toString()}>
+                        <ProductItem key={product.id.toString()} data={product} />
+                      </Grid>
+                    ))}
+                </>
+              )}
+            </Query>
+          </Grid>
+        )}
+      </Query>
+    </>
+  );
 };
 
 export default Products;

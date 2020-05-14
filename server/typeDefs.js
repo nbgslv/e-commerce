@@ -7,6 +7,8 @@ const typeDefs = gql`
     thumbnail: String!
     price: Float
     category: Category
+    rating: Int!
+    voters: Int!
   }
   type Category {
     id: Int!
@@ -25,12 +27,13 @@ const typeDefs = gql`
     productId: Int!
   }
   type Query {
-    product: Product
+    product(id: Int): Product
     products(limit: Int): [Product]
     categories: [Category]
     cart: Cart
   }
   type Mutation {
+    updateProductRating(id: Int!, rating: Int!): Product
     addToCart(input: CartInput!): Cart
     completeCart: Cart
     loginUser(userName: String!, password: String!): User

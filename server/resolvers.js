@@ -26,13 +26,31 @@ const mockCategory = () => ({
   title: faker.commerce.department,
 });
 
-const mockProduct = (id = false) => ({
-  id: id || faker.random.number,
-  title: faker.commerce.productName,
-  thumbnail: `https://loremflickr.com/400/400/${faker.random.arrayElement(['fashion', 'transport', 'technics', 'food'])}`,
-  price: faker.commerce.price(),
-  category: mockCategory(),
-});
+const products = [];
+
+const mockProduct = (id = false) => {
+  const productId = id || faker.random.number();
+  const title = faker.commerce.productName();
+  const thumbnail = `https://source.unsplash.com/350x390/?${faker.random.arrayElement(['fashion', 'transport', 'technics', 'food'])}`;
+  const price = faker.commerce.price();
+  const category = mockCategory();
+  const rating = faker.random.number();
+  const voters = faker.random.number({
+    'min': rating,
+    'max': rating * 5,
+  });
+  const product = {
+    id: productId,
+    title,
+    thumbnail,
+    price,
+    category,
+    rating,
+    voters,
+  };
+  products[productId] = product;
+  return product;
+};
 
 let cart = {
   total: 0,
@@ -42,21 +60,33 @@ let cart = {
 
 const resolvers = {
   Query: {
-    product: () => mockProduct(),
+    product: (_, { id }) => id ? products[id] : mockProduct(),
     products: (_, { limit = 10 }) =>
       Array.from(Array(limit), () => mockProduct()),
-    categories: (_, { limit = 10 }) =>
+    categories: (_, { limit = 5 }) =>
       Array.from(Array(limit), () => mockCategory()),
     cart: () => cart,
   },
   Mutation: {
+    updateProductRating: (_, { id, rating }) => {
+      if (!products[id])
+        throw new Error(`A Product with the id ${id} doesn't exists`);
+
+      products[id] = {
+        ...products[id],
+        rating: products[id].rating + rating,
+        voters: products[id].voters + 1,
+      }
+
+      return products[id];
+    },
     addToCart: (_, { id }) => {
       cart = {
         ...cart,
         total: cart.total + 1,
-        products: [...cart.products, mockProduct(id)],
+        products: [...cart.products, products[id]],
       };
-
+      console.log(products);
       return cart;
     },
     completeCart: (_, {}, { token }) => {

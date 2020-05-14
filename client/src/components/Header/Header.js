@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
-import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import Link from '@material-ui/core/Link';
@@ -15,6 +14,7 @@ const useStyles = makeStyles(theme => ({
     position: 'relative',
     backgroundColor: theme.palette.background.default,
     color: theme.palette.text.primary,
+    marginTop: theme.spacing(8),
     marginBottom: theme.spacing(4),
     backgroundSize: 'cover',
     backgroundRepeat: 'no-repeat',

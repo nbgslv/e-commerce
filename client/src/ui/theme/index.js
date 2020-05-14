@@ -1,16 +1,28 @@
 import { createMuiTheme } from '@material-ui/core/styles';
-import NotoSansBold from './NotoSans-Bold.ttf';
 import NotoSansRegular from './NotoSans-Regular.ttf';
+import NotoSansBold from './NotoSans-Bold.ttf';
 
-const notoSans = {
+const notoSansRegular = {
   fontFamily: 'Noto Sans',
   fontStyle: 'normal',
   fontDisplay: 'swap',
-  fontWeight: 400,
+  fontWeight: 100,
   src: `
     local('Noto Sans'),
     local('NotoSans-Regular'),
     url(${NotoSansRegular}) format('ttf')
+  `,
+};
+
+const notoSansBold = {
+  fontFamily: 'Noto Sans Bold',
+  fontStyle: 'normal',
+  fontDisplay: 'swap',
+  fontWeight: 'normal',
+  src: `
+    local('Noto Sans'),
+    local('NotoSans-Bold'),
+    url(${NotoSansBold}) format('ttf')
   `,
 };
 
@@ -24,7 +36,7 @@ const typography = {
   overrides: {
     MuiCssBaseline: {
       '@global': {
-        '@font-face': [notoSans],
+        '@font-face': [notoSansRegular, notoSansBold],
       },
     },
   },
