@@ -14,7 +14,10 @@ import Rating from 'material-ui-rating';
 import { ADD_RATING, ADD_TO_CART, GET_CART, GET_CART_TOTAL } from '../../constants';
 // TODO add to cart action - move to here
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles({
+  root: {
+    maxWidth: '350px',
+  },
   ratingIconButton: {
     padding: '4px',
   },
@@ -29,7 +32,7 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     justifyContent: 'space-between',
   },
-}));
+});
 
 const ProductItem = ({ data }) => {
   const [imageLoading, setImageLoading] = React.useState(true);
@@ -37,7 +40,7 @@ const ProductItem = ({ data }) => {
   const [hover, setHover] = React.useState(false);
   const classes = useStyles();
   return (
-    <Card>
+    <Card className={classes.root}>
       {imageLoading && (
         <Skeleton
           animation="wave"
