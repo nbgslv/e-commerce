@@ -94,13 +94,14 @@ const ProductItem = ({ data }) => {
               variant="outlined"
               color="primary"
               onClick={() => addToCart({ variables: { productId: data.id } })}
-              onMouseOver={() => setHover(true)}
-              onMouseOut={() => setHover(false)}
+              onMouseEnter={() => setHover(true)}
+              onMouseOver={e => e.stopPropagation()}
+              onMouseLeave={() => setHover(false)}
               onFocus={() => setHover(true)}
               onBlur={() => setHover(false)}
             >
               {hover && (
-                <Fade in={hover}>
+                <Fade in={hover} timeout={1000}>
                   <AddShoppingCartIcon />
                 </Fade>
               )}{' '}
