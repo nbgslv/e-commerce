@@ -125,3 +125,5 @@ ProductItem.propTypes = {
 };
 
 export default ProductItem;
+
+// TODO media query for rating and add to cart button
