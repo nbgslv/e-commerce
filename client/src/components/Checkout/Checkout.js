@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useMutation } from 'react-apollo';
-import Button from '../Button/Button';
+import Button from '@material-ui/core/Button';
 import { COMPLETE_CART } from '../../constants';
 
 const CheckoutWrapper = styled.div`

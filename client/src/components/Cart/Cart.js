@@ -3,9 +3,9 @@ import ReactRouterPropTypes from 'react-router-prop-types';
 import styled from 'styled-components';
 import { Query } from 'react-apollo';
 import { Link } from 'react-router-dom';
+import Button from '@material-ui/core/Button';
 import SubHeader from '../Header/SubHeader';
 import ProductItem from '../Products/ProductItem';
-import Button from '../Button/Button';
 import Totals from './Totals';
 import { GET_CART } from '../../constants';
 

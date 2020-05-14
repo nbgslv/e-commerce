@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Query } from 'react-apollo';
-import Button from '../Button/Button';
+import Button from '@material-ui/core/Button';
 import { GET_CART_TOTAL } from '../../constants';
 
 const CartButton = ({ onClick }) => (
