@@ -1,4 +1,5 @@
 const productResolvers = require('./product/resolvers');
-const cartResolver = require('./user/resolvers');
+const userResolver = require('./user/resolvers');
+const categoryResolver = require('./category/resolvers');
 
-module.exports = [productResolvers, cartResolver];
+module.exports = [productResolvers, userResolver, categoryResolver];
