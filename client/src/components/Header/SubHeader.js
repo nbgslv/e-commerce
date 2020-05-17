@@ -1,40 +1,62 @@
 import React from 'react';
-import styled from 'styled-components';
-import Button from '../Button/Button';
-import CartButton from '../Cart/CartButton';
+import ReactRouterPropTypes from 'react-router-prop-types';
+import { Query } from 'react-apollo';
+import { makeStyles } from '@material-ui/core/styles';
+import Box from '@material-ui/core/Box';
+import Link from '@material-ui/core/Link';
+import { GET_CATEGORIES } from '../../constants';
 
-const SubHeaderWrapper = styled.div`
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  background: cornflowerBlue;
-`;
+const useStyles = makeStyles(theme => ({
+  root: {
+    padding: '0 1% 0 2%',
+    color: theme.palette.grey['400'],
+    fontSize: '1.5rem',
+    '-o-transition': '.5s',
+    '-ms-transition': '.5s',
+    '-moz-transition': '.5s',
+    '-webkit-transition': '.5s',
+    transition: '.5s',
+    '&:first-child': {
+      paddingLeft: 0,
+    },
+    '&:hover': {
+      color: theme.palette.primary.main,
+    },
+  },
+}));
 
-const Title = styled.h2`
-  text-align: center;
-  flex-basis: 60%;
+const SubHeader = ({ history }) => {
+  const classes = useStyles();
 
-  &:first-child {
-    margin-left: 20%;
-  }
+  return (
+    <>
+      {history}
+      <Box>
+        <Query query={GET_CATEGORIES}>
+          {({ loading, error, data }) => {
+            if (loading || error) {
+              return loading ? 'Loading...' : error;
+            }
+            return data.categories.map(category => (
+              <Link
+                className={classes.root}
+                component="button"
+                variant="body1"
+                herf={`/products/category/${category.id}`}
+                key={category.id}
+              >
+                {category.title}
+              </Link>
+            ));
+          }}
+        </Query>
+      </Box>
+    </>
+  );
+};
 
-  &:last-child {
-    margin-right: 20%;
-  }
-`;
-
-const SubHeaderButton = styled(Button)`
-  margin: 10px 5%;
-`;
-
-const SubHeader = ({ goBack, title, goToCart = false }) => (
-  <SubHeaderWrapper>
-    {goBack && (
-      <SubHeaderButton onClick={goBack}>{`< Go Back`}</SubHeaderButton>
-    )}
-    <Title>{title}</Title>
-    {goToCart && <CartButton onClick={goToCart} />}
-  </SubHeaderWrapper>
-);
+SubHeader.protoTypes = {
+  history: ReactRouterPropTypes.history.isRequired,
+};
 
 export default SubHeader;

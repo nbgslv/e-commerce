@@ -2,7 +2,7 @@ import React from 'react';
 import ReactRouterPropTypes from 'react-router-prop-types';
 import styled from 'styled-components';
 import { useMutation } from 'react-apollo';
-import Button from '../Button/Button';
+import Button from '@material-ui/core/Button';
 import { LOGIN_USER } from '../../constants';
 
 const LoginWrapper = styled.div`

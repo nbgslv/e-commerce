@@ -1,13 +1,16 @@
 import React from 'react';
-import styled, { createGlobalStyle } from 'styled-components';
+import { ThemeProvider } from '@material-ui/core';
+import CssBaseline from '@material-ui/core/CssBaseline';
 import { Route, Switch, Redirect } from 'react-router-dom';
 import ApolloClient from 'apollo-client';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import { HttpLink } from 'apollo-link-http';
 import { ApolloProvider } from 'react-apollo';
 import { setContext } from 'apollo-link-context';
+import * as Theme from '../ui/theme/index';
 import Cart from './Cart/Cart';
 import Products from './Products/Products';
+import Appbar from './Appbar/Appbar';
 import Header from './Header/Header';
 import Login from './Checkout/Login';
 import Checkout from './Checkout/Checkout';
@@ -27,9 +30,9 @@ const authLink = setContext((_, { headers }) => {
     headers: {
       ...headers,
       authorization: token ? `Bearer ${token}` : '',
-    }
-  }
-})
+    },
+  };
+});
 
 const client = new ApolloClient({
   link: authLink.concat(httpLink),
@@ -48,29 +51,15 @@ cache.writeData({
   },
 });
 
-const GlobalStyle = createGlobalStyle`
-  body {
-    margin: 0;
-    padding: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-      "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-      sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-`;
-
-const AppWrapper = styled.div`
-  text-align: center;
-`;
-
 const App = () => (
   <ApolloProvider client={client}>
-    <GlobalStyle />
-    <AppWrapper>
+    <CssBaseline />
+    <ThemeProvider theme={Theme.default}>
+      <Appbar />
       <Header />
       <Switch>
         <Route exact path="/" component={Products} />
+        <Route path="/products/category/:id" component={Products} />
         <Route path="/cart" component={Cart} />
         <Route
           path="/checkout"
@@ -78,7 +67,7 @@ const App = () => (
         />
         <Route path="/login/" component={Login} />
       </Switch>
-    </AppWrapper>
+    </ThemeProvider>
   </ApolloProvider>
 );
 

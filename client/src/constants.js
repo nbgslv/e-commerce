@@ -1,5 +1,14 @@
 import gql from 'graphql-tag';
 
+export const GET_CATEGORIES = gql`
+  query getCategories {
+    categories {
+      id
+      title
+    }
+  }
+`;
+
 export const COMPLETE_CART = gql`
   mutation completeCart {
     completeCart {
@@ -29,6 +38,32 @@ export const GET_PRODUCTS = gql`
       id
       title
       thumbnail
+      price
+      rating
+      voters
+    }
+  }
+`;
+
+export const GET_PRODUCT = gql`
+  query getProduct($id: Int) {
+    product(id: $id) {
+      id
+      title
+      thumbnail
+      price
+      rating
+      voters
+    }
+  }
+`;
+
+export const ADD_RATING = gql`
+  mutation updateProductRating($id: Int!, $rating: Int!) {
+    updateProductRating(id: $id, rating: $rating) {
+      id
+      rating
+      voters
     }
   }
 `;

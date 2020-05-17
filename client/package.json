@@ -14,12 +14,18 @@
     "prettier": "^2.0.5"
   },
   "dependencies": {
+    "@material-ui/core": "^4.9.14",
+    "@material-ui/icons": "^4.9.1",
+    "@material-ui/lab": "^4.0.0-alpha.53",
+    "animate.css": "^4.1.0",
     "apollo-cache-inmemory": "1.6.2",
     "apollo-client": "2.6.4",
     "apollo-link-context": "^1.0.18",
     "apollo-link-http": "1.5.15",
     "graphql": "14.5.8",
     "graphql-tag": "^2.10.1",
+    "material-ui-rating": "^4.2.0",
+    "normalize.css": "^8.0.1",
     "prop-types": "^15.7.2",
     "react": "16.10.2",
     "react-apollo": "3.1.2",
