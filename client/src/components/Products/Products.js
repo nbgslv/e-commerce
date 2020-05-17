@@ -40,8 +40,8 @@ const Products = () => {
                   {loading && <SkeletonProducts />}
                   {!loading &&
                     productData.products.map(product => (
-                      <Grid item md={3} key={product.id.toString()}>
-                        <ProductItem key={product.id.toString()} data={product} />
+                      <Grid item md={3} key={product._id.toString()}>
+                        <ProductItem key={product._id.toString()} data={product} />
                       </Grid>
                     ))}
                 </>

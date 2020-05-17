@@ -9,8 +9,6 @@ import MenuIcon from '@material-ui/icons/Menu';
 import Badge from '@material-ui/core/Badge';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import ShoppingCart from '@material-ui/icons/ShoppingCart';
-import MenuItem from '@material-ui/core/MenuItem';
-import Menu from '@material-ui/core/Menu';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -28,7 +26,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const StyledBadge = withStyles((theme) => ({
+const StyledBadge = withStyles(theme => ({
   badge: {
     right: -3,
     top: 13,

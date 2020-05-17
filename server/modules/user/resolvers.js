@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const JsonWebToken = require('jsonwebtoken');
 const User = require('./user.model');
 const Cart = require('./cart.model');
+const Product = require('../product/product.model');
 
 const jwtSecret = '34%%##@#FGFKFL'; // TODO move to env
 
@@ -32,7 +33,9 @@ const resolvers = {
     },
     addToCart: async (parent, { userId, productId }) => {
       const user = await User.findById(userId, 'cart');
-      user.cart.products.push(productId);
+      const product = await Product.findById({ _id: productId });
+      user.cart.products.push(product);
+      user.cart.total += 1;
       const updatedUser = await user.save();
       return updatedUser.cart;
     },

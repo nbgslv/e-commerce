@@ -1,9 +1,13 @@
 const { gql } = require('apollo-server');
 
 const typeDefs = gql`
+  enum Products {
+    Product
+    String
+  }
   type Cart {
     total: Float
-    products: [String]
+    products: [Product]
   }
   type User {
     _id: String

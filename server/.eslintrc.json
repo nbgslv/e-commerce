@@ -2,7 +2,8 @@
     "env": {
         "node": true,
         "browser": true,
-        "es6": true
+        "es6": true,
+        "mongo": true
     },
     "extends": [
         "airbnb-base",
@@ -22,11 +23,15 @@
             {
                 "env": "apollo"
             }
-        ]
+        ],
+        "no-underscore-dangle": ["error", {
+            "allow": ["_id"]
+        }]
     },
     "plugins": [
         "graphql",
         "prettier"
     ],
+    "reportUnusedDisableDirectives": true,
     "parser": "babel-eslint"
 }
