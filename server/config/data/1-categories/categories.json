@@ -1,0 +1,22 @@
+[
+  {
+    "_id": "5ec120a9fc13ae248f000000",
+    "title": "Books"
+  },
+  {
+    "_id": "5ec120a9fc13ae248f000001",
+    "title": "Sports"
+  },
+  {
+    "_id": "5ec120a9fc13ae248f000002",
+    "title": "Toys"
+  },
+  {
+    "_id": "5ec120a9fc13ae248f000003",
+    "title": "Shoes"
+  },
+  {
+    "_id": "5ec120a9fc13ae248f000004",
+    "title": "Automotive"
+  }
+]

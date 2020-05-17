@@ -1,0 +1,10 @@
+[
+  {
+    "email": "test@test.com",
+    "password": "$2y$10$k.rgtfTuYbkXFHq9TIlI/Om4RqQ67xRcBOD97Ykj0QjoOV9Td7Zs6",
+    "cart": {
+      "total": 0,
+      "products": []
+    }
+  }
+]
