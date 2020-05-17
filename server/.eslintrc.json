@@ -1,38 +1,37 @@
 {
     "env": {
+        "node": true,
         "browser": true,
-        "es6": true
+        "es6": true,
+        "mongo": true
     },
     "extends": [
-        "airbnb",
+        "airbnb-base",
         "plugin:prettier/recommended",
-        "prettier/react",
-        "plugin:react/recommended"
+        "plugin:node/recommended"
     ],
     "globals": {
         "Atomics": "readonly",
         "SharedArrayBuffer": "readonly"
     },
     "parserOptions": {
-        "ecmaFeatures": {
-            "jsx": true
-        },
-        "ecmaVersion": 2018,
-        "sourceType": "module"
+        "ecmaVersion": 6
+    },
+    "rules": {
+        "graphql/template-strings": [
+            "error",
+            {
+                "env": "apollo"
+            }
+        ],
+        "no-underscore-dangle": ["error", {
+            "allow": ["_id"]
+        }]
     },
     "plugins": [
-        "react",
+        "graphql",
         "prettier"
     ],
-    "rules": {
-        "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
-        "react/jsx-props-no-spreading": [1,
-            {
-                "exceptions": [
-                    "WrappedComponent"
-                ]
-            }
-        ]
-    },
+    "reportUnusedDisableDirectives": true,
     "parser": "babel-eslint"
 }

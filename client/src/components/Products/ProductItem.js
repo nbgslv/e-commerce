@@ -11,8 +11,8 @@ import Fade from '@material-ui/core/Fade';
 import AddShoppingCartIcon from '@material-ui/icons/AddShoppingCart';
 import Typography from '@material-ui/core/Typography';
 import Rating from 'material-ui-rating';
-import { ADD_RATING, ADD_TO_CART, GET_CART, GET_CART_TOTAL } from '../../constants';
-// TODO add to cart action - move to here
+import { ADD_RATING, ADD_TO_CART, GET_CART } from '../../constants';
+// TODO add to user action - move to here
 
 const useStyles = makeStyles({
   root: {
@@ -84,10 +84,7 @@ const ProductItem = ({ data }) => {
             />
           )}
         </Mutation>
-        <Mutation
-          mutation={ADD_TO_CART}
-          refetchQueries={[{ query: GET_CART }, { query: GET_CART_TOTAL }]}
-        >
+        <Mutation mutation={ADD_TO_CART} refetchQueries={[{ query: GET_CART }]}>
           {addToCart => (
             <Button
               productId={data.id}
@@ -126,4 +123,4 @@ ProductItem.propTypes = {
 
 export default ProductItem;
 
-// TODO media query for rating and add to cart button
+// TODO media query for rating and add to user button

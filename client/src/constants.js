@@ -1,18 +1,60 @@
 import gql from 'graphql-tag';
 
 export const GET_CATEGORIES = gql`
-  query getCategories {
+  query categories {
     categories {
-      id
+      _id
       title
     }
   }
 `;
 
-export const COMPLETE_CART = gql`
-  mutation completeCart {
-    completeCart {
-      complete
+export const GET_CATEGORY = gql`
+  query category($id: String!) {
+    category(id: $id) {
+      title
+    }
+  }
+`;
+
+export const ADD_CATEGORY = gql`
+  mutation category($title: String!) {
+    category(title: $title) {
+      title
+    }
+  }
+`;
+
+export const GET_USER = gql`
+  query user($id: String, $email: String) {
+    user(id: $id, email: $email) {
+      email
+      cart {
+        total
+        products
+      }
+    }
+  }
+`;
+
+export const GET_CART = gql`
+  query cart($id: String!) {
+    cart {
+      total
+      products {
+        _id
+        title
+        price
+      }
+    }
+  }
+`;
+
+export const ADD_USER = gql`
+  mutation user($email: String!, $password: String!) {
+    user(email: $email, password: $password) {
+      _id
+      email
     }
   }
 `;
@@ -26,6 +68,14 @@ export const LOGIN_USER = gql`
   }
 `;
 
+export const ADD_TO_CART = gql`
+  mutation addToCart($userId: String!, $productId: String!) {
+    addToCart(userId: $userId, productId: $productId) {
+      total
+    }
+  }
+`;
+
 export const GET_LIMIT = gql`
   query getLimit {
     limit @client
@@ -35,7 +85,7 @@ export const GET_LIMIT = gql`
 export const GET_PRODUCTS = gql`
   query getProducts($limit: Int) {
     products(limit: $limit) {
-      id
+      _id
       title
       thumbnail
       price
@@ -48,7 +98,7 @@ export const GET_PRODUCTS = gql`
 export const GET_PRODUCT = gql`
   query getProduct($id: Int) {
     product(id: $id) {
-      id
+      _id
       title
       thumbnail
       price
@@ -61,38 +111,9 @@ export const GET_PRODUCT = gql`
 export const ADD_RATING = gql`
   mutation updateProductRating($id: Int!, $rating: Int!) {
     updateProductRating(id: $id, rating: $rating) {
-      id
+      _id
       rating
       voters
-    }
-  }
-`;
-
-export const GET_CART_TOTAL = gql`
-  query getCartTotal {
-    cart {
-      total
-    }
-  }
-`;
-
-export const GET_CART = gql`
-  query getCart {
-    cart {
-      total
-      products {
-        id
-        title
-        thumbnail
-      }
-    }
-  }
-`;
-
-export const ADD_TO_CART = gql`
-  mutation addToCart($productId: Int!) {
-    addToCart(input: { productId: $productId }) {
-      total
     }
   }
 `;

@@ -29,7 +29,7 @@ const Alert = styled.span`
 
 const Cart = ({ history }) => (
   <>
-    {history && <SubHeader title="Cart" goToCart={() => history.push('/cart')} />}
+    {history && <SubHeader title="Cart" goToCart={() => history.push('/user')} />}
     <Query query={GET_CART}>
       {({ loading, error, data }) => {
         if (loading || error) {
