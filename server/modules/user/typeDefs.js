@@ -15,6 +15,11 @@ const typeDefs = gql`
     password: String!
     cart: Cart!
   }
+  type LoggedinUser {
+    email: String!
+    cart: Cart!
+    token: String!
+  }
   extend type Query {
     user(id: String, email: String): User
     cart(id: String!): Cart
@@ -22,7 +27,7 @@ const typeDefs = gql`
   extend type Mutation {
     addUser(email: String!, password: String!): User
     addToCart(userId: String!, productId: String!): Cart
-    loginUser(userName: String!, password: String!): User
+    loginUser(userName: String!, password: String!): LoggedinUser
   }
 `;
 

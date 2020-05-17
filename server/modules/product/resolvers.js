@@ -3,7 +3,9 @@ const Product = require('./product.model');
 const resolvers = {
   Query: {
     product: async (parent, { id }) => Product.findById({ _id: id }).exec(),
-    products: () => Product.find({}),
+    products: (parent, { limit = 16 }) => {
+      return Product.find({}).limit(limit);
+    },
   },
   Mutation: {
     addProduct: (parent, product) => {
