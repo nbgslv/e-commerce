@@ -37,7 +37,7 @@ const StyledBadge = withStyles(theme => ({
 
 const Appbar = () => {
   const classes = useStyles();
-  const [auth, setAuth] = React.useState(Boolean(sessionStorage.getItem('token')));
+  const [auth, setAuth] = React.useState(false);
 
   return (
     <div className={classes.root}>
@@ -53,8 +53,8 @@ const Appbar = () => {
             {!auth && (
               <>
                 <Button
-                  href="/login/"
                   className={classes.button}
+                  variant="contained"
                   color="secondary"
                   disableElevation
                 >
@@ -63,18 +63,18 @@ const Appbar = () => {
                 <Button className={classes.button} variant="outlined" color="secondary">
                   Sign Up
                 </Button>
+                <IconButton>
+                  <StyledBadge badgeContent={4} color="secondary">
+                    <ShoppingCart fontSize="large" color="secondary" />
+                  </StyledBadge>
+                </IconButton>
               </>
             )}
             {auth && (
               <IconButton aria-label="account of current user" color="inherit">
-                <AccountCircle fontSize="large" color="secondary" />
+                <AccountCircle />
               </IconButton>
             )}
-            <IconButton>
-              <StyledBadge badgeContent={4} color="secondary">
-                <ShoppingCart fontSize="large" color="secondary" />
-              </StyledBadge>
-            </IconButton>
           </div>
         </Toolbar>
       </AppBar>

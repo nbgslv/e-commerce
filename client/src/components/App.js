@@ -1,7 +1,7 @@
 import React from 'react';
 import { ThemeProvider } from '@material-ui/core';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import { Route, Switch, Redirect, useLocation } from 'react-router-dom';
+import { Route, Switch, Redirect } from 'react-router-dom';
 import ApolloClient from 'apollo-client';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import { HttpLink } from 'apollo-link-http';
@@ -12,7 +12,7 @@ import Cart from './Cart/Cart';
 import Products from './Products/Products';
 import Appbar from './Appbar/Appbar';
 import Header from './Header/Header';
-import Login from './Login/Login';
+import Login from './Checkout/Login';
 import Checkout from './Checkout/Checkout';
 
 const isAuthenticated = sessionStorage.getItem('token');
@@ -47,32 +47,28 @@ const client = new ApolloClient({
 
 cache.writeData({
   data: {
-    limit: 16,
+    limit: 5,
   },
 });
 
-const App = () => {
-  const location = useLocation();
-
-  return (
-    <ApolloProvider client={client}>
-      <CssBaseline />
-      <ThemeProvider theme={Theme.default}>
-        <Appbar />
-        {location.pathname !== '/' ? '' : <Header />}
-        <Switch>
-          <Route exact path="/" component={Products} />
-          <Route path="/products/category/:id" component={Products} />
-          <Route path="/cart" component={Cart} />
-          <Route
-            path="/checkout"
-            render={() => (isAuthenticated ? <Checkout /> : <Redirect to="/login/" />)}
-          />
-          <Route path="/login/" component={Login} />
-        </Switch>
-      </ThemeProvider>
-    </ApolloProvider>
-  );
-};
+const App = () => (
+  <ApolloProvider client={client}>
+    <CssBaseline />
+    <ThemeProvider theme={Theme.default}>
+      <Appbar />
+      <Header />
+      <Switch>
+        <Route exact path="/" component={Products} />
+        <Route path="/products/category/:id" component={Products} />
+        <Route path="/cart" component={Cart} />
+        <Route
+          path="/checkout"
+          render={() => (isAuthenticated ? <Checkout /> : <Redirect to="/login/" />)}
+        />
+        <Route path="/login/" component={Login} />
+      </Switch>
+    </ThemeProvider>
+  </ApolloProvider>
+);
 
 export default App;
