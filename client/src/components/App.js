@@ -47,7 +47,7 @@ const client = new ApolloClient({
 
 cache.writeData({
   data: {
-    limit: 5,
+    limit: 16,
   },
 });
 

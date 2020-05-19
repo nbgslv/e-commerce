@@ -8,10 +8,11 @@ const Filter = ({ limit, client }) => (
     <select
       id="limit"
       value={limit}
-      onChange={e => client.writeData({ data: { limit: e.target.value } })}>
-      <option value={5}>5</option>
-      <option value={10}>10</option>
-      <option value={20}>20</option>
+      onChange={e => client.writeData({ data: { limit: e.target.value } })}
+    >
+      <option value={4}>4</option>
+      <option value={16}>16</option>
+      <option value={64}>64</option>
     </select>
   </>
 );
