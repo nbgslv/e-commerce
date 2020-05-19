@@ -1,13 +1,13 @@
 const { AuthenticationError } = require('apollo-server');
 const bcrypt = require('bcryptjs');
-const { tokenCookie, setToken } = require('../helpers/auth');
+const { setToken } = require('../helpers/auth');
 const User = require('./user.model');
 const Cart = require('./cart.model');
 const Product = require('../product/product.model');
 
 const resolvers = {
   Query: {
-    user: async (parent, { id, email }) => {
+    user: async (_, { id, email }) => {
       const findJson = {};
       if (id) findJson._id = id;
       if (email) findJson.email = email;
@@ -19,7 +19,7 @@ const resolvers = {
     },
   },
   Mutation: {
-    addUser: (parent, user) => {
+    addUser: (_, user) => {
       const newUser = new User({
         email: user.email,
         password: user.password,
@@ -28,7 +28,7 @@ const resolvers = {
 
       return newUser.save();
     },
-    addToCart: async (parent, { userId, productId }) => {
+    addToCart: async (_, { userId, productId }) => {
       const user = await User.findById(userId, 'cart');
       const product = await Product.findById({ _id: productId });
       user.cart.products.push(product);
@@ -36,24 +36,29 @@ const resolvers = {
       const updatedUser = await user.save();
       return updatedUser.cart;
     },
-    loginUser: async (_, { userName, password }, { res }) => {
+    loginUser: async (_, { email, password }, { res }) => {
       let isValid = false;
-      const user = await User.findOne({ email: userName }).exec();
+      const user = await User.findOne({ email }).exec();
+      if (!user) return null;
 
-      if (userName === user.email) {
+      if (email === user.email) {
         isValid = await bcrypt.compareSync(password, user.password);
       }
 
       if (isValid) {
         const token = setToken(user.email, user._id);
-        const cookie = tokenCookie(token);
-        res.cookie(...cookie);
+        res.cookie('access', token, { httpOnly: true });
         return {
-          email: userName,
+          email,
           cart: user.cart,
+          token,
         };
       }
       throw new AuthenticationError('Please provide (valid) authentication details');
+    },
+    logoutUser: (_, __, { res }) => {
+      res.clearCookie('access');
+      return true;
     },
   },
 };

@@ -11,26 +11,44 @@ const { tokenCookie, setToken } = require('./modules/helpers/auth');
 const typeDefs = require('./modules/index.typedefs');
 const resolvers = require('./modules/index.resolvers');
 
-const jwtSecret = process.env.JWT_SECRET_TOKEN;
+const { jwtSecret } = require('./config/dotenv');
 
 const validateTokensMiddleware = async (req, res, next) => {
-  const parsedToken = req.cookies.access;
+  const parsedToken = req.cookies['access'];
+  console.log('token', parsedToken);
   if (!parsedToken) return next();
 
-  const decodedToken = jwt.verify(tokenCookie, jwtSecret);
-  if (decodedToken && decodedToken.user) {
-    const user = await User.findById(decodedToken.user.id);
+  const decodeToken = async () => {
+    try {
+      return jwt.verify(parsedToken, jwtSecret);
+    } catch (e) {
+      console.log(e.message);
+      console.log('cookie cleared, no user found');
+      res.clearCookie('access');
+      return next();
+    }
+  };
+  const decodedToken = await decodeToken();
+  console.log('decoded token', decodedToken);
+  if (decodedToken && decodedToken.id) {
+    const user = await User.findById(decodedToken.id);
+    console.log('user', user);
     if (!user) {
       // remove cookies if token not valid
+      console.log('cookie cleared, no user found');
       res.clearCookie('access');
       return next();
     }
 
     const userToken = setToken(user.email, user.id);
-    req.user = decodedToken.user;
+    req.user = decodedToken.email;
     // update the cookies with new tokens
-    const cookie = tokenCookie(userToken);
-    res.cookie(...cookie);
+    res.cookie('access', userToken, { httpOnly: true });
+    res.set({
+      'Access-Control-Expose-Headers': 'x-access-token',
+      'x-access-token': userToken,
+    });
+    console.log('good user', res.cookie);
 
     return next();
   }
@@ -41,6 +59,7 @@ const app = express();
 
 app.use(
   cors({
+    origin: 'http://localhost:3000',
     credentials: true,
   })
 );
@@ -50,19 +69,20 @@ app.use(validateTokensMiddleware);
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-  context: async ({ req, connection }) => {
-    try {
-      const token = req ? req.headers.authorization : connection.context.authorization;
-      const user = await getUser(token);
-      return { token: user };
-    } catch (e) {
-      console.log('context', e.message);
-      return {};
-    }
-  },
+  context: async ({ req, res, connection }) => ({ req, res }),
+  //   try {
+  //     const token = req ? req.headers.authorization : connection.context.authorization;
+  //     const user = await getUser(token);
+  //     return { token: user };
+  //   } catch (e) {
+  //     console.log('context', e.message);
+  //     return {};
+  //   }
+  // },
+  cors: false,
 });
 
-server.applyMiddleware({ app, path: '/graphql' });
+server.applyMiddleware({ app, path: '/graphql', cors: false });
 
 const httpServer = createServer(app);
 server.installSubscriptionHandlers(httpServer);

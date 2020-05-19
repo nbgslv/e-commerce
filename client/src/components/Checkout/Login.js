@@ -5,6 +5,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import { useForm } from 'react-hook-form';
+import { saveUser } from '../../utils/localStorage';
 import { LOGIN_USER } from '../../constants';
 
 const useStyles = makeStyles({
@@ -23,17 +24,17 @@ const useStyles = makeStyles({
 const Login = ({ history }) => {
   const classes = useStyles();
   const [loginUser] = useMutation(LOGIN_USER);
-  const [userName, setUserName] = React.useState('');
+  const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
   const { register, handleSubmit, errors } = useForm();
   const onSubmit = async () => {
     const { data } = await loginUser({
-      variables: { username: userName, password },
+      variables: { email, password },
     });
 
-    if (data.loginUser && data.loginUser.token) {
-      sessionStorage.setItem('token', data.loginUser.token);
-      return history.push('/checkout');
+    if (data.loginUser.token) {
+      saveUser(data.loginUser.token);
+      return history.push('/');
     }
     return alert('Please provide (valid) authentication details.');
   };
@@ -44,7 +45,7 @@ const Login = ({ history }) => {
         name="email"
         id="email"
         variant="outlined"
-        onChange={e => setUserName(e.target.value)}
+        onChange={e => setEmail(e.target.value)}
         placeholder="Your email"
         className={classes.input}
         inputProps={{

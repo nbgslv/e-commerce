@@ -1,5 +1,4 @@
 import React from 'react';
-import { withApollo } from 'react-apollo';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -10,6 +9,7 @@ import MenuIcon from '@material-ui/icons/Menu';
 import Badge from '@material-ui/core/Badge';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import ShoppingCart from '@material-ui/icons/ShoppingCart';
+import { authContext } from '../App';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -36,13 +36,12 @@ const StyledBadge = withStyles(theme => ({
   },
 }))(Badge);
 
-const Appbar = ({ client }) => {
+const Appbar = () => {
   const classes = useStyles();
-  const [auth, setAuth] = React.useState(false);
+  const auth = React.useContext(authContext);
 
   return (
     <div className={classes.root}>
-      {console.log(client)}
       <AppBar position="fixed">
         <Toolbar>
           <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
@@ -65,18 +64,18 @@ const Appbar = ({ client }) => {
                 <Button className={classes.button} variant="outlined" color="secondary">
                   Sign Up
                 </Button>
-                <IconButton>
-                  <StyledBadge badgeContent={4} color="secondary">
-                    <ShoppingCart fontSize="large" color="secondary" />
-                  </StyledBadge>
-                </IconButton>
               </>
             )}
             {auth && (
               <IconButton aria-label="account of current user" color="inherit">
-                <AccountCircle />
+                <AccountCircle fontSize="large" color="secondary" />
               </IconButton>
             )}
+            <IconButton>
+              <StyledBadge badgeContent={4} color="secondary">
+                <ShoppingCart fontSize="large" color="secondary" />
+              </StyledBadge>
+            </IconButton>
           </div>
         </Toolbar>
       </AppBar>
@@ -84,4 +83,4 @@ const Appbar = ({ client }) => {
   );
 };
 
-export default withApollo(Appbar);
+export default Appbar;

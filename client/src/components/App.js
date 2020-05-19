@@ -6,7 +6,6 @@ import ApolloClient from 'apollo-client';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import { HttpLink } from 'apollo-link-http';
 import { ApolloProvider } from 'react-apollo';
-import { setContext } from 'apollo-link-context';
 import * as Theme from '../ui/theme/index';
 import Cart from './Cart/Cart';
 import Products from './Products/Products';
@@ -14,28 +13,19 @@ import Appbar from './Appbar/Appbar';
 import Header from './Header/Header';
 import Login from './Checkout/Login';
 import Checkout from './Checkout/Checkout';
+import { saveUser, getUser } from '../utils/localStorage';
 
-const isAuthenticated = sessionStorage.getItem('token');
+export const authContext = React.createContext();
 
 const cache = new InMemoryCache();
 
 const httpLink = new HttpLink({
   uri: 'http://localhost:4000/graphql',
-});
-
-const authLink = setContext((_, { headers }) => {
-  const token = isAuthenticated;
-
-  return {
-    headers: {
-      ...headers,
-      authorization: token ? `Bearer ${token}` : '',
-    },
-  };
+  credentials: 'include',
 });
 
 const client = new ApolloClient({
-  link: authLink.concat(httpLink),
+  link: httpLink,
   cache,
   resolvers: {},
   typeDefs: `
@@ -43,6 +33,12 @@ const client = new ApolloClient({
       limit: Int!
     }
   `,
+  fetch: async (uri, options) => {
+    const initialRequest = await fetch(uri, options);
+    const { headers } = initialRequest;
+    const accessToken = headers.get('x-access-token');
+    if (accessToken) saveUser(accessToken);
+  },
 });
 
 cache.writeData({
@@ -54,20 +50,22 @@ cache.writeData({
 const App = () => (
   <ApolloProvider client={client}>
     <CssBaseline />
-    <ThemeProvider theme={Theme.default}>
-      <Appbar />
-      <Header />
-      <Switch>
-        <Route exact path="/" component={Products} />
-        <Route path="/products/category/:id" component={Products} />
-        <Route path="/cart" component={Cart} />
-        <Route
-          path="/checkout"
-          render={() => (isAuthenticated ? <Checkout /> : <Redirect to="/login/" />)}
-        />
-        <Route path="/login/" component={Login} />
-      </Switch>
-    </ThemeProvider>
+    <authContext.Provider value={Boolean(getUser())}>
+      <ThemeProvider theme={Theme.default}>
+        <Appbar />
+        <Header />
+        <Switch>
+          <Route exact path="/" component={Products} />
+          <Route path="/products/category/:id" component={Products} />
+          <Route path="/cart" component={Cart} />
+          <Route
+            path="/checkout"
+            render={() => (getUser() ? <Checkout /> : <Redirect to="/login/" />)}
+          />
+          <Route path="/login/" component={Login} />
+        </Switch>
+      </ThemeProvider>
+    </authContext.Provider>
   </ApolloProvider>
 );
 
