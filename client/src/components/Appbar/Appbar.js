@@ -1,4 +1,5 @@
 import React from 'react';
+import { withApollo } from 'react-apollo';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -35,12 +36,13 @@ const StyledBadge = withStyles(theme => ({
   },
 }))(Badge);
 
-const Appbar = () => {
+const Appbar = ({ client }) => {
   const classes = useStyles();
   const [auth, setAuth] = React.useState(false);
 
   return (
     <div className={classes.root}>
+      {console.log(client)}
       <AppBar position="fixed">
         <Toolbar>
           <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
@@ -53,12 +55,12 @@ const Appbar = () => {
             {!auth && (
               <>
                 <Button
+                  href="/login/"
                   className={classes.button}
-                  variant="contained"
                   color="secondary"
                   disableElevation
                 >
-                  Sign In
+                  Login
                 </Button>
                 <Button className={classes.button} variant="outlined" color="secondary">
                   Sign Up
@@ -82,4 +84,4 @@ const Appbar = () => {
   );
 };
 
-export default Appbar;
+export default withApollo(Appbar);
