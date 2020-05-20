@@ -6,12 +6,22 @@ const cookieParser = require('cookie-parser');
 const jwt = require('jsonwebtoken');
 const mongoose = require('./config/database'); // Must be provided even if not used, to connect to MongoDB instance
 const User = require('./modules/user/user.model');
-const { tokenCookie, setToken } = require('./modules/helpers/auth');
+const { setToken } = require('./modules/helpers/auth');
 
 const typeDefs = require('./modules/index.typedefs');
 const resolvers = require('./modules/index.resolvers');
 
 const { jwtSecret } = require('./config/dotenv');
+
+const app = express();
+
+app.use(
+  cors({
+    origin: 'http://localhost:3000',
+    credentials: true,
+  })
+);
+app.use(cookieParser());
 
 const validateTokensMiddleware = async (req, res, next) => {
   const parsedToken = req.cookies['access'];
@@ -24,8 +34,7 @@ const validateTokensMiddleware = async (req, res, next) => {
     } catch (e) {
       console.log(e.message);
       console.log('cookie cleared, no user found');
-      res.clearCookie('access');
-      return next();
+      return false;
     }
   };
   const decodedToken = await decodeToken();
@@ -39,37 +48,27 @@ const validateTokensMiddleware = async (req, res, next) => {
       res.clearCookie('access');
       return next();
     }
-
     const userToken = setToken(user.email, user.id);
     req.user = decodedToken.email;
     // update the cookies with new tokens
     res.cookie('access', userToken, { httpOnly: true });
     res.set({
-      'Access-Control-Expose-Headers': 'x-access-token',
+      'Access-Control-Expose-Headers': ['x-access-token'],
       'x-access-token': userToken,
     });
     console.log('good user', res.cookie);
 
     return next();
   }
-  next();
+  return next();
 };
 
-const app = express();
-
-app.use(
-  cors({
-    origin: 'http://localhost:3000',
-    credentials: true,
-  })
-);
-app.use(cookieParser());
 app.use(validateTokensMiddleware);
 
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-  context: async ({ req, res, connection }) => ({ req, res }),
+  context: async ({ req, res }) => ({ req, res }),
   //   try {
   //     const token = req ? req.headers.authorization : connection.context.authorization;
   //     const user = await getUser(token);

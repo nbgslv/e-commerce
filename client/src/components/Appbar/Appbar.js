@@ -38,7 +38,7 @@ const StyledBadge = withStyles(theme => ({
 
 const Appbar = () => {
   const classes = useStyles();
-  const auth = React.useContext(authContext);
+  const { auth } = React.useContext(authContext);
 
   return (
     <div className={classes.root}>
