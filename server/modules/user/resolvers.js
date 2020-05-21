@@ -1,17 +1,14 @@
 const { AuthenticationError } = require('apollo-server');
 const bcrypt = require('bcryptjs');
-const JsonWebToken = require('jsonwebtoken');
+const { setToken } = require('../helpers/auth');
 const User = require('./user.model');
 const Cart = require('./cart.model');
 const Product = require('../product/product.model');
 
-const jwtSecret = '34%%##@#FGFKFL'; // TODO move to env
-
 const resolvers = {
   Query: {
-    user: async (parent, { id, email }) => {
+    user: async (_, { id, email }) => {
       const findJson = {};
-      // eslint-disable-next-line no-underscore-dangle
       if (id) findJson._id = id;
       if (email) findJson.email = email;
       return User.findOne(findJson).exec();
@@ -22,7 +19,7 @@ const resolvers = {
     },
   },
   Mutation: {
-    addUser: (parent, user) => {
+    addUser: (_, user) => {
       const newUser = new User({
         email: user.email,
         password: user.password,
@@ -31,7 +28,7 @@ const resolvers = {
 
       return newUser.save();
     },
-    addToCart: async (parent, { userId, productId }) => {
+    addToCart: async (_, { userId, productId }) => {
       const user = await User.findById(userId, 'cart');
       const product = await Product.findById({ _id: productId });
       user.cart.products.push(product);
@@ -39,25 +36,29 @@ const resolvers = {
       const updatedUser = await user.save();
       return updatedUser.cart;
     },
-    loginUser: async (_, { userName, password }) => {
+    loginUser: async (_, { email, password }, { res }) => {
       let isValid = false;
-      const user = await User.findOne({ email: userName }).exec();
+      const user = await User.findOne({ email }).exec();
+      if (!user) return null;
 
-      if (userName === user.email) {
+      if (email === user.email) {
         isValid = await bcrypt.compareSync(password, user.password);
       }
 
       if (isValid) {
-        const token = JsonWebToken.sign({ user: user.email }, jwtSecret, {
-          expiresIn: 3600,
-        });
+        const token = setToken(user.email, user._id);
+        res.cookie('access', token, { httpOnly: true });
         return {
-          email: userName,
+          email,
           cart: user.cart,
           token,
         };
       }
       throw new AuthenticationError('Please provide (valid) authentication details');
+    },
+    logoutUser: (_, __, { res }) => {
+      res.clearCookie('access');
+      return true;
     },
   },
 };
