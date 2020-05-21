@@ -55,7 +55,6 @@ const client = new ApolloClient({
   typeDefs: `
     extend type Query {
       limit: Int!
-      auth: Boolean!
     }
   `,
   connectToDevTools: true,
