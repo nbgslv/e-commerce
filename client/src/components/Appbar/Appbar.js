@@ -9,7 +9,7 @@ import MenuIcon from '@material-ui/icons/Menu';
 import Badge from '@material-ui/core/Badge';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import ShoppingCart from '@material-ui/icons/ShoppingCart';
-import { authContext } from '../App';
+import { appContext } from '../App';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -38,7 +38,7 @@ const StyledBadge = withStyles(theme => ({
 
 const Appbar = () => {
   const classes = useStyles();
-  const { auth } = React.useContext(authContext);
+  const { auth, cart } = React.useContext(appContext);
 
   return (
     <div className={classes.root}>
@@ -72,7 +72,7 @@ const Appbar = () => {
               </IconButton>
             )}
             <IconButton>
-              <StyledBadge badgeContent={4} color="secondary">
+              <StyledBadge badgeContent={cart.total} color="secondary">
                 <ShoppingCart fontSize="large" color="secondary" />
               </StyledBadge>
             </IconButton>

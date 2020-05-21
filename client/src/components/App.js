@@ -33,7 +33,6 @@ const afterwareLink = new ApolloLink((operation, forward) => {
     } = context;
 
     if (headers) {
-      console.log(headers.get('set-cookie'));
       const token = headers.get('x-access-token');
       if (token) {
         saveUser(token);
@@ -45,11 +44,6 @@ const afterwareLink = new ApolloLink((operation, forward) => {
     }
     return response;
   });
-});
-
-export const authContext = React.createContext({
-  auth: serverAuth,
-  setAuth: () => {},
 });
 
 const link = ApolloLink.from([afterwareLink, httpLink]);
@@ -73,14 +67,33 @@ cache.writeData({
   },
 });
 
+export const appContext = React.createContext({
+  auth: serverAuth,
+  setAuth: () => {},
+  userId: null,
+  setUserId: () => {},
+  cart: { total: 0, products: [] },
+  setCart: () => {},
+});
+
 const App = () => {
   const [auth, setAuth] = React.useState(false);
-  const value = { auth, setAuth };
+  const [userId, setUserId] = React.useState(null);
+  const [cart, setCart] = React.useState({ total: 0, products: [] });
+  React.useEffect(() => {
+    if (!auth && localStorage.getItem('cart')) setCart(JSON.parse(localStorage.getItem('cart')));
+    else if (!localStorage.getItem('cart')) {
+      localStorage.setItem('cart', JSON.stringify({ total: 0, products: [] }));
+      setCart(JSON.stringify({ total: 0, products: [] }));
+    }
+  }, [auth]);
+
+  const value = { auth, setAuth, userId, setUserId, cart, setCart };
 
   return (
     <ApolloProvider client={client}>
       <CssBaseline />
-      <authContext.Provider value={value}>
+      <appContext.Provider value={value}>
         <ThemeProvider theme={Theme.default}>
           <Appbar />
           <Header />
@@ -95,7 +108,7 @@ const App = () => {
             <Route path="/login/" component={Login} />
           </Switch>
         </ThemeProvider>
-      </authContext.Provider>
+      </appContext.Provider>
     </ApolloProvider>
   );
 };

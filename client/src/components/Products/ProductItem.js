@@ -12,6 +12,7 @@ import AddShoppingCartIcon from '@material-ui/icons/AddShoppingCart';
 import Typography from '@material-ui/core/Typography';
 import Rating from 'material-ui-rating';
 import { ADD_RATING, ADD_TO_CART, GET_CART } from '../../constants';
+import { appContext } from '../App';
 // TODO add to user action - move to here
 
 const useStyles = makeStyles({
@@ -38,6 +39,8 @@ const ProductItem = ({ data }) => {
   const [imageLoading, setImageLoading] = React.useState(true);
   const [rating, setRating] = React.useState(Math.round(data.voters / data.rating));
   const [hover, setHover] = React.useState(false);
+  const { auth, userId, cart, setCart } = React.useContext(appContext);
+
   const classes = useStyles();
   return (
     <Card className={classes.root}>
@@ -90,7 +93,18 @@ const ProductItem = ({ data }) => {
               productId={data.id}
               variant="outlined"
               color="primary"
-              onClick={() => addToCart({ variables: { productId: data.id } })}
+              onClick={() => {
+                if (auth) addToCart({ variables: { userId, productId: data.id } });
+                else {
+                  const parsedCart = JSON.parse(localStorage.getItem('cart'));
+                  const updatedCart = {
+                    total: parsedCart.total + 1,
+                    products: [...parsedCart.products, data],
+                  };
+                  setCart(updatedCart);
+                  localStorage.setItem('cart', JSON.stringify(updatedCart));
+                }
+              }}
               onMouseEnter={() => setHover(true)}
               onMouseOver={e => e.stopPropagation()}
               onMouseLeave={() => setHover(false)}
