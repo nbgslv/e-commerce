@@ -39,7 +39,7 @@ const ProductItem = ({ data }) => {
   const [imageLoading, setImageLoading] = React.useState(true);
   const [rating, setRating] = React.useState(Math.round(data.voters / data.rating));
   const [hover, setHover] = React.useState(false);
-  const { auth, userId, cart, setCart } = React.useContext(appContext);
+  const { auth, userId, setCart } = React.useContext(appContext);
 
   const classes = useStyles();
   return (

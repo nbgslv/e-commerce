@@ -17,7 +17,7 @@ const typeDefs = gql`
     token: String!
   }
   extend type Query {
-    user(id: String, email: String): User
+    user(id: String, email: String, token: String): User
     cart(id: String!): Cart
   }
   extend type Mutation {

@@ -6,7 +6,7 @@ const cookieParser = require('cookie-parser');
 const jwt = require('jsonwebtoken');
 const mongoose = require('./config/database'); // Must be provided even if not used, to connect to MongoDB instance
 const User = require('./modules/user/user.model');
-const { setToken } = require('./modules/helpers/auth');
+const { setToken, decodeToken } = require('./modules/helpers/auth');
 
 const typeDefs = require('./modules/index.typedefs');
 const resolvers = require('./modules/index.resolvers');
@@ -23,47 +23,39 @@ app.use(
 );
 app.use(cookieParser());
 
-const validateTokensMiddleware = async (req, res, next) => {
-  const parsedToken = req.cookies['access'];
-  console.log('token', parsedToken);
-  if (!parsedToken) return next();
+// const validateTokensMiddleware = async (req, res, next) => {
+//   const parsedToken = req.cookies['access'];
+//   console.log('token', parsedToken);
+//   if (typeof parsedToken !== 'string') return next();
+//   const decodedToken = await decodeToken(parsedToken);
+//   console.log('decoded token', decodedToken);
+//   if (decodedToken && decodedToken.id) {
+//     const user = await User.findById(decodedToken.id);
+//     console.log('user', user);
+//     if (!user) {
+//       // remove cookies if token not valid
+//       console.log('cookie cleared, no user found');
+//       res.clearCookie('access');
+//       return next();
+//     }
+//     const userToken = setToken(user.email, user.id);
+//     req.user = decodedToken.email;
+//     console.log('req.user', res);
+//     // update the cookies with new tokens
+//     console.log('token for cookie', userToken);
+//     res.cookie('access', userToken, { httpOnly: true });
+//     res.set({
+//       'Access-Control-Expose-Headers': ['x-access-token'],
+//       'x-access-token': userToken,
+//     });
+//     console.log('good user', res.cookie);
+//
+//     return next();
+//   }
+//   return next();
+// };
 
-  const decodeToken = async () => {
-    try {
-      return jwt.verify(parsedToken, jwtSecret);
-    } catch (e) {
-      console.log(e.message);
-      console.log('cookie cleared, no user found');
-      return false;
-    }
-  };
-  const decodedToken = await decodeToken();
-  console.log('decoded token', decodedToken);
-  if (decodedToken && decodedToken.id) {
-    const user = await User.findById(decodedToken.id);
-    console.log('user', user);
-    if (!user) {
-      // remove cookies if token not valid
-      console.log('cookie cleared, no user found');
-      res.clearCookie('access');
-      return next();
-    }
-    const userToken = setToken(user.email, user.id);
-    req.user = decodedToken.email;
-    // update the cookies with new tokens
-    res.cookie('access', userToken, { httpOnly: true });
-    res.set({
-      'Access-Control-Expose-Headers': ['x-access-token'],
-      'x-access-token': userToken,
-    });
-    console.log('good user', res.cookie);
-
-    return next();
-  }
-  return next();
-};
-
-app.use(validateTokensMiddleware);
+// app.use(validateTokensMiddleware);
 
 const server = new ApolloServer({
   typeDefs,

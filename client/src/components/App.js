@@ -23,33 +23,33 @@ const httpLink = new HttpLink({
   credentials: 'include',
 });
 
-let serverAuth = false;
+// let serverAuth = false;
 
-const afterwareLink = new ApolloLink((operation, forward) => {
-  return forward(operation).map(response => {
-    const context = operation.getContext();
-    const {
-      response: { headers },
-    } = context;
+// const afterwareLink = new ApolloLink((operation, forward) => {
+//   return forward(operation).map(response => {
+//     const context = operation.getContext();
+//     const {
+//       response: { headers },
+//     } = context;
+//
+//     if (headers) {
+//       const authorized = headers.get('x-access-token');
+//       if (authorized) {
+//         saveUser(token);
+//         serverAuth = true;
+//       } else {
+//         deleteUser();
+//         serverAuth = false;
+//       }
+//     }
+//     return response;
+//   });
+// });
 
-    if (headers) {
-      const token = headers.get('x-access-token');
-      if (token) {
-        saveUser(token);
-        serverAuth = true;
-      } else {
-        deleteUser();
-        serverAuth = false;
-      }
-    }
-    return response;
-  });
-});
-
-const link = ApolloLink.from([afterwareLink, httpLink]);
+// const link = ApolloLink.from([afterwareLink, httpLink]);
 
 const client = new ApolloClient({
-  link,
+  link: httpLink,
   cache,
   resolvers: {},
   typeDefs: `
@@ -67,7 +67,7 @@ cache.writeData({
 });
 
 export const appContext = React.createContext({
-  auth: serverAuth,
+  auth: false,
   setAuth: () => {},
   userId: null,
   setUserId: () => {},
@@ -79,13 +79,6 @@ const App = () => {
   const [auth, setAuth] = React.useState(false);
   const [userId, setUserId] = React.useState(null);
   const [cart, setCart] = React.useState({ total: 0, products: [] });
-  React.useEffect(() => {
-    if (!auth && localStorage.getItem('cart')) setCart(JSON.parse(localStorage.getItem('cart')));
-    else if (!localStorage.getItem('cart')) {
-      localStorage.setItem('cart', JSON.stringify({ total: 0, products: [] }));
-      setCart(JSON.stringify({ total: 0, products: [] }));
-    }
-  }, [auth]);
 
   const value = { auth, setAuth, userId, setUserId, cart, setCart };
 

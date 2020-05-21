@@ -1,4 +1,5 @@
 import React from 'react';
+import { useQuery } from 'react-apollo';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -9,6 +10,8 @@ import MenuIcon from '@material-ui/icons/Menu';
 import Badge from '@material-ui/core/Badge';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import ShoppingCart from '@material-ui/icons/ShoppingCart';
+import { GET_USER } from '../../constants';
+import { getUser } from '../../utils/localStorage';
 import { appContext } from '../App';
 
 const useStyles = makeStyles(theme => ({
@@ -37,8 +40,24 @@ const StyledBadge = withStyles(theme => ({
 }))(Badge);
 
 const Appbar = () => {
+  const { loading, errors, data } = useQuery(GET_USER, { variables: { token: getUser() } });
+  const { auth, setAuth, setUserId, cart, setCart } = React.useContext(appContext);
+  React.useEffect(() => {
+    if (!errors && !loading && data) {
+      if (data.user) {
+        setAuth(true);
+        setUserId(data.user.id);
+        setCart(data.user.cart);
+      }
+    }
+    if (!auth && localStorage.getItem('cart')) setCart(JSON.parse(localStorage.getItem('cart')));
+    else if (!localStorage.getItem('cart')) {
+      localStorage.setItem('cart', JSON.stringify({ total: 0, products: [] }));
+      setCart(JSON.stringify({ total: 0, products: [] }));
+    }
+  }, [auth, setAuth, setCart, setUserId, data, errors, loading]);
+
   const classes = useStyles();
-  const { auth, cart } = React.useContext(appContext);
 
   return (
     <div className={classes.root}>

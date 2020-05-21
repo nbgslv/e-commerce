@@ -25,18 +25,6 @@ export const ADD_CATEGORY = gql`
   }
 `;
 
-export const GET_USER = gql`
-  query user($id: String, $email: String) {
-    user(id: $id, email: $email) {
-      email
-      cart {
-        total
-        products
-      }
-    }
-  }
-`;
-
 export const GET_CART = gql`
   query cart($id: String!) {
     cart {
@@ -55,6 +43,22 @@ export const ADD_USER = gql`
     user(email: $email, password: $password) {
       _id
       email
+    }
+  }
+`;
+
+export const GET_USER = gql`
+  query getUser($id: String, $email: String, $token: String) {
+    user(id: $id, email: $email, token: $token) {
+      _id
+      cart {
+        total
+        products {
+          _id
+          title
+          price
+        }
+      }
     }
   }
 `;
