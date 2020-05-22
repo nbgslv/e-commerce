@@ -27,7 +27,7 @@ export const ADD_CATEGORY = gql`
 
 export const GET_CART = gql`
   query cart($id: String!) {
-    cart {
+    cart(id: $id) {
       total
       products {
         _id

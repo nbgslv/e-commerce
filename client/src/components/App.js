@@ -4,7 +4,6 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import { Route, Switch, Redirect } from 'react-router-dom';
 import ApolloClient from 'apollo-client';
 import { InMemoryCache } from 'apollo-cache-inmemory';
-import { ApolloLink } from 'apollo-link';
 import { HttpLink } from 'apollo-link-http';
 import { ApolloProvider } from 'react-apollo';
 import * as Theme from '../ui/theme/index';
@@ -14,7 +13,7 @@ import Appbar from './Appbar/Appbar';
 import Header from './Header/Header';
 import Login from './Checkout/Login';
 import Checkout from './Checkout/Checkout';
-import { saveUser, getUser, deleteUser } from '../utils/localStorage';
+import { getUser } from '../utils/localStorage';
 
 const cache = new InMemoryCache();
 

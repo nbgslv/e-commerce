@@ -46,8 +46,8 @@ const Appbar = () => {
     if (!errors && !loading && data) {
       if (data.user) {
         setAuth(true);
-        setUserId(data.user.id);
-        setCart(data.user.cart);
+        setUserId(data.user._id);
+        if (auth && data.user.cart.total > cart.total) setCart(data.user.cart);
       }
     }
     if (!auth && localStorage.getItem('cart')) setCart(JSON.parse(localStorage.getItem('cart')));
@@ -55,7 +55,7 @@ const Appbar = () => {
       localStorage.setItem('cart', JSON.stringify({ total: 0, products: [] }));
       setCart(JSON.stringify({ total: 0, products: [] }));
     }
-  }, [auth, setAuth, setCart, setUserId, data, errors, loading]);
+  }, [auth, setAuth, setCart, setUserId, data, errors, loading, cart.total]);
 
   const classes = useStyles();
 

@@ -11,16 +11,9 @@ const resolvers = {
       const findJson = {};
       if (id) findJson._id = id;
       if (email) findJson.email = email;
-      console.log('res token', token);
       if (token) {
         const decodedToken = await decodeToken(token);
-        console.log('res decoded', decodedToken);
-        if (decodedToken) {
-          console.log(decodedToken.id);
-          const user = await User.findById({ _id: decodedToken.id }).exec();
-          console.log('res user', user);
-          return User.findById(decodedToken.id).exec();
-        }
+        if (decodedToken) return User.findById({ _id: decodedToken.id }).exec();
         return new Error('Invalid token');
       }
       if (id || email) return User.findOne(findJson).exec();
@@ -60,8 +53,7 @@ const resolvers = {
 
       if (isValid) {
         const token = await setToken(user.email, user._id);
-        console.log('login token cooke', token);
-        res.cookie('access', token, { httpOnly: true });
+        res.cookie('access', token, { httpOnly: true, expires: new Date(Date.now() + 3600) });
         return {
           _id: user._id,
           email,

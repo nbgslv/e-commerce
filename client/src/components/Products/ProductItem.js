@@ -87,15 +87,24 @@ const ProductItem = ({ data }) => {
             />
           )}
         </Mutation>
-        <Mutation mutation={ADD_TO_CART} refetchQueries={[{ query: GET_CART }]}>
-          {addToCart => (
+        <Mutation mutation={ADD_TO_CART} ignoreResults={false}>
+          {(addToCart, { client }) => (
             <Button
               productId={data.id}
               variant="outlined"
               color="primary"
-              onClick={() => {
-                if (auth) addToCart({ variables: { userId, productId: data.id } });
-                else {
+              onClick={async () => {
+                if (auth) {
+                  addToCart({ variables: { userId, productId: data._id } });
+                  const { data: user } = await client.query({
+                    query: GET_CART,
+                    variables: { id: userId },
+                  });
+                  console.log(user);
+                  user.cart.total += 1;
+                  user.cart.products.push(data);
+                  setCart({ ...user.cart });
+                } else {
                   const parsedCart = JSON.parse(localStorage.getItem('cart'));
                   const updatedCart = {
                     total: parsedCart.total + 1,

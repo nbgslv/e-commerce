@@ -30,6 +30,7 @@ const Login = ({ history }) => {
   const { register, handleSubmit, errors } = useForm();
   const { setAuth, setUserId, setCart } = React.useContext(appContext);
   const onSubmit = async () => {
+    setCart({ total: 0, products: [] });
     const { data } = await loginUser({
       variables: { email, password },
     });
