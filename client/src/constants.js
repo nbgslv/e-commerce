@@ -26,13 +26,14 @@ export const ADD_CATEGORY = gql`
 `;
 
 export const GET_CART = gql`
-  query cart($id: String!) {
-    cart(id: $id) {
+  query cart {
+    cart {
       total
       products {
         _id
         title
         price
+        quantity
       }
     }
   }
@@ -48,8 +49,8 @@ export const ADD_USER = gql`
 `;
 
 export const GET_USER = gql`
-  query getUser($id: String, $email: String, $token: String) {
-    user(id: $id, email: $email, token: $token) {
+  query getUser($id: String, $email: String) {
+    user(id: $id, email: $email) {
       _id
       cart {
         total
@@ -57,6 +58,7 @@ export const GET_USER = gql`
           _id
           title
           price
+          quantity
         }
       }
     }
@@ -66,25 +68,35 @@ export const GET_USER = gql`
 export const LOGIN_USER = gql`
   mutation loginUser($email: String!, $password: String!) {
     loginUser(email: $email, password: $password) {
-      _id
-      email
-      cart {
-        total
-        products {
-          _id
-          title
-          price
-        }
-      }
-      token
+      success
     }
   }
 `;
 
 export const ADD_TO_CART = gql`
-  mutation addToCart($userId: String!, $productId: String!) {
-    addToCart(userId: $userId, productId: $productId) {
+  mutation addToCart($productId: String!) {
+    addToCart(productId: $productId) {
       total
+      products {
+        _id
+        title
+        price
+        quantity
+      }
+    }
+  }
+`;
+
+export const REMOVE_FROM_CART = gql`
+  mutation removeFromCart($productId: String!) {
+    removeFromCart(productId: $productId) {
+      total
+      products {
+        _id
+        title
+        price
+        quantity
+      }
     }
   }
 `;

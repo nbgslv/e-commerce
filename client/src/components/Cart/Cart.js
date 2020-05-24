@@ -1,61 +1,40 @@
 import React from 'react';
-import ReactRouterPropTypes from 'react-router-prop-types';
-import styled from 'styled-components';
-import { Query } from 'react-apollo';
-import { Link } from 'react-router-dom';
-import Button from '@material-ui/core/Button';
-import SubHeader from '../Header/SubHeader';
-import ProductItem from '../Products/ProductItem';
+import { useMutation, useQuery } from 'react-apollo';
+import { styled } from '@material-ui/core/styles';
+import CartItems from './CartItems';
 import Totals from './Totals';
-import { GET_CART } from '../../constants';
+import { GET_CART, REMOVE_FROM_CART } from '../../constants';
+import { getCart, getUser, removeProductFromCart } from '../../utils/localStorage';
 
-const CartWrapper = styled.div`
-  display: flex;
-  justify-content: space-between;
-  flex-direction: column;
-  margin: 2% 5%;
-`;
+const ProductsTableWrapper = styled('div')({
+  margin: '0 48px',
+});
 
-const CartItemsWrapper = styled.div`
-  display: flex;
-  justify-content: space-between;
-  flex-direction: column;
-`;
+const Cart = ({ updateCartTotal }) => {
+  const { loading, errors, data } = useQuery(GET_CART);
+  let cartData;
+  if (getUser() && !errors && !loading) {
+    cartData = data.cart.products;
+    updateCartTotal(data.cart.total);
+  } else cartData = getCart().products;
 
-const Alert = styled.span`
-  width: 100%;
-  text-align: center;
-`;
+  const [removeFromCart] = useMutation(REMOVE_FROM_CART);
+  const handleRemoveItem = async productId => {
+    if (getUser()) {
+      await removeFromCart({ variables: { productId }, refetchQueries: [{ query: GET_CART }] });
+    } else {
+      const cart = removeProductFromCart(productId);
+      updateCartTotal(cart.total);
+      cartData = cart;
+    }
+  };
 
-const Cart = ({ history }) => (
-  <>
-    {history && <SubHeader title="Cart" goToCart={() => history.push('/user')} />}
-    <Query query={GET_CART}>
-      {({ loading, error, data }) => {
-        if (loading || error) {
-          return <Alert>{loading ? 'Loading...' : error}</Alert>;
-        }
-        return (
-          <CartWrapper>
-            <CartItemsWrapper>
-              {data.cart &&
-                data.cart.products.map(product => <ProductItem key={product.id} data={product} />)}
-            </CartItemsWrapper>
-            <Totals count={data.cart.total} />
-            {data.cart && data.cart.products.length > 0 && (
-              <Link to="/checkout">
-                <Button color="royalBlue">Checkout</Button>
-              </Link>
-            )}
-          </CartWrapper>
-        );
-      }}
-    </Query>
-  </>
-);
-
-Cart.propTypes = {
-  history: ReactRouterPropTypes.history.isRequired,
+  return (
+    <ProductsTableWrapper>
+      <CartItems data={cartData} removeItem={handleRemoveItem} />
+      <Totals />
+    </ProductsTableWrapper>
+  );
 };
 
 export default Cart;

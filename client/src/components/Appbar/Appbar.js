@@ -10,9 +10,10 @@ import MenuIcon from '@material-ui/icons/Menu';
 import Badge from '@material-ui/core/Badge';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import ShoppingCart from '@material-ui/icons/ShoppingCart';
-import { GET_USER } from '../../constants';
-import { getUser } from '../../utils/localStorage';
-import { appContext } from '../App';
+import { GET_CART } from '../../constants';
+import { getCart, setCart } from '../../utils/localStorage';
+import CartMenu from './CartMenu';
+import UserMenu from './UserMenu';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -40,24 +41,36 @@ const StyledBadge = withStyles(theme => ({
 }))(Badge);
 
 const Appbar = () => {
-  const { loading, errors, data } = useQuery(GET_USER, { variables: { token: getUser() } });
-  const { auth, setAuth, setUserId, cart, setCart } = React.useContext(appContext);
-  React.useEffect(() => {
-    if (!errors && !loading && data) {
-      if (data.user) {
-        setAuth(true);
-        setUserId(data.user._id);
-        if (auth && data.user.cart.total > cart.total) setCart(data.user.cart);
-      }
-    }
-    if (!auth && localStorage.getItem('cart')) setCart(JSON.parse(localStorage.getItem('cart')));
-    else if (!localStorage.getItem('cart')) {
-      localStorage.setItem('cart', JSON.stringify({ total: 0, products: [] }));
-      setCart(JSON.stringify({ total: 0, products: [] }));
-    }
-  }, [auth, setAuth, setCart, setUserId, data, errors, loading, cart.total]);
+  let auth = false;
+  let cartTotal = 0;
+  const { loading, errors, data } = useQuery(GET_CART);
+  if (data && !errors && !loading) {
+    auth = true;
+    cartTotal = data.cart.total;
+  } else {
+    auth = false;
+    cartTotal = getCart() ? getCart().total : setCart(true);
+  }
 
+  const [anchorElCart, setAnchorElCart] = React.useState(null);
+  const [anchorElUser, setAnchorElUser] = React.useState(null);
   const classes = useStyles();
+
+  const handleCartMenuOpen = e => {
+    setAnchorElCart(e.currentTarget);
+  };
+
+  const handleCartMenuClose = e => {
+    setAnchorElCart(null);
+  };
+
+  const handleUserMenuOpen = e => {
+    setAnchorElUser(e.currentTarget);
+  };
+
+  const handleUserMenuClose = e => {
+    setAnchorElUser(null);
+  };
 
   return (
     <div className={classes.root}>
@@ -86,15 +99,38 @@ const Appbar = () => {
               </>
             )}
             {auth && (
-              <IconButton aria-label="account of current user" color="inherit">
-                <AccountCircle fontSize="large" color="secondary" />
-              </IconButton>
+              <>
+                <IconButton
+                  aria-label="account of current user"
+                  aria-haspopup="true"
+                  onClick={handleUserMenuOpen}
+                  color="inherit"
+                >
+                  <AccountCircle fontSize="large" color="secondary" />
+                </IconButton>
+                <UserMenu
+                  anchorEl={anchorElUser}
+                  open={Boolean(anchorElUser)}
+                  onClose={handleUserMenuClose}
+                />
+              </>
             )}
-            <IconButton>
-              <StyledBadge badgeContent={cart.total} color="secondary">
+            <IconButton
+              edge="end"
+              aria-label="shopping cart"
+              // aria-controls={menuId}
+              aria-haspopup="true"
+              onClick={handleCartMenuOpen}
+            >
+              <StyledBadge badgeContent={cartTotal} color="secondary">
                 <ShoppingCart fontSize="large" color="secondary" />
               </StyledBadge>
             </IconButton>
+            <CartMenu
+              anchorEl={anchorElCart}
+              open={Boolean(anchorElCart)}
+              onClose={handleCartMenuClose}
+            />
           </div>
         </Toolbar>
       </AppBar>

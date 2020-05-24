@@ -19,8 +19,11 @@ const Alert = styled('span')`
   text-align: center;
 `;
 
-const Products = () => {
+const Products = ({ updateTotal }) => {
   const classes = useStyles();
+  const handleUpdateTotal = newTotal => {
+    updateTotal(newTotal);
+  };
 
   return (
     <>
@@ -41,7 +44,11 @@ const Products = () => {
                   {!loading &&
                     productData.products.map(product => (
                       <Grid item md={3} key={product._id.toString()}>
-                        <ProductItem key={product._id.toString()} data={product} />
+                        <ProductItem
+                          key={product._id.toString()}
+                          data={product}
+                          updateTotal={handleUpdateTotal}
+                        />
                       </Grid>
                     ))}
                 </>

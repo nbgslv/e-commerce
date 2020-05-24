@@ -6,8 +6,7 @@ import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import { useForm } from 'react-hook-form';
 import { saveUser } from '../../utils/localStorage';
-import { appContext } from '../App';
-import { LOGIN_USER } from '../../constants';
+import { GET_CART, LOGIN_USER } from '../../constants';
 
 const useStyles = makeStyles({
   form: {
@@ -28,21 +27,17 @@ const Login = ({ history }) => {
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
   const { register, handleSubmit, errors } = useForm();
-  const { setAuth, setUserId, setCart } = React.useContext(appContext);
   const onSubmit = async () => {
-    setCart({ total: 0, products: [] });
     const { data } = await loginUser({
       variables: { email, password },
+      refetchQueries: [{ query: GET_CART }],
     });
 
-    if (data.loginUser.token) {
-      saveUser(data.loginUser.token);
-      setAuth(true);
-      setUserId(data.loginUser._id);
-      setCart(data.loginUser.cart);
+    if (data.loginUser.success) {
+      saveUser();
       return history.push('/');
     }
-    return alert('Please provide (valid) authentication details.');
+    return console.log('login failed');
   };
 
   return (

@@ -12,7 +12,7 @@ import AddShoppingCartIcon from '@material-ui/icons/AddShoppingCart';
 import Typography from '@material-ui/core/Typography';
 import Rating from 'material-ui-rating';
 import { ADD_RATING, ADD_TO_CART, GET_CART } from '../../constants';
-import { appContext } from '../App';
+import { getUser, addProductToCart } from '../../utils/localStorage';
 // TODO add to user action - move to here
 
 const useStyles = makeStyles({
@@ -35,11 +35,11 @@ const useStyles = makeStyles({
   },
 });
 
-const ProductItem = ({ data }) => {
+const ProductItem = ({ data, updateTotal }) => {
   const [imageLoading, setImageLoading] = React.useState(true);
   const [rating, setRating] = React.useState(Math.round(data.voters / data.rating));
   const [hover, setHover] = React.useState(false);
-  const { auth, userId, setCart } = React.useContext(appContext);
+  const auth = Boolean(getUser());
 
   const classes = useStyles();
   return (
@@ -88,30 +88,20 @@ const ProductItem = ({ data }) => {
           )}
         </Mutation>
         <Mutation mutation={ADD_TO_CART} ignoreResults={false}>
-          {(addToCart, { client }) => (
+          {addToCart => (
             <Button
               productId={data.id}
               variant="outlined"
               color="primary"
               onClick={async () => {
                 if (auth) {
-                  addToCart({ variables: { userId, productId: data._id } });
-                  const { data: user } = await client.query({
-                    query: GET_CART,
-                    variables: { id: userId },
+                  addToCart({
+                    variables: { productId: data._id },
+                    refetchQueries: [{ query: GET_CART }],
                   });
-                  console.log(user);
-                  user.cart.total += 1;
-                  user.cart.products.push(data);
-                  setCart({ ...user.cart });
                 } else {
-                  const parsedCart = JSON.parse(localStorage.getItem('cart'));
-                  const updatedCart = {
-                    total: parsedCart.total + 1,
-                    products: [...parsedCart.products, data],
-                  };
-                  setCart(updatedCart);
-                  localStorage.setItem('cart', JSON.stringify(updatedCart));
+                  const cart = addProductToCart(data);
+                  updateTotal(cart.total);
                 }
               }}
               onMouseEnter={() => setHover(true)}

@@ -3,23 +3,18 @@ const bcrypt = require('bcryptjs');
 const { setToken, decodeToken } = require('../helpers/auth');
 const User = require('./user.model');
 const Cart = require('./cart.model');
-const Product = require('../product/product.model');
+const { Product, cartProduct } = require('../product/product.model');
 
 const resolvers = {
   Query: {
-    user: async (_, { id, email, token }, { res }) => {
+    user: async (_, { id, email }) => {
       const findJson = {};
       if (id) findJson._id = id;
       if (email) findJson.email = email;
-      if (token) {
-        const decodedToken = await decodeToken(token);
-        if (decodedToken) return User.findById({ _id: decodedToken.id }).exec();
-        return new Error('Invalid token');
-      }
       if (id || email) return User.findOne(findJson).exec();
       return new Error('No user fetched');
     },
-    cart: async (parent, { id }) => {
+    cart: async (_, __, { id }) => {
       const user = await User.findById({ _id: id }, 'cart').exec();
       return user.cart;
     },
@@ -34,18 +29,44 @@ const resolvers = {
 
       return newUser.save();
     },
-    addToCart: async (_, { userId, productId }) => {
+    addToCart: async (_, { productId }, { id: userId }) => {
       const user = await User.findById(userId, 'cart');
-      const product = await Product.findById({ _id: productId });
-      user.cart.products.push(product);
+      let addedProduct = false;
+      user.cart.products.map(async product => {
+        if (product._id.toString() === productId.toString()) {
+          product.quantity += 1;
+          addedProduct = true;
+        }
+      });
+      if (!addedProduct) {
+        const productImage = await Product.findById({ _id: productId });
+        // eslint-disable-next-line new-cap
+        user.cart.products.push(new cartProduct(productImage));
+      }
       user.cart.total += 1;
+      user.cart.markModified('products');
+      const updatedUser = await user.save();
+      return updatedUser.cart;
+    },
+    removeFromCart: async (_, { productId }, { id: userId }) => {
+      const user = await User.findById(userId, 'cart');
+      let quantity = 0;
+      const updatedProducts = user.cart.products.filter(product => {
+        if (product._id.toString() !== productId.toString()) {
+          return true;
+        }
+        quantity = product.quantity;
+        return false;
+      });
+      user.cart.total -= quantity;
+      user.cart.products = updatedProducts;
       const updatedUser = await user.save();
       return updatedUser.cart;
     },
     loginUser: async (_, { email, password }, { res }) => {
       let isValid = false;
       const user = await User.findOne({ email }).exec();
-      if (!user) return null;
+      if (!user) throw new AuthenticationError('Please provide (valid) authentication details');
 
       if (email === user.email) {
         isValid = await bcrypt.compareSync(password, user.password);
@@ -53,12 +74,11 @@ const resolvers = {
 
       if (isValid) {
         const token = await setToken(user.email, user._id);
-        res.cookie('access', token, { httpOnly: true, expires: new Date(Date.now() + 3600) });
+        res.cookie('token', token, {
+          httpOnly: true,
+        });
         return {
-          _id: user._id,
-          email,
-          cart: user.cart,
-          token,
+          success: true,
         };
       }
       throw new AuthenticationError('Please provide (valid) authentication details');

@@ -3,15 +3,11 @@ const { createServer } = require('http');
 const cors = require('cors');
 const { ApolloServer } = require('apollo-server-express');
 const cookieParser = require('cookie-parser');
-const jwt = require('jsonwebtoken');
 const mongoose = require('./config/database'); // Must be provided even if not used, to connect to MongoDB instance
-const User = require('./modules/user/user.model');
-const { setToken, decodeToken } = require('./modules/helpers/auth');
+const { decodeToken } = require('./modules/helpers/auth');
 
 const typeDefs = require('./modules/index.typedefs');
 const resolvers = require('./modules/index.resolvers');
-
-const { jwtSecret } = require('./config/dotenv');
 
 const app = express();
 
@@ -23,54 +19,19 @@ app.use(
 );
 app.use(cookieParser());
 
-// const validateTokensMiddleware = async (req, res, next) => {
-//   const parsedToken = req.cookies['access'];
-//   console.log('token', parsedToken);
-//   if (typeof parsedToken !== 'string') return next();
-//   const decodedToken = await decodeToken(parsedToken);
-//   console.log('decoded token', decodedToken);
-//   if (decodedToken && decodedToken.id) {
-//     const user = await User.findById(decodedToken.id);
-//     console.log('user', user);
-//     if (!user) {
-//       // remove cookies if token not valid
-//       console.log('cookie cleared, no user found');
-//       res.clearCookie('access');
-//       return next();
-//     }
-//     const userToken = setToken(user.email, user.id);
-//     req.user = decodedToken.email;
-//     console.log('req.user', res);
-//     // update the cookies with new tokens
-//     console.log('token for cookie', userToken);
-//     res.cookie('access', userToken, { httpOnly: true });
-//     res.set({
-//       'Access-Control-Expose-Headers': ['x-access-token'],
-//       'x-access-token': userToken,
-//     });
-//     console.log('good user', res.cookie);
-//
-//     return next();
-//   }
-//   return next();
-// };
-
-// app.use(validateTokensMiddleware);
-
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-  context: async ({ req, res }) => ({ req, res }),
-  //   try {
-  //     const token = req ? req.headers.authorization : connection.context.authorization;
-  //     const user = await getUser(token);
-  //     return { token: user };
-  //   } catch (e) {
-  //     console.log('context', e.message);
-  //     return {};
-  //   }
-  // },
-  cors: false,
+  context: async ({ req, res }) => {
+    const token = req.cookies['token'] || '';
+    try {
+      const { email, id } = await decodeToken(token);
+      return { email, id, res };
+    } catch (e) {
+      console.log('context', e.message);
+      return { email: null, id: null, res };
+    }
+  },
 });
 
 server.applyMiddleware({ app, path: '/graphql', cors: false });

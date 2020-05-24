@@ -1,7 +1,7 @@
 import React from 'react';
 import { ThemeProvider } from '@material-ui/core';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import { Route, Switch, Redirect } from 'react-router-dom';
+import { Route, Switch, Redirect, useLocation } from 'react-router-dom';
 import ApolloClient from 'apollo-client';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import { HttpLink } from 'apollo-link-http';
@@ -22,31 +22,6 @@ const httpLink = new HttpLink({
   credentials: 'include',
 });
 
-// let serverAuth = false;
-
-// const afterwareLink = new ApolloLink((operation, forward) => {
-//   return forward(operation).map(response => {
-//     const context = operation.getContext();
-//     const {
-//       response: { headers },
-//     } = context;
-//
-//     if (headers) {
-//       const authorized = headers.get('x-access-token');
-//       if (authorized) {
-//         saveUser(token);
-//         serverAuth = true;
-//       } else {
-//         deleteUser();
-//         serverAuth = false;
-//       }
-//     }
-//     return response;
-//   });
-// });
-
-// const link = ApolloLink.from([afterwareLink, httpLink]);
-
 const client = new ApolloClient({
   link: httpLink,
   cache,
@@ -65,41 +40,38 @@ cache.writeData({
   },
 });
 
-export const appContext = React.createContext({
-  auth: false,
-  setAuth: () => {},
-  userId: null,
-  setUserId: () => {},
-  cart: { total: 0, products: [] },
-  setCart: () => {},
-});
-
 const App = () => {
-  const [auth, setAuth] = React.useState(false);
-  const [userId, setUserId] = React.useState(null);
-  const [cart, setCart] = React.useState({ total: 0, products: [] });
+  const location = useLocation();
+  const [cartTotal, setCartTotal] = React.useState();
 
-  const value = { auth, setAuth, userId, setUserId, cart, setCart };
+  const handleUpdateCartTotal = total => {
+    setCartTotal(total);
+  };
 
   return (
     <ApolloProvider client={client}>
       <CssBaseline />
-      <appContext.Provider value={value}>
-        <ThemeProvider theme={Theme.default}>
-          <Appbar />
-          <Header />
-          <Switch>
-            <Route exact path="/" component={Products} />
-            <Route path="/products/category/:id" component={Products} />
-            <Route path="/cart" component={Cart} />
-            <Route
-              path="/checkout"
-              render={() => (getUser() ? <Checkout /> : <Redirect to="/login/" />)}
-            />
-            <Route path="/login/" component={Login} />
-          </Switch>
-        </ThemeProvider>
-      </appContext.Provider>
+      <ThemeProvider theme={Theme.default}>
+        <Appbar />
+        {location.pathname === '/' ? <Header /> : null}
+        <Switch>
+          <Route
+            exact
+            path="/"
+            render={props => <Products updateTotal={handleUpdateCartTotal} {...props} />}
+          />
+          <Route path="/products/category/:id" component={Products} />
+          <Route
+            path="/cart"
+            render={props => <Cart updateCartTotal={handleUpdateCartTotal} {...props} />}
+          />
+          <Route
+            path="/checkout"
+            render={() => (getUser() ? <Checkout /> : <Redirect to="/login/" />)}
+          />
+          <Route path="/login/" component={Login} />
+        </Switch>
+      </ThemeProvider>
     </ApolloProvider>
   );
 };

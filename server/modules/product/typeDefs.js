@@ -1,12 +1,31 @@
 const { gql } = require('apollo-server');
 
 const typeDefs = gql`
+  interface GenProduct {
+    _id: String!
+    title: String!
+    thumbnail: String!
+    price: Float!
+    category: String!
+    rating: Int
+    voters: Int
+  }
   type Product {
     _id: String!
     title: String!
     thumbnail: String!
     price: Float!
     category: String!
+    rating: Int
+    voters: Int
+  }
+  type CartProduct {
+    _id: String
+    title: String
+    quantity: Int
+    thumbnail: String
+    price: Float
+    category: String
     rating: Int
     voters: Int
   }
