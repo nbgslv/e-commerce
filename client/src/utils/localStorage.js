@@ -41,4 +41,18 @@ export const removeProductFromCart = productId => {
   return cart;
 };
 
+export const changeQuantity = (productId, quantity) => {
+  const cart = getCart();
+  let lastQuantity;
+  cart.products.map(product => {
+    if (product._id === productId) {
+      lastQuantity = product.quantity;
+      product.quantity = quantity;
+    }
+  });
+  cart.total += quantity - lastQuantity;
+  setCart(false, cart.total, cart.products);
+  return cart;
+};
+
 export const clearCart = () => localStorage.removeItem('cart');

@@ -4,6 +4,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import MaterialTable, { MTablePagination } from 'material-table';
 import RemoveShoppingCartOutlinedIcon from '@material-ui/icons/RemoveShoppingCartOutlined';
+import NumericInput from 'react-numeric-input';
 
 const useStyles = makeStyles({
   paper: {
@@ -11,64 +12,60 @@ const useStyles = makeStyles({
   },
 });
 
-const CartItems = ({ data, removeItem }) => {
-  const classes = useStyles();
-
-  return (
-    <MaterialTable
-      options={{
-        showFirstLastPageButtons: false,
-        search: false,
-        sorting: false,
-        draggable: false,
-        emptyRowsWhenPaging: false,
-        padding: 'dense',
-        pageSizeOptions: [],
-        pageSize: 10,
-        headerStyle: {
-          fontWeight: '800',
+const CartItems = ({ data, removeItem, changeQuantity }) => (
+  <MaterialTable
+    options={{
+      showFirstLastPageButtons: false,
+      search: false,
+      sorting: false,
+      draggable: false,
+      emptyRowsWhenPaging: false,
+      padding: 'dense',
+      pageSizeOptions: [],
+      pageSize: 10,
+      headerStyle: {
+        fontWeight: '800',
+      },
+      actionsCellStyle: {
+        padding: '0 16px',
+      },
+    }}
+    title="Cart Summary"
+    columns={[
+      { title: 'Product', field: 'title' },
+      { title: 'Price', field: 'price' },
+      {
+        title: 'Quantity',
+        field: 'quantity',
+        render: rowData => (
+          <NumericInput
+            min={1}
+            max={50}
+            value={rowData.quantity}
+            onChange={valueAsNumber => changeQuantity(rowData._id, valueAsNumber)}
+          />
+        ),
+      },
+    ]}
+    data={data}
+    components={{
+      Pagination: props => {
+        const { count, rowsPerPage } = props;
+        if (count % rowsPerPage === count) return null;
+        return <MTablePagination {...props} />; // eslint-disable-line
+      },
+    }}
+    actions={[
+      {
+        icon: () => <RemoveShoppingCartOutlinedIcon color="secondary" />,
+        tooltip: 'Remove Item',
+        onClick: (event, rowData) => {
+          removeItem(rowData._id);
         },
-        actionsCellStyle: {
-          padding: '0 16px',
-        },
-      }}
-      title="Cart Summary"
-      columns={[
-        { title: 'Product', field: 'title' },
-        { title: 'Price', field: 'price' },
-        {
-          title: 'Quantity',
-          field: 'quantity',
-          render: rowData => (
-            <TextField
-              id="standard-basic"
-              type="number"
-              value={rowData.quantity}
-              onChange={e => {}}
-            />
-          ),
-        },
-      ]}
-      data={data}
-      components={{
-        Pagination: props => {
-          const { count, rowsPerPage } = props;
-          if (count % rowsPerPage === count) return null;
-          return <MTablePagination {...props} />; // eslint-disable-line
-        },
-      }}
-      actions={[
-        {
-          icon: () => <RemoveShoppingCartOutlinedIcon color="secondary" />,
-          tooltip: 'Remove Item',
-          onClick: (event, rowData) => {
-            removeItem(rowData._id);
-          },
-        },
-      ]}
-    />
-  );
-};
+      },
+    ]}
+  />
+);
 
 CartItems.propTypes = {
   data: PropTypes.arrayOf(PropTypes.object).isRequired,

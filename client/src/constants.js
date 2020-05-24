@@ -101,6 +101,20 @@ export const REMOVE_FROM_CART = gql`
   }
 `;
 
+export const CHANGE_QUANTITY = gql`
+  mutation changeQuantity($productId: String!, $quantity: Int!) {
+    changeQuantity(productId: $productId, quantity: $quantity) {
+      total
+      products {
+        _id
+        title
+        price
+        quantity
+      }
+    }
+  }
+`;
+
 export const GET_LIMIT = gql`
   query getLimit {
     limit @client

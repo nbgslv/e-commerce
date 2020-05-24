@@ -63,6 +63,21 @@ const resolvers = {
       const updatedUser = await user.save();
       return updatedUser.cart;
     },
+    changeQuantity: async (_, { productId, quantity }, { id: userId }) => {
+      const user = await User.findById(userId, 'cart');
+      let lastQuantity;
+      user.cart.products.map(product => {
+        if (product._id.toString() === productId.toString()) {
+          lastQuantity = product.quantity;
+          // eslint-disable-next-line no-param-reassign
+          product.quantity = quantity;
+        }
+      });
+      user.cart.total += quantity - lastQuantity;
+      user.cart.markModified('products');
+      const updatedUser = await user.save();
+      return updatedUser.cart;
+    },
     loginUser: async (_, { email, password }, { res }) => {
       let isValid = false;
       const user = await User.findOne({ email }).exec();

@@ -3,8 +3,13 @@ import { useMutation, useQuery } from 'react-apollo';
 import { styled } from '@material-ui/core/styles';
 import CartItems from './CartItems';
 import Totals from './Totals';
-import { GET_CART, REMOVE_FROM_CART } from '../../constants';
-import { getCart, getUser, removeProductFromCart } from '../../utils/localStorage';
+import { CHANGE_QUANTITY, GET_CART, REMOVE_FROM_CART } from '../../constants';
+import {
+  getCart,
+  getUser,
+  removeProductFromCart,
+  changeQuantity as changeLocalQuantity,
+} from '../../utils/localStorage';
 
 const ProductsTableWrapper = styled('div')({
   margin: '0 48px',
@@ -29,9 +34,27 @@ const Cart = ({ updateCartTotal }) => {
     }
   };
 
+  const [changeQuantity] = useMutation(CHANGE_QUANTITY);
+  const handleQuantityChange = async (productId, quantity) => {
+    if (getUser()) {
+      await changeQuantity({
+        variables: { productId, quantity },
+        refetchQueries: [{ query: GET_CART }],
+      });
+    } else {
+      const cart = changeLocalQuantity(productId, quantity);
+      updateCartTotal(cart.toal);
+      cartData = cart;
+    }
+  };
+
   return (
     <ProductsTableWrapper>
-      <CartItems data={cartData} removeItem={handleRemoveItem} />
+      <CartItems
+        data={cartData}
+        removeItem={handleRemoveItem}
+        changeQuantity={handleQuantityChange}
+      />
       <Totals />
     </ProductsTableWrapper>
   );
