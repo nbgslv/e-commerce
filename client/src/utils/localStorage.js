@@ -55,4 +55,8 @@ export const changeQuantity = (productId, quantity) => {
   return cart;
 };
 
-export const clearCart = () => localStorage.removeItem('cart');
+export const emptyCart = () => {
+  setCart(true);
+};
+
+export const deleteCart = () => localStorage.removeItem('cart');

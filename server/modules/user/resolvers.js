@@ -78,6 +78,13 @@ const resolvers = {
       const updatedUser = await user.save();
       return updatedUser.cart;
     },
+    emptyCart: async (_, __, { id }) => {
+      const user = await User.findById(id, 'cart');
+      user.cart.products = [];
+      user.cart.total = 0;
+      await user.save();
+      return true;
+    },
     loginUser: async (_, { email, password }, { res }) => {
       let isValid = false;
       const user = await User.findOne({ email }).exec();

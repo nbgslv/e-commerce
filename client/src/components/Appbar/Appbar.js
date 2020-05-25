@@ -1,5 +1,5 @@
 import React from 'react';
-import { useQuery } from 'react-apollo';
+import { useQuery, useMutation } from 'react-apollo';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -10,8 +10,8 @@ import MenuIcon from '@material-ui/icons/Menu';
 import Badge from '@material-ui/core/Badge';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import ShoppingCart from '@material-ui/icons/ShoppingCart';
-import { GET_CART } from '../../constants';
-import { getCart, setCart } from '../../utils/localStorage';
+import { EMPTY_CART, GET_CART } from '../../constants';
+import { getCart, getUser, setCart, emptyCart as emptyLocalCart } from '../../utils/localStorage';
 import CartMenu from './CartMenu';
 import UserMenu from './UserMenu';
 
@@ -40,7 +40,7 @@ const StyledBadge = withStyles(theme => ({
   },
 }))(Badge);
 
-const Appbar = () => {
+const Appbar = ({ updateEmptyLocalCart }) => {
   let auth = false;
   let cartTotal = 0;
   const { loading, errors, data } = useQuery(GET_CART);
@@ -70,6 +70,17 @@ const Appbar = () => {
 
   const handleUserMenuClose = e => {
     setAnchorElUser(null);
+  };
+
+  const [emptyCart] = useMutation(EMPTY_CART);
+
+  const handleEmptyCart = async () => {
+    if (getUser()) await emptyCart({ refetchQueries: [{ query: GET_CART }] });
+    else {
+      emptyLocalCart();
+      cartTotal = 0;
+      updateEmptyLocalCart();
+    }
   };
 
   return (
@@ -130,6 +141,7 @@ const Appbar = () => {
               anchorEl={anchorElCart}
               open={Boolean(anchorElCart)}
               onClose={handleCartMenuClose}
+              emptyCart={handleEmptyCart}
             />
           </div>
         </Toolbar>

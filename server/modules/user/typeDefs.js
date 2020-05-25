@@ -24,6 +24,7 @@ const typeDefs = gql`
     addToCart(productId: String!): Cart
     removeFromCart(productId: String!): Cart
     changeQuantity(productId: String!, quantity: Int!): Cart
+    emptyCart: Boolean
     loginUser(email: String!, password: String!): LoginResult
     logoutUser: Boolean
   }

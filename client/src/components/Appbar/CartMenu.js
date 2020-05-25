@@ -28,7 +28,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const CartMenu = ({ anchorEl, open, onClose }) => {
+const CartMenu = ({ anchorEl, open, onClose, emptyCart }) => {
   const classes = useStyles();
 
   return (
@@ -52,7 +52,7 @@ const CartMenu = ({ anchorEl, open, onClose }) => {
         <ShopIcon color="primary" fontSize="small" />
         &nbsp; Purchase
       </MenuItem>
-      <MenuItem className={classes.root}>
+      <MenuItem className={classes.root} onClick={emptyCart}>
         <RemoveShoppingCartOutlinedIcon color="primary" fontSize="small" />
         &nbsp; Empty Cart
       </MenuItem>

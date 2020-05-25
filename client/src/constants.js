@@ -115,6 +115,12 @@ export const CHANGE_QUANTITY = gql`
   }
 `;
 
+export const EMPTY_CART = gql`
+  mutation emptyCart {
+    emptyCart
+  }
+`;
+
 export const GET_LIMIT = gql`
   query getLimit {
     limit @client

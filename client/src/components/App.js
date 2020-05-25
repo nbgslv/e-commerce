@@ -48,11 +48,13 @@ const App = () => {
     setCartTotal(total);
   };
 
+  const handleEmptyCart = () => handleUpdateCartTotal(0);
+
   return (
     <ApolloProvider client={client}>
       <CssBaseline />
       <ThemeProvider theme={Theme.default}>
-        <Appbar />
+        <Appbar updateEmptyLocalCart={handleEmptyCart} />
         {location.pathname === '/' ? <Header /> : null}
         <Switch>
           <Route
