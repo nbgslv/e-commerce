@@ -19,7 +19,7 @@ const Alert = styled('span')`
   text-align: center;
 `;
 
-const Products = ({ updateTotal }) => {
+const Products = ({ updateTotal, match }) => {
   const classes = useStyles();
   const handleUpdateTotal = newTotal => {
     updateTotal(newTotal);
@@ -36,7 +36,10 @@ const Products = ({ updateTotal }) => {
             <Grid item md={12}>
               <Filter limit={parseInt(data.limit, 10)} />
             </Grid>
-            <Query query={GET_PRODUCTS} variables={{ limit: parseInt(data.limit, 10) }}>
+            <Query
+              query={GET_PRODUCTS}
+              variables={{ limit: parseInt(data.limit, 10), category: match.params.id }}
+            >
               {({ loading, error, data: productData }) => (
                 <>
                   {error && <Alert>{error}</Alert>}

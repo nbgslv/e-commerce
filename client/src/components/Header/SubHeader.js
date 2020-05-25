@@ -3,7 +3,7 @@ import ReactRouterPropTypes from 'react-router-prop-types';
 import { Query } from 'react-apollo';
 import { makeStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
-import Link from '@material-ui/core/Link';
+import { Link } from '@material-ui/core';
 import { GET_CATEGORIES } from '../../constants';
 
 const useStyles = makeStyles(theme => ({
@@ -40,10 +40,9 @@ const SubHeader = ({ history }) => {
             return data.categories.map(category => (
               <Link
                 className={classes.root}
-                component="button"
                 variant="body1"
-                herf={`/products/category/${category.id}`}
-                key={category.id}
+                href={`/category/${category._id}`}
+                key={category._id}
               >
                 {category.title}
               </Link>

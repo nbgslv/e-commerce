@@ -62,7 +62,7 @@ const App = () => {
             path="/"
             render={props => <Products updateTotal={handleUpdateCartTotal} {...props} />}
           />
-          <Route path="/products/category/:id" component={Products} />
+          <Route path="/category/:id" component={Products} />
           <Route
             path="/cart"
             render={props => <Cart updateCartTotal={handleUpdateCartTotal} {...props} />}
