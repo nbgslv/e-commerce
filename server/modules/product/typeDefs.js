@@ -31,7 +31,7 @@ const typeDefs = gql`
   }
   extend type Query {
     product(id: String!): Product
-    products(limit: Int): [Product]
+    products(limit: Int, category: String): [Product]
   }
   extend type Mutation {
     addProduct(

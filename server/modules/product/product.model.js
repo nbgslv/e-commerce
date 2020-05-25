@@ -42,7 +42,7 @@ const cartProductSchema = new mongoose.Schema({
     default: 1,
   },
   price: {
-    type: Number,
+    type: mongoose.Types.Decimal128,
     required: true,
   },
   category: {

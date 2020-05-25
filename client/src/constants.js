@@ -128,10 +128,11 @@ export const GET_LIMIT = gql`
 `;
 
 export const GET_PRODUCTS = gql`
-  query getProducts($limit: Int) {
-    products(limit: $limit) {
+  query getProducts($limit: Int, $category: String) {
+    products(limit: $limit, category: $category) {
       _id
       title
+      category
       thumbnail
       price
       rating
