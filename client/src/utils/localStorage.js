@@ -19,23 +19,31 @@ export const addProductToCart = shopProduct => {
   const cart = getCart();
   let productExists = false;
   cart.products.map(product => {
-    if (product.id === shopProduct._id) {
+    if (product._id.toString() === shopProduct._id.toString()) {
       product.quantity += 1;
       productExists = true;
     }
   });
   if (!productExists) {
+    shopProduct.quantity = 1;
     cart.products.push(shopProduct);
-    cart.total += 1;
   }
+  cart.total += 1;
   setCart(false, cart.total, cart.products);
   return cart;
 };
 
 export const removeProductFromCart = productId => {
   const cart = getCart();
-  const updatedProducts = cart.products.filter(product => product._id !== productId);
-  cart.total -= 1;
+  let quantity = 0;
+  const updatedProducts = cart.products.filter(product => {
+    if (product._id !== productId) {
+      return true;
+    }
+    quantity = product.quantity;
+    return false;
+  });
+  cart.total -= quantity;
   cart.products = updatedProducts;
   setCart(false, cart.total, cart.products);
   return cart;
@@ -45,7 +53,7 @@ export const changeQuantity = (productId, quantity) => {
   const cart = getCart();
   let lastQuantity;
   cart.products.map(product => {
-    if (product._id === productId) {
+    if (product._id.toString() === productId.toString()) {
       lastQuantity = product.quantity;
       product.quantity = quantity;
     }

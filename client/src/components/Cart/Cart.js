@@ -43,7 +43,7 @@ const Cart = ({ updateCartTotal }) => {
       });
     } else {
       const cart = changeLocalQuantity(productId, quantity);
-      updateCartTotal(cart.toal);
+      updateCartTotal(cart.total);
       cartData = cart;
     }
   };
