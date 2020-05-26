@@ -26,41 +26,39 @@ const Products = ({ updateTotal, match }) => {
   };
 
   return (
-    <>
-      <Query query={GET_LIMIT}>
-        {({ data }) => (
-          <Grid container spacing={3} className={classes.root}>
-            <Grid item md={12}>
-              <SubHeader />
-            </Grid>
-            <Grid item md={12}>
-              <Filter limit={parseInt(data.limit, 10)} />
-            </Grid>
-            <Query
-              query={GET_PRODUCTS}
-              variables={{ limit: parseInt(data.limit, 10), category: match.params.id }}
-            >
-              {({ loading, error, data: productData }) => (
-                <>
-                  {error && <Alert>{error}</Alert>}
-                  {loading && <SkeletonProducts limit={data.limit} />}
-                  {!loading &&
-                    productData.products.map(product => (
-                      <Grid item md={3} key={product._id.toString()}>
-                        <ProductItem
-                          key={product._id.toString()}
-                          data={product}
-                          updateTotal={handleUpdateTotal}
-                        />
-                      </Grid>
-                    ))}
-                </>
-              )}
-            </Query>
+    <Query query={GET_LIMIT}>
+      {({ data }) => (
+        <Grid container spacing={3} classes={{ container: classes.root }}>
+          <Grid item md={8}>
+            <SubHeader />
           </Grid>
-        )}
-      </Query>
-    </>
+          <Grid item md={4} alignItems="flex-end">
+            <Filter limit={parseInt(data.limit, 10)} />
+          </Grid>
+          <Query
+            query={GET_PRODUCTS}
+            variables={{ limit: parseInt(data.limit, 10), category: match.params.id }}
+          >
+            {({ loading, error, data: productData }) => (
+              <>
+                {error && <Alert>{error}</Alert>}
+                {loading && <SkeletonProducts limit={data.limit} />}
+                {!loading &&
+                  productData.products.map(product => (
+                    <Grid item md={3} key={product._id.toString()}>
+                      <ProductItem
+                        key={product._id.toString()}
+                        data={product}
+                        updateTotal={handleUpdateTotal}
+                      />
+                    </Grid>
+                  ))}
+              </>
+            )}
+          </Query>
+        </Grid>
+      )}
+    </Query>
   );
 };
 
