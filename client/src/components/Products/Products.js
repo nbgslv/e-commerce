@@ -43,7 +43,7 @@ const Products = ({ updateTotal, match }) => {
               {({ loading, error, data: productData }) => (
                 <>
                   {error && <Alert>{error}</Alert>}
-                  {loading && <SkeletonProducts />}
+                  {loading && <SkeletonProducts limit={data.limit} />}
                   {!loading &&
                     productData.products.map(product => (
                       <Grid item md={3} key={product._id.toString()}>

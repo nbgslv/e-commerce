@@ -1,5 +1,6 @@
 import React from 'react';
 import { useQuery, useMutation } from 'react-apollo';
+import Cookies from 'js-cookie';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -10,7 +11,7 @@ import MenuIcon from '@material-ui/icons/Menu';
 import Badge from '@material-ui/core/Badge';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import ShoppingCart from '@material-ui/icons/ShoppingCart';
-import { EMPTY_CART, GET_CART } from '../../constants';
+import { EMPTY_CART, GET_CART, LOGOUT_USER } from '../../constants';
 import { getCart, getUser, setCart, emptyCart as emptyLocalCart } from '../../utils/localStorage';
 import CartMenu from './CartMenu';
 import UserMenu from './UserMenu';
@@ -41,16 +42,18 @@ const StyledBadge = withStyles(theme => ({
 }))(Badge);
 
 const Appbar = ({ updateEmptyLocalCart }) => {
-  let auth = false;
-  let cartTotal = 0;
+  const [auth, setAuth] = React.useState(false);
+  const [cartTotal, setCartTotal] = React.useState(0);
   const { loading, errors, data } = useQuery(GET_CART);
-  if (data && !errors && !loading) {
-    auth = true;
-    cartTotal = data.cart.total;
-  } else {
-    auth = false;
-    cartTotal = getCart() ? getCart().total : setCart(true);
-  }
+  React.useEffect(() => {
+    if (Boolean(getUser()) && data && !errors && !loading) {
+      setAuth(true);
+      setCartTotal(data.cart.total);
+    } else {
+      setAuth(false);
+      setCartTotal(getCart() ? getCart().total : setCart(true));
+    }
+  }, [data, errors, loading, auth]);
 
   const [anchorElCart, setAnchorElCart] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
@@ -78,8 +81,19 @@ const Appbar = ({ updateEmptyLocalCart }) => {
     if (getUser()) await emptyCart({ refetchQueries: [{ query: GET_CART }] });
     else {
       emptyLocalCart();
-      cartTotal = 0;
+      setCartTotal(0);
       updateEmptyLocalCart();
+    }
+  };
+
+  const [logoutUser] = useMutation(LOGOUT_USER);
+
+  const handleLogout = () => {
+    const logoutSuccess = logoutUser();
+    if (logoutSuccess) {
+      Cookies.remove('signedin');
+      setAuth(false);
+      setCartTotal(0);
     }
   };
 
@@ -123,6 +137,7 @@ const Appbar = ({ updateEmptyLocalCart }) => {
                   anchorEl={anchorElUser}
                   open={Boolean(anchorElUser)}
                   onClose={handleUserMenuClose}
+                  logout={handleLogout}
                 />
               </>
             )}

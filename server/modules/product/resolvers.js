@@ -5,13 +5,6 @@ const resolvers = {
   Query: {
     product: async (_, { id }) => Product.findById({ _id: id }).exec(),
     products: (_, { limit, category }) => {
-      console.log(mongoose.Types.ObjectId('5ec120a9fc13ae248f000004'));
-      Product.find({ category: mongoose.Types.ObjectId(category) })
-        .limit(limit)
-        .exec((err, products) => {
-          if (err) console.log(err);
-          console.log(products);
-        });
       if (category) return Product.find({ category }).limit(limit);
       return Product.find({}).limit(limit);
     },

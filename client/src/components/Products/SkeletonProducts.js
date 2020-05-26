@@ -24,12 +24,12 @@ const useStyles = makeStyles({
   },
 });
 
-const SkeletonProducts = () => {
+const SkeletonProducts = ({ limit }) => {
   const classes = useStyles();
 
   return (
     <>
-      {Array(4)
+      {Array(limit)
         .fill()
         .map((data, id) => (
           // eslint-disable-next-line react/no-array-index-key

@@ -73,6 +73,12 @@ export const LOGIN_USER = gql`
   }
 `;
 
+export const LOGOUT_USER = gql`
+  mutation logoutUser {
+    logoutUser
+  }
+`;
+
 export const ADD_TO_CART = gql`
   mutation addToCart($productId: String!) {
     addToCart(productId: $productId) {

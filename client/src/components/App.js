@@ -13,7 +13,7 @@ import Appbar from './Appbar/Appbar';
 import Header from './Header/Header';
 import Login from './Checkout/Login';
 import Checkout from './Checkout/Checkout';
-import { getUser } from '../utils/localStorage';
+import { getUser, getCart } from '../utils/localStorage';
 
 const cache = new InMemoryCache();
 
@@ -50,11 +50,16 @@ const App = () => {
 
   const handleEmptyCart = () => handleUpdateCartTotal(0);
 
+  const handleChangeToLocalCart = () => handleUpdateCartTotal(getCart().total);
+
   return (
     <ApolloProvider client={client}>
       <CssBaseline />
       <ThemeProvider theme={Theme.default}>
-        <Appbar updateEmptyLocalCart={handleEmptyCart} />
+        <Appbar
+          updateEmptyLocalCart={handleEmptyCart}
+          changeToLocalCart={handleChangeToLocalCart}
+        />
         {location.pathname === '/' ? <Header /> : null}
         <Switch>
           <Route

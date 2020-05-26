@@ -25,7 +25,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const UserMenu = ({ anchorEl, open, onClose }) => {
+const UserMenu = ({ anchorEl, open, onClose, logout }) => {
   const classes = useStyles();
 
   return (
@@ -39,7 +39,7 @@ const UserMenu = ({ anchorEl, open, onClose }) => {
       open={open}
       onClose={onClose}
     >
-      <MenuItem className={classes.root}>
+      <MenuItem className={classes.root} onClick={logout}>
         <MeetingRoomOutlinedIcon color="secondary" fontSize="small" />
         &nbsp; Checkout
       </MenuItem>

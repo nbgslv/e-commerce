@@ -1,11 +1,15 @@
+const { makeExecutableSchema } = require('graphql-tools');
+const GraphQLDecimal = require('graphql-type-decimal');
 const { gql } = require('apollo-server');
 
 const typeDefs = gql`
+  scalar Decimal
+
   interface GenProduct {
     _id: String!
     title: String!
     thumbnail: String!
-    price: Float!
+    price: Decimal!
     category: String!
     rating: Int
     voters: Int
@@ -14,7 +18,7 @@ const typeDefs = gql`
     _id: String!
     title: String!
     thumbnail: String!
-    price: Float!
+    price: Decimal!
     category: String!
     rating: Int
     voters: Int
@@ -24,7 +28,7 @@ const typeDefs = gql`
     title: String
     quantity: Int
     thumbnail: String
-    price: Float
+    price: Decimal
     category: String
     rating: Int
     voters: Int

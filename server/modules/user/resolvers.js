@@ -106,7 +106,7 @@ const resolvers = {
       throw new AuthenticationError('Please provide (valid) authentication details');
     },
     logoutUser: (_, __, { res }) => {
-      res.clearCookie('access');
+      res.clearCookie('token');
       return true;
     },
   },
