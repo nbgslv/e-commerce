@@ -1,4 +1,5 @@
 import React from 'react';
+import Typography from '@material-ui/core/Typography';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -9,9 +10,15 @@ const Products = ({ products, totalForPayment }) => {
   return (
     <Table aria-label="Products Table">
       <TableHead>
-        <TableCell>Product Name</TableCell>
-        <TableCell align="right">Quantity</TableCell>
-        <TableCell align="right">Total Price</TableCell>
+        <TableCell>
+          <Typography variant="h6">Product Name</Typography>
+        </TableCell>
+        <TableCell align="right">
+          <Typography variant="h6">Quantity</Typography>
+        </TableCell>
+        <TableCell align="right">
+          <Typography variant="h6">Total Price</Typography>
+        </TableCell>
       </TableHead>
       <TableBody>
         {products.map(product => (
@@ -25,8 +32,12 @@ const Products = ({ products, totalForPayment }) => {
         ))}
         <TableRow>
           <TableCell colSpan={1} />
-          <TableCell align="right">Total For Payment</TableCell>
-          <TableCell align="right">{totalForPayment}$</TableCell>
+          <TableCell align="right">
+            <Typography variant="h6">Total For Payment</Typography>
+          </TableCell>
+          <TableCell align="right">
+            <Typography variant="h6">{totalForPayment}$</Typography>
+          </TableCell>
         </TableRow>
       </TableBody>
     </Table>

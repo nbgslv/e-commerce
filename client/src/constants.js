@@ -40,8 +40,20 @@ export const GET_CART = gql`
 `;
 
 export const ADD_USER = gql`
-  mutation user($email: String!, $password: String!) {
-    user(email: $email, password: $password) {
+  mutation user(
+    $firstName: String!
+    $lastName: String!
+    $birthDate: Date!
+    $email: String!
+    $password: String!
+  ) {
+    user(
+      firstName: $firstName
+      lastName: $lastName
+      birthDate: $birthDate
+      email: $email
+      password: $password
+    ) {
       _id
       email
     }
@@ -52,6 +64,8 @@ export const GET_USER = gql`
   query getUser($id: String, $email: String) {
     user(id: $id, email: $email) {
       _id
+      firstName
+      lastName
       cart {
         total
         products {

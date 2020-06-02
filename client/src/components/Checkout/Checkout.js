@@ -55,7 +55,7 @@ const Checkout = ({ history, items, totalForPayment }) => {
 
   const classes = useStyles();
 
-  const [activeStep, setActiveStep] = React.useState(2);
+  const [activeStep, setActiveStep] = React.useState(0);
 
   const [address, setAddress] = React.useState({});
 
@@ -151,7 +151,7 @@ const Checkout = ({ history, items, totalForPayment }) => {
                 handleNext={() => handleNext()}
               />
             ) : (
-              <Typography color="textPrimary">
+              <Typography variant="body1" color="primary">
                 It seems you are not connected to your account.
                 <br />
                 Would you like to continue as a guest, or would you rather login to your account?
