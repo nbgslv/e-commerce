@@ -35,7 +35,7 @@ const Login = ({ history }) => {
 
     if (data.loginUser.success) {
       saveUser();
-      return history.push('/');
+      return history.goBack();
     }
     return console.log('login failed');
   };

@@ -1,16 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
 import MaterialTable, { MTablePagination } from 'material-table';
 import RemoveShoppingCartOutlinedIcon from '@material-ui/icons/RemoveShoppingCartOutlined';
 import NumericInput from 'react-numeric-input';
-
-const useStyles = makeStyles({
-  paper: {
-    padding: '20px',
-  },
-});
 
 const CartItems = ({ data, removeItem, changeQuantity }) => (
   <MaterialTable

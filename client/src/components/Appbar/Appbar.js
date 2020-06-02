@@ -41,19 +41,19 @@ const StyledBadge = withStyles(theme => ({
   },
 }))(Badge);
 
-const Appbar = ({ updateEmptyLocalCart }) => {
+const Appbar = ({ updateEmptyLocalCart, cartTotal }) => {
   const [auth, setAuth] = React.useState(false);
-  const [cartTotal, setCartTotal] = React.useState(0);
+  const [cartTotalItems, setCartTotalItems] = React.useState(cartTotal);
   const { loading, errors, data } = useQuery(GET_CART);
   React.useEffect(() => {
     if (Boolean(getUser()) && data && !errors && !loading) {
       setAuth(true);
-      setCartTotal(data.cart.total);
+      setCartTotalItems(data.cart.total);
     } else {
       setAuth(false);
-      setCartTotal(getCart() ? getCart().total : setCart(true));
+      setCartTotalItems(getCart() ? getCart().total : setCart(true));
     }
-  }, [data, errors, loading, auth]);
+  }, [data, errors, loading, auth, cartTotal]);
 
   const [anchorElCart, setAnchorElCart] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
@@ -81,7 +81,7 @@ const Appbar = ({ updateEmptyLocalCart }) => {
     if (getUser()) await emptyCart({ refetchQueries: [{ query: GET_CART }] });
     else {
       emptyLocalCart();
-      setCartTotal(0);
+      setCartTotalItems(0);
       updateEmptyLocalCart();
     }
   };
@@ -93,7 +93,7 @@ const Appbar = ({ updateEmptyLocalCart }) => {
     if (logoutSuccess) {
       Cookies.remove('signedin');
       setAuth(false);
-      setCartTotal(0);
+      setCartTotalItems(0);
     }
   };
 
@@ -148,7 +148,7 @@ const Appbar = ({ updateEmptyLocalCart }) => {
               aria-haspopup="true"
               onClick={handleCartMenuOpen}
             >
-              <StyledBadge badgeContent={cartTotal} color="secondary">
+              <StyledBadge badgeContent={cartTotalItems} color="secondary">
                 <ShoppingCart fontSize="large" color="secondary" />
               </StyledBadge>
             </IconButton>

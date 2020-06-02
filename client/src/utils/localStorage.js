@@ -22,7 +22,9 @@ export const addProductToCart = shopProduct => {
     if (product._id.toString() === shopProduct._id.toString()) {
       product.quantity += 1;
       productExists = true;
+      return true;
     }
+    return false;
   });
   if (!productExists) {
     shopProduct.quantity = 1;
@@ -56,7 +58,9 @@ export const changeQuantity = (productId, quantity) => {
     if (product._id.toString() === productId.toString()) {
       lastQuantity = product.quantity;
       product.quantity = quantity;
+      return true;
     }
+    return false;
   });
   cart.total += quantity - lastQuantity;
   setCart(false, cart.total, cart.products);

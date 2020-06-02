@@ -6,14 +6,14 @@ import ApolloClient from 'apollo-client';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import { HttpLink } from 'apollo-link-http';
 import { ApolloProvider } from 'react-apollo';
-import * as Theme from '../ui/theme/index';
-import Cart from './Cart/Cart';
-import Products from './Products/Products';
-import Appbar from './Appbar/Appbar';
-import Header from './Header/Header';
-import Login from './Checkout/Login';
-import Checkout from './Checkout/Checkout';
-import { getUser, getCart } from '../utils/localStorage';
+import * as Theme from '../ui/theme';
+import Cart from '../components/Cart/Cart';
+import Products from '../components/Products/Products';
+import Appbar from '../components/Appbar/Appbar';
+import Header from '../components/Header/Header';
+import Login from '../components/Login/Login';
+import Checkout from '../components/Checkout/Checkout';
+import { getCart } from '../utils/localStorage';
 
 const cache = new InMemoryCache();
 
@@ -43,6 +43,8 @@ cache.writeData({
 const App = () => {
   const location = useLocation();
   const [cartTotal, setCartTotal] = React.useState();
+  const [itemsForCheckout, setItemsForCheckout] = React.useState();
+  const [totalForPayment, setTotalForPayment] = React.useState();
 
   const handleUpdateCartTotal = total => {
     setCartTotal(total);
@@ -52,6 +54,14 @@ const App = () => {
 
   const handleChangeToLocalCart = () => handleUpdateCartTotal(getCart().total);
 
+  const handleSendItemsToCheckout = items => {
+    setItemsForCheckout(items);
+  };
+
+  const handleSetTotalForPayment = total => {
+    setTotalForPayment(total);
+  };
+
   return (
     <ApolloProvider client={client}>
       <CssBaseline />
@@ -59,6 +69,7 @@ const App = () => {
         <Appbar
           updateEmptyLocalCart={handleEmptyCart}
           changeToLocalCart={handleChangeToLocalCart}
+          cartTotal={cartTotal}
         />
         {location.pathname === '/' ? <Header /> : null}
         <Switch>
@@ -70,11 +81,21 @@ const App = () => {
           <Route path="/category/:id" component={Products} />
           <Route
             path="/cart"
-            render={props => <Cart updateCartTotal={handleUpdateCartTotal} {...props} />}
+            render={props => (
+              <Cart
+                updateCartTotal={handleUpdateCartTotal}
+                itemsForCheckout={handleSendItemsToCheckout}
+                totalForPayment={handleSetTotalForPayment}
+                {...props}
+              />
+            )}
           />
           <Route
             path="/checkout"
-            render={() => (getUser() ? <Checkout /> : <Redirect to="/login/" />)}
+            // render={() => (getUser() ? <Cart /> : <Redirect to="/login/" />)}
+            render={props => (
+              <Checkout items={itemsForCheckout} totalForPayment={totalForPayment} {...props} />
+            )}
           />
           <Route path="/login/" component={Login} />
         </Switch>

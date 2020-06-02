@@ -2,9 +2,11 @@ const express = require('express');
 const { createServer } = require('http');
 const cors = require('cors');
 const { ApolloServer } = require('apollo-server-express');
+const bodtParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const mongoose = require('./config/database'); // Must be provided even if not used, to connect to MongoDB instance
 const { decodeToken } = require('./modules/helpers/auth');
+const configureRoutes = require('./routes');
 
 const typeDefs = require('./modules/index.typedefs');
 const resolvers = require('./modules/index.resolvers');
@@ -17,7 +19,10 @@ app.use(
     credentials: true,
   })
 );
+app.use(bodtParser.json());
 app.use(cookieParser());
+
+configureRoutes(app);
 
 const server = new ApolloServer({
   typeDefs,
