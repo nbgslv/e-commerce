@@ -6,7 +6,7 @@ import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import { useForm } from 'react-hook-form';
 import { saveUser } from '../../utils/localStorage';
-import { GET_CART, LOGIN_USER } from '../../constants';
+import { GET_CART, GET_USER, LOGIN_USER } from '../../constants';
 
 const useStyles = makeStyles({
   form: {
@@ -30,7 +30,7 @@ const Login = ({ history }) => {
   const onSubmit = async () => {
     const { data } = await loginUser({
       variables: { email, password },
-      refetchQueries: [{ query: GET_CART }],
+      refetchQueries: [{ query: GET_CART }, { query: GET_USER }],
     });
 
     if (data.loginUser.success) {

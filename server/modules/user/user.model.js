@@ -12,7 +12,7 @@ const userSchema = new Schema({
     required: true,
   },
   birth_date: {
-    type: Date,
+    type: String,
     required: false,
   },
   email: {

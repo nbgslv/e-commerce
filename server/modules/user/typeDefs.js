@@ -7,8 +7,9 @@ const typeDefs = gql`
   }
   type User {
     _id: String
-    firstName: String!
-    lastName: String!
+    firstName: String
+    lastName: String
+    birthDate: String
     email: String!
     password: String!
     cart: Cart!
@@ -17,9 +18,12 @@ const typeDefs = gql`
   type LoginResult {
     success: Boolean!
   }
+  extend type Subscription {
+    cartItemAdded: Cart
+  }
   extend type Query {
-    user(id: String, email: String): User
     cart: Cart
+    getUser: User
   }
   extend type Mutation {
     addUser(email: String!, password: String!): User

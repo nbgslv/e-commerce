@@ -2,7 +2,9 @@ const express = require('express');
 const { createServer } = require('http');
 const cors = require('cors');
 const { ApolloServer } = require('apollo-server-express');
-const bodtParser = require('body-parser');
+const { execute, subscribe } = require('graphql');
+const { SubscriptionServer } = require('subscriptions-transport-ws');
+const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const mongoose = require('./config/database'); // Must be provided even if not used, to connect to MongoDB instance
 const { decodeToken } = require('./modules/helpers/auth');
@@ -19,7 +21,7 @@ app.use(
     credentials: true,
   })
 );
-app.use(bodtParser.json());
+app.use(bodyParser.json());
 app.use(cookieParser());
 
 configureRoutes(app);
@@ -46,4 +48,16 @@ server.installSubscriptionHandlers(httpServer);
 
 httpServer.listen({ port: 4000 }, () => {
   console.log('Apollo Server on http://localhost:4000/graphql');
+  // eslint-disable-next-line no-new
+  new SubscriptionServer(
+    {
+      execute,
+      subscribe,
+      typeDefs,
+    },
+    {
+      server: httpServer,
+      path: '/subscriptions',
+    }
+  );
 });

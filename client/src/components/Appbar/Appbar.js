@@ -1,5 +1,5 @@
 import React from 'react';
-import { useQuery, useMutation } from 'react-apollo';
+import { useLazyQuery, useQuery, useMutation, useSubscription } from 'react-apollo';
 import Cookies from 'js-cookie';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
@@ -11,7 +11,8 @@ import MenuIcon from '@material-ui/icons/Menu';
 import Badge from '@material-ui/core/Badge';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import ShoppingCart from '@material-ui/icons/ShoppingCart';
-import { EMPTY_CART, GET_CART, LOGOUT_USER } from '../../constants';
+import { EMPTY_CART, GET_CART, LOGOUT_USER, GET_USER, USER_LOGGED_IN } from '../../constants';
+import { UserContext } from '../../context/UserContext';
 import { getCart, getUser, setCart, emptyCart as emptyLocalCart } from '../../utils/localStorage';
 import CartMenu from './CartMenu';
 import UserMenu from './UserMenu';
@@ -41,19 +42,16 @@ const StyledBadge = withStyles(theme => ({
   },
 }))(Badge);
 
-const Appbar = ({ updateEmptyLocalCart, cartTotal }) => {
-  const [auth, setAuth] = React.useState(false);
-  const [cartTotalItems, setCartTotalItems] = React.useState(cartTotal);
-  const { loading, errors, data } = useQuery(GET_CART);
+const Appbar = ({ updateEmptyLocalCart }) => {
+  const { state, dispatch } = React.useContext(UserContext);
+  const { loading, data } = useQuery(GET_USER);
   React.useEffect(() => {
-    if (Boolean(getUser()) && data && !errors && !loading) {
-      setAuth(true);
-      setCartTotalItems(data.cart.total);
+    if (getUser()) {
+      if (!loading && data.getUser) dispatch({ type: 'SET_USER', user: data.getUser });
     } else {
-      setAuth(false);
-      setCartTotalItems(getCart() ? getCart().total : setCart(true));
+      dispatch({ type: 'SET_LOCAL_USER' });
     }
-  }, [data, errors, loading, auth, cartTotal]);
+  }, [data, loading]);
 
   const [anchorElCart, setAnchorElCart] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
@@ -81,7 +79,7 @@ const Appbar = ({ updateEmptyLocalCart, cartTotal }) => {
     if (getUser()) await emptyCart({ refetchQueries: [{ query: GET_CART }] });
     else {
       emptyLocalCart();
-      setCartTotalItems(0);
+      // setCartTotalItems(0); TODO replace that
       updateEmptyLocalCart();
     }
   };
@@ -92,8 +90,8 @@ const Appbar = ({ updateEmptyLocalCart, cartTotal }) => {
     const logoutSuccess = logoutUser();
     if (logoutSuccess) {
       Cookies.remove('signedin');
-      setAuth(false);
-      setCartTotalItems(0);
+      // setAuth(false);  TODO replace that
+      // setCartTotalItems(0); TODO replace that
     }
   };
 
@@ -108,7 +106,7 @@ const Appbar = ({ updateEmptyLocalCart, cartTotal }) => {
             Photos
           </Typography>
           <div>
-            {!auth && (
+            {state.user.guest && (
               <>
                 <Button
                   href="/login/"
@@ -123,7 +121,7 @@ const Appbar = ({ updateEmptyLocalCart, cartTotal }) => {
                 </Button>
               </>
             )}
-            {auth && (
+            {!state.user.guest && (
               <>
                 <IconButton
                   aria-label="account of current user"
@@ -148,7 +146,7 @@ const Appbar = ({ updateEmptyLocalCart, cartTotal }) => {
               aria-haspopup="true"
               onClick={handleCartMenuOpen}
             >
-              <StyledBadge badgeContent={cartTotalItems} color="secondary">
+              <StyledBadge badgeContent={state.user.cart.total} color="secondary">
                 <ShoppingCart fontSize="large" color="secondary" />
               </StyledBadge>
             </IconButton>

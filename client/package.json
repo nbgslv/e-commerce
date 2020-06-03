@@ -14,6 +14,8 @@
     "prettier": "^2.0.5"
   },
   "dependencies": {
+    "@apollo/client": "^3.0.0-rc.0",
+    "@apollo/link-ws": "^2.0.0-beta.3",
     "@date-io/date-fns": "^2.6.2",
     "@material-ui/core": "^4.9.14",
     "@material-ui/icons": "^4.9.1",
@@ -45,7 +47,8 @@
     "react-router-dom": "5.1.2",
     "react-router-prop-types": "^1.0.4",
     "react-scripts": "3.4.0",
-    "styled-components": "4.4.0"
+    "styled-components": "4.4.0",
+    "subscriptions-transport-ws": "^0.9.16"
   },
   "scripts": {
     "start": "react-scripts start",

@@ -1,18 +1,23 @@
 const { AuthenticationError } = require('apollo-server');
+const { PubSub } = require('graphql-subscriptions');
 const bcrypt = require('bcryptjs');
 const { setToken, decodeToken } = require('../helpers/auth');
 const User = require('./user.model');
 const Cart = require('./cart.model');
 const { Product, cartProduct } = require('../product/product.model');
 
+const pubsub = new PubSub(); // create a PubSub instance
+const CART_ADDED_ITEM = 'newItem';
+
 const resolvers = {
   Query: {
-    user: async (_, { id, email }) => {
-      const findJson = {};
-      if (id) findJson._id = id;
-      if (email) findJson.email = email;
-      if (id || email) return User.findOne(findJson).exec();
-      return new Error('No user fetched');
+    getUser: async (_, __, { id, res }) => {
+      console.log(id);
+      if (id) {
+        console.log(await User.findById(id));
+        return User.findById(id);
+      }
+      return { success: false };
     },
     cart: async (_, __, { id }) => {
       const user = await User.findById({ _id: id }, 'cart').exec();
@@ -31,21 +36,26 @@ const resolvers = {
     },
     addToCart: async (_, { productId }, { id: userId }) => {
       const user = await User.findById(userId, 'cart');
+      let quantity = 1;
+      let productAdded;
       let addedProduct = false;
       user.cart.products.map(async product => {
         if (product._id.toString() === productId.toString()) {
           product.quantity += 1;
+          quantity = product.quantity;
+          productAdded = product;
           addedProduct = true;
         }
       });
       if (!addedProduct) {
-        const productImage = await Product.findById({ _id: productId });
+        productAdded = await Product.findById({ _id: productId });
         // eslint-disable-next-line new-cap
-        user.cart.products.push(new cartProduct(productImage));
+        user.cart.products.push(new cartProduct(productAdded));
       }
       user.cart.total += 1;
       user.cart.markModified('products');
       const updatedUser = await user.save();
+      await pubsub.publish(CART_ADDED_ITEM, { cart: user.cart });
       return updatedUser.cart;
     },
     removeFromCart: async (_, { productId }, { id: userId }) => {
@@ -108,6 +118,11 @@ const resolvers = {
     logoutUser: (_, __, { res }) => {
       res.clearCookie('token');
       return true;
+    },
+  },
+  Subscription: {
+    cartItemAdded: {
+      subscribe: () => pubsub.asyncIterator(CART_ADDED_ITEM),
     },
   },
 };

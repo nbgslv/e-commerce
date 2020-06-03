@@ -61,8 +61,8 @@ export const ADD_USER = gql`
 `;
 
 export const GET_USER = gql`
-  query getUser($id: String, $email: String) {
-    user(id: $id, email: $email) {
+  query getUser {
+    getUser {
       _id
       firstName
       lastName
@@ -138,6 +138,20 @@ export const CHANGE_QUANTITY = gql`
 export const EMPTY_CART = gql`
   mutation emptyCart {
     emptyCart
+  }
+`;
+
+export const CART_ITEM_ADDED = gql`
+  subscription cartItemAdded {
+    cartItemAdded {
+      total
+      products {
+        _id
+        title
+        price
+        quantity
+      }
+    }
   }
 `;
 
