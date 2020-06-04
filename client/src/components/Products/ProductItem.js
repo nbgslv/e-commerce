@@ -11,9 +11,9 @@ import Fade from '@material-ui/core/Fade';
 import AddShoppingCartIcon from '@material-ui/icons/AddShoppingCart';
 import Typography from '@material-ui/core/Typography';
 import Rating from 'material-ui-rating';
-import { ADD_RATING, ADD_TO_CART, GET_CART } from '../../constants';
+import { ADD_RATING, ADD_TO_CART } from '../../constants';
+import { UserContext } from '../../context/UserContext';
 import { getUser, addProductToCart } from '../../utils/localStorage';
-// TODO add to user action - move to here
 
 const useStyles = makeStyles({
   root: {
@@ -95,14 +95,10 @@ const ProductItem = ({ data, updateTotal }) => {
               color="primary"
               onClick={async () => {
                 if (auth) {
-                  addToCart({
+                  await addToCart({
                     variables: { productId: data._id },
-                    refetchQueries: [{ query: GET_CART }],
                   });
-                } else {
-                  const cart = addProductToCart(data);
-                  updateTotal(cart.total);
-                }
+                } else addProductToCart(data);
               }}
               onMouseEnter={() => setHover(true)}
               onMouseOver={e => e.stopPropagation()}

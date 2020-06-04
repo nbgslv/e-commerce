@@ -17,11 +17,13 @@ export const setCart = (newCart, total = 0, products = []) =>
 
 export const addProductToCart = shopProduct => {
   const cart = getCart();
+  let productAdded;
   let productExists = false;
   cart.products.map(product => {
     if (product._id.toString() === shopProduct._id.toString()) {
       product.quantity += 1;
       productExists = true;
+      productAdded = product;
       return true;
     }
     return false;
@@ -29,10 +31,11 @@ export const addProductToCart = shopProduct => {
   if (!productExists) {
     shopProduct.quantity = 1;
     cart.products.push(shopProduct);
+    productAdded = shopProduct;
   }
   cart.total += 1;
   setCart(false, cart.total, cart.products);
-  return cart;
+  return productAdded;
 };
 
 export const removeProductFromCart = productId => {

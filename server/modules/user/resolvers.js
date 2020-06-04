@@ -48,15 +48,17 @@ const resolvers = {
         }
       });
       if (!addedProduct) {
-        productAdded = await Product.findById({ _id: productId });
+        const product = await Product.findById({ _id: productId });
         // eslint-disable-next-line new-cap
-        user.cart.products.push(new cartProduct(productAdded));
+        productAdded = new cartProduct(product);
+        user.cart.products.push(productAdded);
       }
       user.cart.total += 1;
       user.cart.markModified('products');
-      const updatedUser = await user.save();
-      await pubsub.publish(CART_ADDED_ITEM, { cart: user.cart });
-      return updatedUser.cart;
+      await user.save();
+      const sub = await pubsub.publish(CART_ADDED_ITEM, { cartItemAdded: user.cart });
+      console.log('sub', sub);
+      return productAdded;
     },
     removeFromCart: async (_, { productId }, { id: userId }) => {
       const user = await User.findById(userId, 'cart');
@@ -122,7 +124,7 @@ const resolvers = {
   },
   Subscription: {
     cartItemAdded: {
-      subscribe: () => pubsub.asyncIterator(CART_ADDED_ITEM),
+      subscribe: () => pubsub.asyncIterator([CART_ADDED_ITEM]),
     },
   },
 };

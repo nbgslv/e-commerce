@@ -11,7 +11,14 @@ import MenuIcon from '@material-ui/icons/Menu';
 import Badge from '@material-ui/core/Badge';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import ShoppingCart from '@material-ui/icons/ShoppingCart';
-import { EMPTY_CART, GET_CART, LOGOUT_USER, GET_USER, USER_LOGGED_IN } from '../../constants';
+import {
+  EMPTY_CART,
+  GET_CART,
+  LOGOUT_USER,
+  GET_USER,
+  USER_LOGGED_IN,
+  CART_ITEM_ADDED,
+} from '../../constants';
 import { UserContext } from '../../context/UserContext';
 import { getCart, getUser, setCart, emptyCart as emptyLocalCart } from '../../utils/localStorage';
 import CartMenu from './CartMenu';
@@ -45,13 +52,20 @@ const StyledBadge = withStyles(theme => ({
 const Appbar = ({ updateEmptyLocalCart }) => {
   const { state, dispatch } = React.useContext(UserContext);
   const { loading, data } = useQuery(GET_USER);
+  const { data: updatedCart, loading: cartItemAddedLoading } = useSubscription(CART_ITEM_ADDED);
   React.useEffect(() => {
     if (getUser()) {
-      if (!loading && data.getUser) dispatch({ type: 'SET_USER', user: data.getUser });
+      if (!cartItemAddedLoading && updatedCart)
+        dispatch({
+          type: 'UPDATE_CART',
+          cart: updatedCart,
+        });
+      else if (!loading && data) dispatch({ type: 'SET_USER', user: data.getUser });
     } else {
-      dispatch({ type: 'SET_LOCAL_USER' });
+      dispatch({ type: 'SET_GUEST' });
     }
-  }, [data, loading]);
+  }, [data, loading, updatedCart, cartItemAddedLoading]);
+  // TODO add loading figure to user appbar right side
 
   const [anchorElCart, setAnchorElCart] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);

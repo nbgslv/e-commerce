@@ -27,7 +27,7 @@ const typeDefs = gql`
   }
   extend type Mutation {
     addUser(email: String!, password: String!): User
-    addToCart(productId: String!): Cart
+    addToCart(productId: String!): CartProduct
     removeFromCart(productId: String!): Cart
     changeQuantity(productId: String!, quantity: Int!): Cart
     emptyCart: Boolean

@@ -9,8 +9,7 @@ const productsReducer = (state, action) => {
           ...action.user,
         },
       };
-    case 'SET_LOCAL_USER':
-      console.log(getCart());
+    case 'SET_GUEST':
       return {
         user: {
           guest: true,
@@ -19,6 +18,13 @@ const productsReducer = (state, action) => {
       };
     case 'REMOVE_USER':
       return [];
+    case 'UPDATE_CART':
+      return {
+        user: {
+          ...state.user,
+          cart: action.cart.cartItemAdded,
+        },
+      };
     default:
       return state;
   }

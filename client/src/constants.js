@@ -96,13 +96,10 @@ export const LOGOUT_USER = gql`
 export const ADD_TO_CART = gql`
   mutation addToCart($productId: String!) {
     addToCart(productId: $productId) {
-      total
-      products {
-        _id
-        title
-        price
-        quantity
-      }
+      _id
+      title
+      price
+      quantity
     }
   }
 `;
