@@ -4,7 +4,7 @@ import MaterialTable, { MTablePagination } from 'material-table';
 import RemoveShoppingCartOutlinedIcon from '@material-ui/icons/RemoveShoppingCartOutlined';
 import NumericInput from 'react-numeric-input';
 
-const CartItems = ({ data, removeItem, changeQuantity }) => (
+const CartItems = ({ productsData, removeItem, changeQuantity }) => (
   <MaterialTable
     options={{
       showFirstLastPageButtons: false,
@@ -39,7 +39,7 @@ const CartItems = ({ data, removeItem, changeQuantity }) => (
         ),
       },
     ]}
-    data={data}
+    data={productsData}
     components={{
       Pagination: props => {
         const { count, rowsPerPage } = props;
@@ -60,11 +60,9 @@ const CartItems = ({ data, removeItem, changeQuantity }) => (
 );
 
 CartItems.propTypes = {
-  data: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // eslint-disable-next-line react/no-unused-prop-types
-  count: PropTypes.number.isRequired,
-  // eslint-disable-next-line react/no-unused-prop-types
-  rowsPerPage: PropTypes.number.isRequired,
+  productsData: PropTypes.arrayOf(PropTypes.object).isRequired,
+  removeItem: PropTypes.func.isRequired,
+  changeQuantity: PropTypes.func.isRequired,
 };
 
 export default CartItems;

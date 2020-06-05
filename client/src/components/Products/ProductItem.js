@@ -35,7 +35,8 @@ const useStyles = makeStyles({
   },
 });
 
-const ProductItem = ({ data, updateTotal }) => {
+const ProductItem = ({ data, handleAddProduct }) => {
+  const { state, dispatch } = React.useContext(UserContext);
   const [imageLoading, setImageLoading] = React.useState(true);
   const [rating, setRating] = React.useState(Math.round(data.voters / data.rating));
   const [hover, setHover] = React.useState(false);
@@ -94,11 +95,14 @@ const ProductItem = ({ data, updateTotal }) => {
               variant="outlined"
               color="primary"
               onClick={async () => {
-                if (auth) {
+                if (!state.user.guest) {
                   await addToCart({
                     variables: { productId: data._id },
                   });
-                } else addProductToCart(data);
+                } else {
+                  const productAdded = addProductToCart(data);
+                  dispatch({ type: 'ADD_PRODUCT_TO_CART', product: productAdded });
+                }
               }}
               onMouseEnter={() => setHover(true)}
               onMouseOver={e => e.stopPropagation()}

@@ -19,7 +19,7 @@ const typeDefs = gql`
     success: Boolean!
   }
   extend type Subscription {
-    cartItemAdded: Cart
+    cartChanged: Cart
   }
   extend type Query {
     cart: Cart

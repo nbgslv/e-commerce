@@ -7,20 +7,30 @@ const Cart = require('./cart.model');
 const { Product, cartProduct } = require('../product/product.model');
 
 const pubsub = new PubSub(); // create a PubSub instance
-const CART_ADDED_ITEM = 'newItem';
+const CART_CHANGED = 'cartChanged';
+
+const decimalToString = products => {
+  products.map(product => {
+    product.price = product.price.toString();
+    return true;
+  });
+  return products;
+};
 
 const resolvers = {
   Query: {
     getUser: async (_, __, { id, res }) => {
       console.log(id);
       if (id) {
-        console.log(await User.findById(id));
-        return User.findById(id);
+        const user = await User.findById(id);
+        user.cart.products = decimalToString(user.cart.products);
+        return user;
       }
       return { success: false };
     },
     cart: async (_, __, { id }) => {
       const user = await User.findById({ _id: id }, 'cart').exec();
+      user.cart.products = decimalToString(user.cart.products);
       return user.cart;
     },
   },
@@ -36,13 +46,12 @@ const resolvers = {
     },
     addToCart: async (_, { productId }, { id: userId }) => {
       const user = await User.findById(userId, 'cart');
-      let quantity = 1;
       let productAdded;
       let addedProduct = false;
       user.cart.products.map(async product => {
         if (product._id.toString() === productId.toString()) {
+          // eslint-disable-next-line no-param-reassign
           product.quantity += 1;
-          quantity = product.quantity;
           productAdded = product;
           addedProduct = true;
         }
@@ -56,8 +65,7 @@ const resolvers = {
       user.cart.total += 1;
       user.cart.markModified('products');
       await user.save();
-      const sub = await pubsub.publish(CART_ADDED_ITEM, { cartItemAdded: user.cart });
-      console.log('sub', sub);
+      await pubsub.publish(CART_CHANGED, { cartChanged: user.cart });
       return productAdded;
     },
     removeFromCart: async (_, { productId }, { id: userId }) => {
@@ -73,6 +81,8 @@ const resolvers = {
       user.cart.total -= quantity;
       user.cart.products = updatedProducts;
       const updatedUser = await user.save();
+      updatedUser.cart.products = decimalToString(updatedUser.cart.products);
+      await pubsub.publish(CART_CHANGED, { cartChanged: user.cart });
       return updatedUser.cart;
     },
     changeQuantity: async (_, { productId, quantity }, { id: userId }) => {
@@ -88,6 +98,8 @@ const resolvers = {
       user.cart.total += quantity - lastQuantity;
       user.cart.markModified('products');
       const updatedUser = await user.save();
+      updatedUser.cart.products = decimalToString(updatedUser.cart.products);
+      await pubsub.publish(CART_CHANGED, { cartChanged: user.cart });
       return updatedUser.cart;
     },
     emptyCart: async (_, __, { id }) => {
@@ -95,6 +107,7 @@ const resolvers = {
       user.cart.products = [];
       user.cart.total = 0;
       await user.save();
+      await pubsub.publish(CART_CHANGED, { cartChanged: user.cart });
       return true;
     },
     loginUser: async (_, { email, password }, { res }) => {
@@ -123,8 +136,8 @@ const resolvers = {
     },
   },
   Subscription: {
-    cartItemAdded: {
-      subscribe: () => pubsub.asyncIterator([CART_ADDED_ITEM]),
+    cartChanged: {
+      subscribe: () => pubsub.asyncIterator([CART_CHANGED]),
     },
   },
 };

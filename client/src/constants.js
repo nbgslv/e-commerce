@@ -138,9 +138,9 @@ export const EMPTY_CART = gql`
   }
 `;
 
-export const CART_ITEM_ADDED = gql`
-  subscription cartItemAdded {
-    cartItemAdded {
+export const CART_CHANGED = gql`
+  subscription cartChanged {
+    cartChanged {
       total
       products {
         _id

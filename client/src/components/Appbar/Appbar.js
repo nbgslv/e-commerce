@@ -17,7 +17,7 @@ import {
   LOGOUT_USER,
   GET_USER,
   USER_LOGGED_IN,
-  CART_ITEM_ADDED,
+  CART_CHANGED,
 } from '../../constants';
 import { UserContext } from '../../context/UserContext';
 import { getCart, getUser, setCart, emptyCart as emptyLocalCart } from '../../utils/localStorage';
@@ -52,7 +52,7 @@ const StyledBadge = withStyles(theme => ({
 const Appbar = ({ updateEmptyLocalCart }) => {
   const { state, dispatch } = React.useContext(UserContext);
   const { loading, data } = useQuery(GET_USER);
-  const { data: updatedCart, loading: cartItemAddedLoading } = useSubscription(CART_ITEM_ADDED);
+  const { data: updatedCart, loading: cartItemAddedLoading } = useSubscription(CART_CHANGED);
   React.useEffect(() => {
     if (getUser()) {
       if (!cartItemAddedLoading && updatedCart)
@@ -90,7 +90,7 @@ const Appbar = ({ updateEmptyLocalCart }) => {
   const [emptyCart] = useMutation(EMPTY_CART);
 
   const handleEmptyCart = async () => {
-    if (getUser()) await emptyCart({ refetchQueries: [{ query: GET_CART }] });
+    if (getUser()) await emptyCart();
     else {
       emptyLocalCart();
       // setCartTotalItems(0); TODO replace that
