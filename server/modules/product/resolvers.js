@@ -1,9 +1,13 @@
-const Product = require('./product.model');
+const mongoose = require('mongoose');
+const { Product } = require('./product.model');
 
 const resolvers = {
   Query: {
-    product: async (parent, { id }) => Product.findById({ _id: id }).exec(),
-    products: () => Product.find({}),
+    product: async (_, { id }) => Product.findById({ _id: id }).exec(),
+    products: (_, { limit, category }) => {
+      if (category) return Product.find({ category }).limit(limit);
+      return Product.find({}).limit(limit);
+    },
   },
   Mutation: {
     addProduct: (parent, product) => {

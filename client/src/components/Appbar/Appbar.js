@@ -1,4 +1,6 @@
 import React from 'react';
+import { useQuery, useMutation, useSubscription } from 'react-apollo';
+import Cookies from 'js-cookie';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -9,6 +11,11 @@ import MenuIcon from '@material-ui/icons/Menu';
 import Badge from '@material-ui/core/Badge';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import ShoppingCart from '@material-ui/icons/ShoppingCart';
+import { EMPTY_CART, LOGOUT_USER, GET_USER, CART_CHANGED } from '../../constants';
+import { UserContext } from '../../context/UserContext';
+import { getUser, emptyCart as emptyLocalCart } from '../../utils/localStorage';
+import CartMenu from './CartMenu';
+import UserMenu from './UserMenu';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -36,8 +43,63 @@ const StyledBadge = withStyles(theme => ({
 }))(Badge);
 
 const Appbar = () => {
+  const { state, dispatch } = React.useContext(UserContext);
+  const { loading, data } = useQuery(GET_USER);
+  const { data: updatedCart, loading: cartItemAddedLoading } = useSubscription(CART_CHANGED);
+  React.useEffect(() => {
+    if (getUser()) {
+      if (!cartItemAddedLoading && updatedCart)
+        dispatch({
+          type: 'UPDATE_CART',
+          cart: updatedCart,
+        });
+      else if (!loading && data) dispatch({ type: 'SET_USER', user: data.getUser });
+    } else {
+      dispatch({ type: 'SET_GUEST' });
+      Cookies.remove('signedin');
+    }
+  }, [data, loading, updatedCart, cartItemAddedLoading]);
+  // TODO add loading figure to user appbar right side
+
+  const [anchorElCart, setAnchorElCart] = React.useState(null);
+  const [anchorElUser, setAnchorElUser] = React.useState(null);
   const classes = useStyles();
-  const [auth, setAuth] = React.useState(false);
+
+  const handleCartMenuOpen = e => {
+    setAnchorElCart(e.currentTarget);
+  };
+
+  const handleCartMenuClose = e => {
+    setAnchorElCart(null);
+  };
+
+  const handleUserMenuOpen = e => {
+    setAnchorElUser(e.currentTarget);
+  };
+
+  const handleUserMenuClose = e => {
+    setAnchorElUser(null);
+  };
+
+  const [emptyCart] = useMutation(EMPTY_CART);
+
+  const handleEmptyCart = async () => {
+    if (getUser()) await emptyCart();
+    else {
+      emptyLocalCart();
+      dispatch({ type: 'EMPTY_CART' });
+    }
+  };
+
+  const [logoutUser] = useMutation(LOGOUT_USER);
+
+  const handleLogout = () => {
+    const logoutSuccess = logoutUser();
+    if (logoutSuccess) {
+      Cookies.remove('signedin');
+      dispatch({ type: 'REMOVE_USER' });
+    }
+  };
 
   return (
     <div className={classes.root}>
@@ -50,31 +112,56 @@ const Appbar = () => {
             Photos
           </Typography>
           <div>
-            {!auth && (
+            {state.user.guest && (
               <>
                 <Button
+                  href="/login/"
                   className={classes.button}
-                  variant="contained"
                   color="secondary"
                   disableElevation
                 >
-                  Sign In
+                  Login
                 </Button>
                 <Button className={classes.button} variant="outlined" color="secondary">
                   Sign Up
                 </Button>
-                <IconButton>
-                  <StyledBadge badgeContent={4} color="secondary">
-                    <ShoppingCart fontSize="large" color="secondary" />
-                  </StyledBadge>
-                </IconButton>
               </>
             )}
-            {auth && (
-              <IconButton aria-label="account of current user" color="inherit">
-                <AccountCircle />
-              </IconButton>
+            {!state.user.guest && (
+              <>
+                <IconButton
+                  aria-label="account of current user"
+                  aria-haspopup="true"
+                  onClick={handleUserMenuOpen}
+                  color="inherit"
+                >
+                  <AccountCircle fontSize="large" color="secondary" />
+                </IconButton>
+                <UserMenu
+                  anchorEl={anchorElUser}
+                  open={Boolean(anchorElUser)}
+                  onClose={handleUserMenuClose}
+                  logout={handleLogout}
+                />
+              </>
             )}
+            <IconButton
+              edge="end"
+              aria-label="shopping cart"
+              // aria-controls={menuId}
+              aria-haspopup="true"
+              onClick={handleCartMenuOpen}
+            >
+              <StyledBadge badgeContent={state.user.cart.total} color="secondary">
+                <ShoppingCart fontSize="large" color="secondary" />
+              </StyledBadge>
+            </IconButton>
+            <CartMenu
+              anchorEl={anchorElCart}
+              open={Boolean(anchorElCart)}
+              onClose={handleCartMenuClose}
+              emptyCart={handleEmptyCart}
+            />
           </div>
         </Toolbar>
       </AppBar>

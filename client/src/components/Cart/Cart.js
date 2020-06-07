@@ -1,58 +1,90 @@
 import React from 'react';
 import ReactRouterPropTypes from 'react-router-prop-types';
-import styled from 'styled-components';
-import { Query } from 'react-apollo';
-import { Link } from 'react-router-dom';
+import { useMutation } from 'react-apollo';
+import { makeStyles, styled } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
-import SubHeader from '../Header/SubHeader';
-import ProductItem from '../Products/ProductItem';
-import Totals from './Totals';
-import { GET_CART } from '../../constants';
+import Card from '@material-ui/core/Card';
+import CardActions from '@material-ui/core/CardActions';
+import CardContent from '@material-ui/core/CardContent';
+import { UserContext } from '../../context/UserContext';
+import CartItems from './CartItems';
+import { CHANGE_QUANTITY, REMOVE_FROM_CART } from '../../constants';
+import {
+  removeProductFromCart,
+  changeQuantity as changeLocalQuantity,
+} from '../../utils/localStorage';
 
-const CartWrapper = styled.div`
-  display: flex;
-  justify-content: space-between;
-  flex-direction: column;
-  margin: 2% 5%;
-`;
+const useStyles = makeStyles({
+  card: {
+    margin: '8px 0',
+  },
+});
 
-const CartItemsWrapper = styled.div`
-  display: flex;
-  justify-content: space-between;
-  flex-direction: column;
-`;
+const ProductsTableWrapper = styled('div')({
+  margin: '0 48px',
+});
 
-const Alert = styled.span`
-  width: 100%;
-  text-align: center;
-`;
+const Cart = ({ history }) => {
+  const classes = useStyles();
+  const [totalForPayment, setTotalForPayment] = React.useState(0);
+  const { state, dispatch } = React.useContext(UserContext);
 
-const Cart = ({ history }) => (
-  <>
-    {history && <SubHeader title="Cart" goToCart={() => history.push('/user')} />}
-    <Query query={GET_CART}>
-      {({ loading, error, data }) => {
-        if (loading || error) {
-          return <Alert>{loading ? 'Loading...' : error}</Alert>;
-        }
-        return (
-          <CartWrapper>
-            <CartItemsWrapper>
-              {data.cart &&
-                data.cart.products.map(product => <ProductItem key={product.id} data={product} />)}
-            </CartItemsWrapper>
-            <Totals count={data.cart.total} />
-            {data.cart && data.cart.products.length > 0 && (
-              <Link to="/checkout">
-                <Button color="royalBlue">Checkout</Button>
-              </Link>
-            )}
-          </CartWrapper>
-        );
-      }}
-    </Query>
-  </>
-);
+  const computeTotal = () => {
+    let totalForPaymentCalculation = 0;
+    state.user.cart.products.map(product => {
+      totalForPaymentCalculation += product.price * product.quantity;
+      return true;
+    });
+    return Math.round(totalForPaymentCalculation * 100) / 100;
+  };
+
+  React.useEffect(() => setTotalForPayment(computeTotal()), [state.user.cart.total]);
+
+  const [removeFromCart] = useMutation(REMOVE_FROM_CART);
+  const handleRemoveItem = async productId => {
+    if (!state.user.guest) await removeFromCart({ variables: { productId } });
+    else {
+      const cart = removeProductFromCart(productId);
+      dispatch({ type: 'UPDATE_CART', cart: { cartChanged: cart } });
+    }
+  };
+
+  const [changeQuantity] = useMutation(CHANGE_QUANTITY);
+  const handleQuantityChange = async (productId, quantity) => {
+    if (!state.user.guest) {
+      await changeQuantity({
+        variables: { productId, quantity },
+      });
+    } else {
+      const cart = changeLocalQuantity(productId, quantity);
+      dispatch({ type: 'UPDATE_CART', cart: { cartChanged: cart } });
+    }
+  };
+
+  return (
+    <>
+      <ProductsTableWrapper>
+        <CartItems
+          productsData={state.user.cart.products}
+          removeItem={handleRemoveItem}
+          changeQuantity={handleQuantityChange}
+        />
+        <Card className={classes.card}>
+          <CardContent>Total For Payment: {totalForPayment}$</CardContent>
+          <CardActions>
+            <Button
+              onClick={() => {
+                history.push('/checkout');
+              }}
+            >
+              Continue to checkout
+            </Button>
+          </CardActions>
+        </Card>
+      </ProductsTableWrapper>
+    </>
+  );
+};
 
 Cart.propTypes = {
   history: ReactRouterPropTypes.history.isRequired,

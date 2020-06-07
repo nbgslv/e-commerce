@@ -3,6 +3,18 @@ const bcrypt = require('bcryptjs');
 const Cart = require('./cart.model');
 
 const userSchema = new Schema({
+  first_name: {
+    type: String,
+    required: true,
+  },
+  last_name: {
+    type: String,
+    required: true,
+  },
+  birth_date: {
+    type: String,
+    required: false,
+  },
   email: {
     type: String,
     required: true,

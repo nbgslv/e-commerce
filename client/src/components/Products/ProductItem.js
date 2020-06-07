@@ -11,8 +11,9 @@ import Fade from '@material-ui/core/Fade';
 import AddShoppingCartIcon from '@material-ui/icons/AddShoppingCart';
 import Typography from '@material-ui/core/Typography';
 import Rating from 'material-ui-rating';
-import { ADD_RATING, ADD_TO_CART, GET_CART } from '../../constants';
-// TODO add to user action - move to here
+import { ADD_RATING, ADD_TO_CART } from '../../constants';
+import { UserContext } from '../../context/UserContext';
+import { getUser, addProductToCart } from '../../utils/localStorage';
 
 const useStyles = makeStyles({
   root: {
@@ -35,9 +36,12 @@ const useStyles = makeStyles({
 });
 
 const ProductItem = ({ data }) => {
+  const { state, dispatch } = React.useContext(UserContext);
   const [imageLoading, setImageLoading] = React.useState(true);
   const [rating, setRating] = React.useState(Math.round(data.voters / data.rating));
   const [hover, setHover] = React.useState(false);
+  const auth = Boolean(getUser());
+
   const classes = useStyles();
   return (
     <Card className={classes.root}>
@@ -84,13 +88,22 @@ const ProductItem = ({ data }) => {
             />
           )}
         </Mutation>
-        <Mutation mutation={ADD_TO_CART} refetchQueries={[{ query: GET_CART }]}>
+        <Mutation mutation={ADD_TO_CART} ignoreResults={false}>
           {addToCart => (
             <Button
               productId={data.id}
               variant="outlined"
               color="primary"
-              onClick={() => addToCart({ variables: { productId: data.id } })}
+              onClick={async () => {
+                if (!state.user.guest) {
+                  await addToCart({
+                    variables: { productId: data._id },
+                  });
+                } else {
+                  const productAdded = addProductToCart(data);
+                  dispatch({ type: 'ADD_PRODUCT_TO_CART', product: productAdded });
+                }
+              }}
               onMouseEnter={() => setHover(true)}
               onMouseOver={e => e.stopPropagation()}
               onMouseLeave={() => setHover(false)}

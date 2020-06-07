@@ -1,28 +1,38 @@
 const { gql } = require('apollo-server');
 
 const typeDefs = gql`
-  enum Products {
-    Product
-    String
-  }
   type Cart {
     total: Float
-    products: [Product]
+    products: [CartProduct]
   }
   type User {
     _id: String
+    firstName: String
+    lastName: String
+    birthDate: String
     email: String!
     password: String!
     cart: Cart!
+    token: String!
+  }
+  type LoginResult {
+    success: Boolean!
+  }
+  extend type Subscription {
+    cartChanged: Cart
   }
   extend type Query {
-    user(id: String, email: String): User
-    cart(id: String!): Cart
+    cart: Cart
+    getUser: User
   }
   extend type Mutation {
     addUser(email: String!, password: String!): User
-    addToCart(userId: String!, productId: String!): Cart
-    loginUser(userName: String!, password: String!): User
+    addToCart(productId: String!): CartProduct
+    removeFromCart(productId: String!): Cart
+    changeQuantity(productId: String!, quantity: Int!): Cart
+    emptyCart: Boolean
+    loginUser(email: String!, password: String!): LoginResult
+    logoutUser: Boolean
   }
 `;
 
