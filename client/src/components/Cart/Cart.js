@@ -1,7 +1,6 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import ReactRouterPropTypes from 'react-router-prop-types';
-import { useMutation, useQuery } from 'react-apollo';
+import { useMutation } from 'react-apollo';
 import { makeStyles, styled } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
@@ -9,10 +8,8 @@ import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import { UserContext } from '../../context/UserContext';
 import CartItems from './CartItems';
-import { CHANGE_QUANTITY, GET_CART, REMOVE_FROM_CART } from '../../constants';
+import { CHANGE_QUANTITY, REMOVE_FROM_CART } from '../../constants';
 import {
-  getCart,
-  getUser,
   removeProductFromCart,
   changeQuantity as changeLocalQuantity,
 } from '../../utils/localStorage';

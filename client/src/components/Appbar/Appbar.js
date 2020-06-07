@@ -1,5 +1,5 @@
 import React from 'react';
-import { useLazyQuery, useQuery, useMutation, useSubscription } from 'react-apollo';
+import { useQuery, useMutation, useSubscription } from 'react-apollo';
 import Cookies from 'js-cookie';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
@@ -11,16 +11,9 @@ import MenuIcon from '@material-ui/icons/Menu';
 import Badge from '@material-ui/core/Badge';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import ShoppingCart from '@material-ui/icons/ShoppingCart';
-import {
-  EMPTY_CART,
-  GET_CART,
-  LOGOUT_USER,
-  GET_USER,
-  USER_LOGGED_IN,
-  CART_CHANGED,
-} from '../../constants';
+import { EMPTY_CART, LOGOUT_USER, GET_USER, CART_CHANGED } from '../../constants';
 import { UserContext } from '../../context/UserContext';
-import { getCart, getUser, setCart, emptyCart as emptyLocalCart } from '../../utils/localStorage';
+import { getUser, emptyCart as emptyLocalCart } from '../../utils/localStorage';
 import CartMenu from './CartMenu';
 import UserMenu from './UserMenu';
 
@@ -49,7 +42,7 @@ const StyledBadge = withStyles(theme => ({
   },
 }))(Badge);
 
-const Appbar = ({ updateEmptyLocalCart }) => {
+const Appbar = () => {
   const { state, dispatch } = React.useContext(UserContext);
   const { loading, data } = useQuery(GET_USER);
   const { data: updatedCart, loading: cartItemAddedLoading } = useSubscription(CART_CHANGED);
@@ -63,6 +56,7 @@ const Appbar = ({ updateEmptyLocalCart }) => {
       else if (!loading && data) dispatch({ type: 'SET_USER', user: data.getUser });
     } else {
       dispatch({ type: 'SET_GUEST' });
+      Cookies.remove('signedin');
     }
   }, [data, loading, updatedCart, cartItemAddedLoading]);
   // TODO add loading figure to user appbar right side
@@ -93,8 +87,7 @@ const Appbar = ({ updateEmptyLocalCart }) => {
     if (getUser()) await emptyCart();
     else {
       emptyLocalCart();
-      // setCartTotalItems(0); TODO replace that
-      updateEmptyLocalCart();
+      dispatch({ type: 'EMPTY_CART' });
     }
   };
 
@@ -104,8 +97,7 @@ const Appbar = ({ updateEmptyLocalCart }) => {
     const logoutSuccess = logoutUser();
     if (logoutSuccess) {
       Cookies.remove('signedin');
-      // setAuth(false);  TODO replace that
-      // setCartTotalItems(0); TODO replace that
+      dispatch({ type: 'REMOVE_USER' });
     }
   };
 

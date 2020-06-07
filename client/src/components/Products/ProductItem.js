@@ -35,7 +35,7 @@ const useStyles = makeStyles({
   },
 });
 
-const ProductItem = ({ data, handleAddProduct }) => {
+const ProductItem = ({ data }) => {
   const { state, dispatch } = React.useContext(UserContext);
   const [imageLoading, setImageLoading] = React.useState(true);
   const [rating, setRating] = React.useState(Math.round(data.voters / data.rating));

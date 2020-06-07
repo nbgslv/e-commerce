@@ -39,6 +39,7 @@ const server = new ApolloServer({
       return { email, id, res };
     } catch (e) {
       console.log('context', e.message);
+      res.clearCookie('token');
       return { email: null, id: null, res };
     }
   },

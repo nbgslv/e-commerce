@@ -20,7 +20,7 @@ const Alert = styled('span')`
   text-align: center;
 `;
 
-const Products = ({ updateTotal, match }) => {
+const Products = () => {
   const classes = useStyles();
   const { state, dispatch } = React.useContext(ProductsContext);
   const { data } = useQuery(GET_LIMIT);
@@ -32,12 +32,13 @@ const Products = ({ updateTotal, match }) => {
     if (!loading) dispatch({ type: 'SET_PRODUCTS', products: productsData });
   }, [productsData, loading, dispatch]);
 
-  if (loading) return <SkeletonProducts limit={data.limit} />;
+  if (loading)
+    return (
+      <Grid container spacing={3} classes={{ container: classes.root }}>
+        <SkeletonProducts limit={data.limit} />
+      </Grid>
+    );
   if (error) return <Alert>{error}</Alert>;
-
-  const handleUpdateTotal = newTotal => {
-    updateTotal(newTotal);
-  };
 
   return (
     <Grid container spacing={3} classes={{ container: classes.root }}>
@@ -49,11 +50,7 @@ const Products = ({ updateTotal, match }) => {
       </Grid>
       {state.products.map(product => (
         <Grid item md={3} key={product._id.toString()}>
-          <ProductItem
-            key={product._id.toString()}
-            data={product}
-            updateTotal={handleUpdateTotal}
-          />
+          <ProductItem key={product._id.toString()} data={product} />
         </Grid>
       ))}
     </Grid>

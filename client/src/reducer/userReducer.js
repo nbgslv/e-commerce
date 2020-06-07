@@ -17,7 +17,12 @@ const productsReducer = (state, action) => {
         },
       };
     case 'REMOVE_USER':
-      return [];
+      return {
+        user: {
+          guest: true,
+          cart: getCart(),
+        },
+      };
     case 'UPDATE_CART':
       return {
         user: {
@@ -40,6 +45,16 @@ const productsReducer = (state, action) => {
         user: {
           ...state.user,
           cart: { ...state.user.cart },
+        },
+      };
+    case 'EMPTY_CART':
+      return {
+        user: {
+          ...state.user,
+          cart: {
+            total: 0,
+            products: [],
+          },
         },
       };
     default:

@@ -54,7 +54,7 @@ const SubHeader = ({ history }) => {
   );
 };
 
-SubHeader.protoTypes = {
+SubHeader.propTypes = {
   history: ReactRouterPropTypes.history.isRequired,
 };
 

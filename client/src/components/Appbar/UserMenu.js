@@ -41,7 +41,7 @@ const UserMenu = ({ anchorEl, open, onClose, logout }) => {
     >
       <MenuItem className={classes.root} onClick={logout}>
         <MeetingRoomOutlinedIcon color="secondary" fontSize="small" />
-        &nbsp; Checkout
+        &nbsp; Logout
       </MenuItem>
     </Menu>
   );
