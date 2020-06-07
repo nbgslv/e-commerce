@@ -16,7 +16,6 @@ const decodeToken = async token => {
   try {
     return jwt.verify(token, jwtSecret);
   } catch (e) {
-    console.log(e.message);
     return false;
   }
 };

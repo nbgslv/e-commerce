@@ -1,4 +1,4 @@
-const { AuthenticationError } = require('apollo-server');
+const { ApolloError, AuthenticationError } = require('apollo-server');
 const { PubSub } = require('graphql-subscriptions');
 const bcrypt = require('bcryptjs');
 const { setToken, decodeToken } = require('../helpers/auth');
@@ -26,12 +26,15 @@ const resolvers = {
         user.cart.products = decimalToString(user.cart.products);
         return user;
       }
-      return { success: false };
+      throw new AuthenticationError(
+        "User credentials couldn't be found. Please login and try again."
+      );
     },
     cart: async (_, __, { id }) => {
       const user = await User.findById({ _id: id }, 'cart').exec();
       user.cart.products = decimalToString(user.cart.products);
-      return user.cart;
+      if (user) return user.cart;
+      throw new ApolloError("Couldn't retrieve cart details.");
     },
   },
   Mutation: {
@@ -41,8 +44,10 @@ const resolvers = {
         password: user.password,
         cart: new Cart(),
       });
-
-      return newUser.save();
+      newUser.save().exec((res, err) => {
+        if (res) return res;
+        throw new ApolloError(`User registration failed. ${err.message()}`);
+      });
     },
     addToCart: async (_, { productId }, { id: userId }) => {
       const user = await User.findById(userId, 'cart');
@@ -64,9 +69,11 @@ const resolvers = {
       }
       user.cart.total += 1;
       user.cart.markModified('products');
-      await user.save();
       await pubsub.publish(CART_CHANGED, { cartChanged: user.cart });
-      return productAdded;
+      user.save().exec((res, err) => {
+        if (res) return productAdded;
+        throw new ApolloError(`Adding item to cart failed. ${err.message()}`);
+      });
     },
     removeFromCart: async (_, { productId }, { id: userId }) => {
       const user = await User.findById(userId, 'cart');
@@ -106,9 +113,11 @@ const resolvers = {
       const user = await User.findById(id, 'cart');
       user.cart.products = [];
       user.cart.total = 0;
-      await user.save();
       await pubsub.publish(CART_CHANGED, { cartChanged: user.cart });
-      return true;
+      await user.save().exec((res, err) => {
+        if (res) return true;
+        throw new ApolloError(`Couldn't empty cart. ${err.message()}`);
+      });
     },
     loginUser: async (_, { email, password }, { res }) => {
       let isValid = false;

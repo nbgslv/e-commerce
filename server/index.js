@@ -38,7 +38,6 @@ const server = new ApolloServer({
       const { email, id } = await decodeToken(token);
       return { email, id, res };
     } catch (e) {
-      console.log('context', e.message);
       res.clearCookie('token');
       return { email: null, id: null, res };
     }

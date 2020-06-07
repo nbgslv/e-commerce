@@ -1,13 +1,16 @@
 import React from 'react';
 import { ThemeProvider } from '@material-ui/core';
 import CssBaseline from '@material-ui/core/CssBaseline';
+import Cookies from 'js-cookie';
 import { Route, Switch, useLocation } from 'react-router-dom';
 import ApolloClient from 'apollo-client';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import { split, HttpLink } from '@apollo/client';
+import { onError } from 'apollo-link-error';
 import { getMainDefinition } from '@apollo/client/utilities';
 import { WebSocketLink } from '@apollo/link-ws';
 import { ApolloProvider } from 'react-apollo';
+import Error from '../components/Error/Error';
 import * as Theme from '../ui/theme';
 import ProductsContextProvider from '../context/ProductsContext';
 import UserContextProvider from '../context/UserContext';
@@ -33,6 +36,18 @@ const wsLink = new WebSocketLink({
   },
 });
 
+const errorLink = onError(({ graphQLErrors, networkError }) => {
+  if (graphQLErrors)
+    graphQLErrors.map(({ message, locations, path, extensions }) => {
+      if (extensions.code === 'AUTHENTICATION') {
+        Cookies.remove('signedin');
+      }
+      console.log(`[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`);
+    });
+  if (networkError)
+    return <Error errorCode={networkError.code} errorMessage={networkError.message} />;
+});
+
 const splitLink = split(
   ({ query }) => {
     const definition = getMainDefinition(query);
@@ -43,7 +58,7 @@ const splitLink = split(
 );
 
 const client = new ApolloClient({
-  link: splitLink,
+  link: errorLink.concat(splitLink),
   cache,
   resolvers: {},
   typeDefs: `
