@@ -11,9 +11,9 @@ import Fade from '@material-ui/core/Fade';
 import AddShoppingCartIcon from '@material-ui/icons/AddShoppingCart';
 import Typography from '@material-ui/core/Typography';
 import Rating from 'material-ui-rating';
-import { ADD_RATING, ADD_TO_CART, GET_CART } from '../../constants';
+import { ADD_RATING, ADD_TO_CART } from '../../constants';
+import { UserContext } from '../../context/UserContext';
 import { getUser, addProductToCart } from '../../utils/localStorage';
-// TODO add to user action - move to here
 
 const useStyles = makeStyles({
   root: {
@@ -35,7 +35,8 @@ const useStyles = makeStyles({
   },
 });
 
-const ProductItem = ({ data, updateTotal }) => {
+const ProductItem = ({ data }) => {
+  const { state, dispatch } = React.useContext(UserContext);
   const [imageLoading, setImageLoading] = React.useState(true);
   const [rating, setRating] = React.useState(Math.round(data.voters / data.rating));
   const [hover, setHover] = React.useState(false);
@@ -94,14 +95,13 @@ const ProductItem = ({ data, updateTotal }) => {
               variant="outlined"
               color="primary"
               onClick={async () => {
-                if (auth) {
-                  addToCart({
+                if (!state.user.guest) {
+                  await addToCart({
                     variables: { productId: data._id },
-                    refetchQueries: [{ query: GET_CART }],
                   });
                 } else {
-                  const cart = addProductToCart(data);
-                  updateTotal(cart.total);
+                  const productAdded = addProductToCart(data);
+                  dispatch({ type: 'ADD_PRODUCT_TO_CART', product: productAdded });
                 }
               }}
               onMouseEnter={() => setHover(true)}

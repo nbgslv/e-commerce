@@ -1,12 +1,16 @@
 import React from 'react';
 import { ThemeProvider } from '@material-ui/core';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import { Route, Switch, Redirect, useLocation } from 'react-router-dom';
+import { Route, Switch, useLocation } from 'react-router-dom';
 import ApolloClient from 'apollo-client';
 import { InMemoryCache } from 'apollo-cache-inmemory';
-import { HttpLink } from 'apollo-link-http';
+import { split, HttpLink } from '@apollo/client';
+import { getMainDefinition } from '@apollo/client/utilities';
+import { WebSocketLink } from '@apollo/link-ws';
 import { ApolloProvider } from 'react-apollo';
 import * as Theme from '../ui/theme';
+import ProductsContextProvider from '../context/ProductsContext';
+import UserContextProvider from '../context/UserContext';
 import Cart from '../components/Cart/Cart';
 import Products from '../components/Products/Products';
 import Appbar from '../components/Appbar/Appbar';
@@ -22,8 +26,24 @@ const httpLink = new HttpLink({
   credentials: 'include',
 });
 
+const wsLink = new WebSocketLink({
+  uri: `ws://localhost:4000/graphql`,
+  options: {
+    reconnect: true,
+  },
+});
+
+const splitLink = split(
+  ({ query }) => {
+    const definition = getMainDefinition(query);
+    return definition.kind === 'OperationDefinition' && definition.operation === 'subscription';
+  },
+  wsLink,
+  httpLink
+);
+
 const client = new ApolloClient({
-  link: httpLink,
+  link: splitLink,
   cache,
   resolvers: {},
   typeDefs: `
@@ -64,42 +84,46 @@ const App = () => {
 
   return (
     <ApolloProvider client={client}>
-      <CssBaseline />
-      <ThemeProvider theme={Theme.default}>
-        <Appbar
-          updateEmptyLocalCart={handleEmptyCart}
-          changeToLocalCart={handleChangeToLocalCart}
-          cartTotal={cartTotal}
-        />
-        {location.pathname === '/' ? <Header /> : null}
-        <Switch>
-          <Route
-            exact
-            path="/"
-            render={props => <Products updateTotal={handleUpdateCartTotal} {...props} />}
-          />
-          <Route path="/category/:id" component={Products} />
-          <Route
-            path="/cart"
-            render={props => (
-              <Cart
-                updateCartTotal={handleUpdateCartTotal}
-                itemsForCheckout={handleSendItemsToCheckout}
-                totalForPayment={handleSetTotalForPayment}
-                {...props}
+      <ProductsContextProvider>
+        <UserContextProvider>
+          <CssBaseline />
+          <ThemeProvider theme={Theme.default}>
+            <Appbar
+              updateEmptyLocalCart={handleEmptyCart}
+              changeToLocalCart={handleChangeToLocalCart}
+              cartTotal={cartTotal}
+            />
+            {location.pathname === '/' ? <Header /> : null}
+            <Switch>
+              <Route
+                exact
+                path="/"
+                render={props => <Products updateTotal={handleUpdateCartTotal} {...props} />}
               />
-            )}
-          />
-          <Route
-            path="/checkout"
-            // render={() => (getUser() ? <Cart /> : <Redirect to="/login/" />)}
-            render={props => (
-              <Checkout items={itemsForCheckout} totalForPayment={totalForPayment} {...props} />
-            )}
-          />
-          <Route path="/login/" component={Login} />
-        </Switch>
-      </ThemeProvider>
+              <Route path="/category/:id" component={Products} />
+              <Route
+                path="/cart"
+                render={props => (
+                  <Cart
+                    updateCartTotal={handleUpdateCartTotal}
+                    itemsForCheckout={handleSendItemsToCheckout}
+                    totalForPayment={handleSetTotalForPayment}
+                    {...props}
+                  />
+                )}
+              />
+              <Route
+                path="/checkout"
+                // render={() => (getUser() ? <Cart /> : <Redirect to="/login/" />)}
+                render={props => (
+                  <Checkout items={itemsForCheckout} totalForPayment={totalForPayment} {...props} />
+                )}
+              />
+              <Route path="/login/" component={Login} />
+            </Switch>
+          </ThemeProvider>
+        </UserContextProvider>
+      </ProductsContextProvider>
     </ApolloProvider>
   );
 };

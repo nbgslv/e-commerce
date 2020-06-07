@@ -1,5 +1,5 @@
 import React from 'react';
-import { useQuery, useMutation } from 'react-apollo';
+import { useQuery, useMutation, useSubscription } from 'react-apollo';
 import Cookies from 'js-cookie';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
@@ -11,8 +11,9 @@ import MenuIcon from '@material-ui/icons/Menu';
 import Badge from '@material-ui/core/Badge';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import ShoppingCart from '@material-ui/icons/ShoppingCart';
-import { EMPTY_CART, GET_CART, LOGOUT_USER } from '../../constants';
-import { getCart, getUser, setCart, emptyCart as emptyLocalCart } from '../../utils/localStorage';
+import { EMPTY_CART, LOGOUT_USER, GET_USER, CART_CHANGED } from '../../constants';
+import { UserContext } from '../../context/UserContext';
+import { getUser, emptyCart as emptyLocalCart } from '../../utils/localStorage';
 import CartMenu from './CartMenu';
 import UserMenu from './UserMenu';
 
@@ -41,19 +42,24 @@ const StyledBadge = withStyles(theme => ({
   },
 }))(Badge);
 
-const Appbar = ({ updateEmptyLocalCart, cartTotal }) => {
-  const [auth, setAuth] = React.useState(false);
-  const [cartTotalItems, setCartTotalItems] = React.useState(cartTotal);
-  const { loading, errors, data } = useQuery(GET_CART);
+const Appbar = () => {
+  const { state, dispatch } = React.useContext(UserContext);
+  const { loading, data } = useQuery(GET_USER);
+  const { data: updatedCart, loading: cartItemAddedLoading } = useSubscription(CART_CHANGED);
   React.useEffect(() => {
-    if (Boolean(getUser()) && data && !errors && !loading) {
-      setAuth(true);
-      setCartTotalItems(data.cart.total);
+    if (getUser()) {
+      if (!cartItemAddedLoading && updatedCart)
+        dispatch({
+          type: 'UPDATE_CART',
+          cart: updatedCart,
+        });
+      else if (!loading && data) dispatch({ type: 'SET_USER', user: data.getUser });
     } else {
-      setAuth(false);
-      setCartTotalItems(getCart() ? getCart().total : setCart(true));
+      dispatch({ type: 'SET_GUEST' });
+      Cookies.remove('signedin');
     }
-  }, [data, errors, loading, auth, cartTotal]);
+  }, [data, loading, updatedCart, cartItemAddedLoading]);
+  // TODO add loading figure to user appbar right side
 
   const [anchorElCart, setAnchorElCart] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
@@ -78,11 +84,10 @@ const Appbar = ({ updateEmptyLocalCart, cartTotal }) => {
   const [emptyCart] = useMutation(EMPTY_CART);
 
   const handleEmptyCart = async () => {
-    if (getUser()) await emptyCart({ refetchQueries: [{ query: GET_CART }] });
+    if (getUser()) await emptyCart();
     else {
       emptyLocalCart();
-      setCartTotalItems(0);
-      updateEmptyLocalCart();
+      dispatch({ type: 'EMPTY_CART' });
     }
   };
 
@@ -92,8 +97,7 @@ const Appbar = ({ updateEmptyLocalCart, cartTotal }) => {
     const logoutSuccess = logoutUser();
     if (logoutSuccess) {
       Cookies.remove('signedin');
-      setAuth(false);
-      setCartTotalItems(0);
+      dispatch({ type: 'REMOVE_USER' });
     }
   };
 
@@ -108,7 +112,7 @@ const Appbar = ({ updateEmptyLocalCart, cartTotal }) => {
             Photos
           </Typography>
           <div>
-            {!auth && (
+            {state.user.guest && (
               <>
                 <Button
                   href="/login/"
@@ -123,7 +127,7 @@ const Appbar = ({ updateEmptyLocalCart, cartTotal }) => {
                 </Button>
               </>
             )}
-            {auth && (
+            {!state.user.guest && (
               <>
                 <IconButton
                   aria-label="account of current user"
@@ -148,7 +152,7 @@ const Appbar = ({ updateEmptyLocalCart, cartTotal }) => {
               aria-haspopup="true"
               onClick={handleCartMenuOpen}
             >
-              <StyledBadge badgeContent={cartTotalItems} color="secondary">
+              <StyledBadge badgeContent={state.user.cart.total} color="secondary">
                 <ShoppingCart fontSize="large" color="secondary" />
               </StyledBadge>
             </IconButton>

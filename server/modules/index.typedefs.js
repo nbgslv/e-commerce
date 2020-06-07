@@ -5,6 +5,9 @@ const userTypeDefs = require('./user/typeDefs');
 const categoryTypeDefs = require('./category/typeDefs');
 
 const linkSchema = gql`
+  type Subscription {
+    _: Boolean
+  }
   type Query {
     _: Boolean
   }
