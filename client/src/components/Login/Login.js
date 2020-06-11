@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import ReactRouterPropTypes from 'react-router-prop-types';
 import { useMutation } from 'react-apollo';
 import { makeStyles } from '@material-ui/core/styles';
@@ -7,6 +8,7 @@ import Button from '@material-ui/core/Button';
 import { useForm } from 'react-hook-form';
 import { saveUser } from '../../utils/localStorage';
 import { GET_CART, GET_USER, LOGIN_USER } from '../../constants';
+import CustomSnackbars from '../Snackbar/CustomSnackbar';
 
 const useStyles = makeStyles({
   form: {
@@ -21,23 +23,32 @@ const useStyles = makeStyles({
   },
 });
 
-const Login = ({ history }) => {
+const Login = ({ history, loginSuccess }) => {
   const classes = useStyles();
   const [loginUser] = useMutation(LOGIN_USER);
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
+  const [open, setOpen] = React.useState(false);
+  const [message, setMessage] = React.useState('');
+  const [severity, setSeverity] = React.useState('');
   const { register, handleSubmit, errors } = useForm();
   const onSubmit = async () => {
     const { data } = await loginUser({
       variables: { email, password },
+      errorPolicy: 'all',
       refetchQueries: [{ query: GET_CART }, { query: GET_USER }],
     });
-
-    if (data.loginUser.success) {
-      saveUser();
-      return history.goBack();
+    if (data.loginUser) {
+      if (data.loginUser.success) {
+        saveUser();
+        loginSuccess();
+        return history.goBack();
+      }
+    } else {
+      setMessage('Login failed. Please make sure the email address and password are correct');
+      setSeverity('error');
+      setOpen(true);
     }
-    return console.log('login failed');
   };
 
   return (
@@ -80,12 +91,14 @@ const Login = ({ history }) => {
       <Button variant="contained" color="primary" type="submit">
         Login
       </Button>
+      <CustomSnackbars message={message} severity={severity} open={open} />
     </form>
   );
 };
 
 Login.propTypes = {
   history: ReactRouterPropTypes.history.isRequired,
+  loginSuccess: PropTypes.func.isRequired,
 };
 
 export default Login;

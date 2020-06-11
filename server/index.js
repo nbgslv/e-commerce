@@ -15,7 +15,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: 'http://localhost:3000',
+    origin: ['http://localhost:3000', 'http://localhost:5000'],
     credentials: true,
   })
 );
@@ -38,7 +38,6 @@ const server = new ApolloServer({
       const { email, id } = await decodeToken(token);
       return { email, id, res };
     } catch (e) {
-      console.log('context', e.message);
       res.clearCookie('token');
       return { email: null, id: null, res };
     }

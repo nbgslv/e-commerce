@@ -1,16 +1,19 @@
 import React from 'react';
 import { ThemeProvider } from '@material-ui/core';
 import CssBaseline from '@material-ui/core/CssBaseline';
+import Cookies from 'js-cookie';
 import { Route, Switch, useLocation } from 'react-router-dom';
 import ApolloClient from 'apollo-client';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import { split, HttpLink } from '@apollo/client';
+import { onError } from 'apollo-link-error';
 import { getMainDefinition } from '@apollo/client/utilities';
 import { WebSocketLink } from '@apollo/link-ws';
 import { ApolloProvider } from 'react-apollo';
+import Error from '../components/Error/Error';
+import CustomSnackbars from '../components/Snackbar/CustomSnackbar';
+import { SnackbarContext } from '../context/snackbarContext';
 import * as Theme from '../ui/theme';
-import ProductsContextProvider from '../context/ProductsContext';
-import UserContextProvider from '../context/UserContext';
 import Cart from '../components/Cart/Cart';
 import Products from '../components/Products/Products';
 import Appbar from '../components/Appbar/Appbar';
@@ -33,6 +36,20 @@ const wsLink = new WebSocketLink({
   },
 });
 
+const errorLink = onError(({ graphQLErrors, networkError, response }) => {
+  if (graphQLErrors)
+    graphQLErrors.map(({ message, locations, path, extensions }) => {
+      if (extensions.code === 'UNAUTHENTICATED') {
+        Cookies.remove('signedin');
+        response.errors = null;
+      }
+      console.log(`[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`);
+      response.errors = null;
+    });
+  if (networkError)
+    return <Error errorCode={networkError.code} errorMessage={networkError.message} />;
+});
+
 const splitLink = split(
   ({ query }) => {
     const definition = getMainDefinition(query);
@@ -43,7 +60,7 @@ const splitLink = split(
 );
 
 const client = new ApolloClient({
-  link: splitLink,
+  link: errorLink.concat(splitLink),
   cache,
   resolvers: {},
   typeDefs: `
@@ -62,9 +79,34 @@ cache.writeData({
 
 const App = () => {
   const location = useLocation();
+  const { state, dispatch } = React.useContext(SnackbarContext);
   const [cartTotal, setCartTotal] = React.useState();
   const [itemsForCheckout, setItemsForCheckout] = React.useState();
   const [totalForPayment, setTotalForPayment] = React.useState();
+  const [open, setOpen] = React.useState(false);
+  const [message, setMessage] = React.useState('');
+  const [severity, setSeverity] = React.useState('');
+
+  React.useEffect(() => {
+    if (state.snackbar.addItemSuccessSnackbar) {
+      setOpen(true);
+      setMessage('Added item to cart');
+      setSeverity('success');
+      dispatch({ type: 'SET_ADD_ITEM_SUCCESS_OFF' });
+    }
+    if (state.snackbar.logoutSuccessSnackbar) {
+      setOpen(true);
+      setMessage('Logged out successfully');
+      setSeverity('success');
+      dispatch({ type: 'SET_LOGOUT_SUCCESS_OFF' });
+    }
+    if (state.snackbar.cartemptySuccessSnackbar) {
+      setOpen(true);
+      setMessage('Emptied cart successfully');
+      setSeverity('success');
+      dispatch({ type: 'SET_EMPTY_CART_SUCCESS_OFF' });
+    }
+  }, [state]);
 
   const handleUpdateCartTotal = total => {
     setCartTotal(total);
@@ -82,48 +124,57 @@ const App = () => {
     setTotalForPayment(total);
   };
 
+  const handleLoginSuccess = () => {
+    setOpen(true);
+    setMessage('Logged-in successfully');
+    setSeverity('success');
+  };
+
+  const handleSnackbarOnClose = () => setOpen(false);
+
   return (
     <ApolloProvider client={client}>
-      <ProductsContextProvider>
-        <UserContextProvider>
-          <CssBaseline />
-          <ThemeProvider theme={Theme.default}>
-            <Appbar
-              updateEmptyLocalCart={handleEmptyCart}
-              changeToLocalCart={handleChangeToLocalCart}
-              cartTotal={cartTotal}
-            />
-            {location.pathname === '/' ? <Header /> : null}
-            <Switch>
-              <Route
-                exact
-                path="/"
-                render={props => <Products updateTotal={handleUpdateCartTotal} {...props} />}
+      <CssBaseline />
+      <ThemeProvider theme={Theme.default}>
+        <Appbar
+          updateEmptyLocalCart={handleEmptyCart}
+          changeToLocalCart={handleChangeToLocalCart}
+          cartTotal={cartTotal}
+        />
+        {location.pathname === '/' ? <Header /> : null}
+        <Switch>
+          <Route exact path="/" component={Products} />
+          <Route path="/category/:id" component={Products} />
+          <Route
+            path="/cart"
+            render={props => (
+              <Cart
+                updateCartTotal={handleUpdateCartTotal}
+                itemsForCheckout={handleSendItemsToCheckout}
+                totalForPayment={handleSetTotalForPayment}
+                {...props}
               />
-              <Route path="/category/:id" component={Products} />
-              <Route
-                path="/cart"
-                render={props => (
-                  <Cart
-                    updateCartTotal={handleUpdateCartTotal}
-                    itemsForCheckout={handleSendItemsToCheckout}
-                    totalForPayment={handleSetTotalForPayment}
-                    {...props}
-                  />
-                )}
-              />
-              <Route
-                path="/checkout"
-                // render={() => (getUser() ? <Cart /> : <Redirect to="/login/" />)}
-                render={props => (
-                  <Checkout items={itemsForCheckout} totalForPayment={totalForPayment} {...props} />
-                )}
-              />
-              <Route path="/login/" component={Login} />
-            </Switch>
-          </ThemeProvider>
-        </UserContextProvider>
-      </ProductsContextProvider>
+            )}
+          />
+          <Route
+            path="/checkout"
+            // render={() => (getUser() ? <Cart /> : <Redirect to="/login/" />)}
+            render={props => (
+              <Checkout items={itemsForCheckout} totalForPayment={totalForPayment} {...props} />
+            )}
+          />
+          <Route
+            path="/login/"
+            render={props => <Login loginSuccess={handleLoginSuccess} {...props} />}
+          />
+        </Switch>
+        <CustomSnackbars
+          message={message}
+          severity={severity}
+          open={open}
+          onCloseHandler={handleSnackbarOnClose}
+        />
+      </ThemeProvider>
     </ApolloProvider>
   );
 };

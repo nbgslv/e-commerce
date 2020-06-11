@@ -1,10 +1,12 @@
 import { getCart } from '../utils/localStorage';
 
-const productsReducer = (state, action) => {
+const userReducer = (state, action) => {
   switch (action.type) {
     case 'SET_USER':
       return {
         user: {
+          ...state.user,
+          loginSuccessSnackbar: state.user.loginSuccessSnackbar,
           guest: false,
           ...action.user,
         },
@@ -12,6 +14,7 @@ const productsReducer = (state, action) => {
     case 'SET_GUEST':
       return {
         user: {
+          ...state.user,
           guest: true,
           cart: getCart(),
         },
@@ -44,6 +47,7 @@ const productsReducer = (state, action) => {
       return {
         user: {
           ...state.user,
+          addItemSuccessSnackbar: true,
           cart: { ...state.user.cart },
         },
       };
@@ -62,4 +66,4 @@ const productsReducer = (state, action) => {
   }
 };
 
-export default productsReducer;
+export default userReducer;

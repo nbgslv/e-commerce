@@ -1,13 +1,23 @@
 import React from 'react';
+import { ApolloProvider } from 'react-apollo';
 import ReactDOM from 'react-dom';
 import { BrowserRouter as Router } from 'react-router-dom';
 import App from './containers/App';
+import ProductsContextProvider from './context/ProductsContext';
+import SnackbarContextProvider from './context/snackbarContext';
+import UserContextProvider from './context/UserContext';
 import * as serviceWorker from './serviceWorker';
 
 ReactDOM.render(
-  <Router>
-    <App />
-  </Router>,
+  <ProductsContextProvider>
+    <UserContextProvider>
+      <SnackbarContextProvider>
+        <Router>
+          <App />
+        </Router>
+      </SnackbarContextProvider>
+    </UserContextProvider>
+  </ProductsContextProvider>,
   document.getElementById('root')
 );
 
