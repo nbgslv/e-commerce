@@ -12,8 +12,10 @@ import Badge from '@material-ui/core/Badge';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import ShoppingCart from '@material-ui/icons/ShoppingCart';
 import { EMPTY_CART, LOGOUT_USER, GET_USER, CART_CHANGED } from '../../constants';
+import { SnackbarContext } from '../../context/snackbarContext';
 import { UserContext } from '../../context/UserContext';
-import { getUser, emptyCart as emptyLocalCart } from '../../utils/localStorage';
+import { getUser, emptyCart as emptyLocalCart, getCart, setCart } from '../../utils/localStorage';
+import CustomDialog from '../Dialog/CustomDialog';
 import CartMenu from './CartMenu';
 import UserMenu from './UserMenu';
 
@@ -44,8 +46,11 @@ const StyledBadge = withStyles(theme => ({
 
 const Appbar = () => {
   const { state, dispatch } = React.useContext(UserContext);
+  const { dispatch: snackbarDispatch } = React.useContext(SnackbarContext);
   const { loading, data } = useQuery(GET_USER);
   const { data: updatedCart, loading: cartItemAddedLoading } = useSubscription(CART_CHANGED);
+  const [dialogOpen, setDialogOpen] = React.useState(false);
+
   React.useEffect(() => {
     if (getUser()) {
       if (!cartItemAddedLoading && updatedCart)
@@ -55,10 +60,11 @@ const Appbar = () => {
         });
       else if (!loading && data) dispatch({ type: 'SET_USER', user: data.getUser });
     } else {
+      if (!getCart()) setCart(true);
       dispatch({ type: 'SET_GUEST' });
       Cookies.remove('signedin');
     }
-  }, [data, loading, updatedCart, cartItemAddedLoading]);
+  }, [data, loading, updatedCart, cartItemAddedLoading, state.user.guest]);
   // TODO add loading figure to user appbar right side
 
   const [anchorElCart, setAnchorElCart] = React.useState(null);
@@ -69,7 +75,7 @@ const Appbar = () => {
     setAnchorElCart(e.currentTarget);
   };
 
-  const handleCartMenuClose = e => {
+  const handleCartMenuClose = () => {
     setAnchorElCart(null);
   };
 
@@ -77,27 +83,38 @@ const Appbar = () => {
     setAnchorElUser(e.currentTarget);
   };
 
-  const handleUserMenuClose = e => {
+  const handleUserMenuClose = () => {
     setAnchorElUser(null);
   };
 
   const [emptyCart] = useMutation(EMPTY_CART);
 
-  const handleEmptyCart = async () => {
-    if (getUser()) await emptyCart();
-    else {
-      emptyLocalCart();
-      dispatch({ type: 'EMPTY_CART' });
+  const handleEmptyCart = () => {
+    handleCartMenuClose();
+    setDialogOpen(true);
+  };
+
+  const handleDialogOnClose = async button => {
+    setDialogOpen(false);
+    if (button === 'right') {
+      if (getUser()) await emptyCart();
+      else {
+        emptyLocalCart();
+        dispatch({ type: 'EMPTY_CART' });
+      }
+      snackbarDispatch({ type: 'SET_EMPTY_CART_SUCCESS_ON' });
     }
   };
 
   const [logoutUser] = useMutation(LOGOUT_USER);
 
   const handleLogout = () => {
+    handleUserMenuClose();
     const logoutSuccess = logoutUser();
     if (logoutSuccess) {
       Cookies.remove('signedin');
       dispatch({ type: 'REMOVE_USER' });
+      snackbarDispatch({ type: 'SET_LOGOUT_SUCCESS_ON' });
     }
   };
 
@@ -165,6 +182,14 @@ const Appbar = () => {
           </div>
         </Toolbar>
       </AppBar>
+      <CustomDialog
+        rightButtonLabel="Empty Cart"
+        open={dialogOpen}
+        onCloseHandler={handleDialogOnClose}
+        message="Are you sure you wish to empty the cart?"
+        leftButtonLabel="Cancel"
+        title="Empty Cart"
+      />
     </div>
   );
 };

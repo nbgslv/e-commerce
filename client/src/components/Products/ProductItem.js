@@ -12,6 +12,7 @@ import AddShoppingCartIcon from '@material-ui/icons/AddShoppingCart';
 import Typography from '@material-ui/core/Typography';
 import Rating from 'material-ui-rating';
 import { ADD_RATING, ADD_TO_CART } from '../../constants';
+import { SnackbarContext } from '../../context/snackbarContext';
 import { UserContext } from '../../context/UserContext';
 import { getUser, addProductToCart } from '../../utils/localStorage';
 
@@ -37,10 +38,10 @@ const useStyles = makeStyles({
 
 const ProductItem = ({ data }) => {
   const { state, dispatch } = React.useContext(UserContext);
+  const { dispatch: snackbarDispatch } = React.useContext(SnackbarContext);
   const [imageLoading, setImageLoading] = React.useState(true);
   const [rating, setRating] = React.useState(Math.round(data.voters / data.rating));
   const [hover, setHover] = React.useState(false);
-  const auth = Boolean(getUser());
 
   const classes = useStyles();
   return (
@@ -103,6 +104,7 @@ const ProductItem = ({ data }) => {
                   const productAdded = addProductToCart(data);
                   dispatch({ type: 'ADD_PRODUCT_TO_CART', product: productAdded });
                 }
+                snackbarDispatch({ type: 'SET_ADD_ITEM_SUCCESS_ON' });
               }}
               onMouseEnter={() => setHover(true)}
               onMouseOver={e => e.stopPropagation()}

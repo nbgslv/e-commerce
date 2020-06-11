@@ -1,8 +1,13 @@
 import React from 'react';
+import ReactRouterPropTypes from 'react-router-prop-types';
+import queryString from 'query-string';
 import { useQuery } from 'react-apollo';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles, styled } from '@material-ui/core/styles';
+import { UserContext } from '../../context/UserContext';
+import { SnackbarContext } from '../../context/snackbarContext';
 import SubHeader from '../Header/SubHeader';
+import CustomSnackbars from '../Snackbar/CustomSnackbar';
 import ProductItem from './ProductItem';
 import SkeletonProducts from './SkeletonProducts';
 import Filter from './Filter';
