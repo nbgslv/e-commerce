@@ -6,6 +6,8 @@ import Typography from '@material-ui/core/Typography';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 
+// TODO show selected category and allow to abort filter on click
+
 const useStyles = makeStyles({
   text: {
     margin: '0 8px',

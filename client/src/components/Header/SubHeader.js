@@ -2,8 +2,9 @@ import React from 'react';
 import ReactRouterPropTypes from 'react-router-prop-types';
 import { Query } from 'react-apollo';
 import { makeStyles } from '@material-ui/core/styles';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import Box from '@material-ui/core/Box';
-import { Link } from '@material-ui/core';
+import Link from '@material-ui/core/Link';
 import { GET_CATEGORIES } from '../../constants';
 
 const useStyles = makeStyles(theme => ({
@@ -34,7 +35,7 @@ const SubHeader = ({ history }) => {
       <Query query={GET_CATEGORIES}>
         {({ loading, error, data }) => {
           if (loading || error) {
-            return loading ? 'Loading...' : error;
+            return loading ? <CircularProgress color="primary" /> : error;
           }
           return data.categories.map(category => (
             <Link

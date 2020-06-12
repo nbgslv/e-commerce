@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import MenuItem from '@material-ui/core/MenuItem';
 import Divider from '@material-ui/core/Divider';
-import ShopIcon from '@material-ui/icons/Shop';
+import MonetizationOnIcon from '@material-ui/icons/MonetizationOn';
 import RemoveShoppingCartOutlinedIcon from '@material-ui/icons/RemoveShoppingCartOutlined';
 import Menu from '@material-ui/core/Menu';
 
@@ -42,14 +42,14 @@ const CartMenu = ({ anchorEl, open, onClose, emptyCart }) => {
       open={open}
       onClose={onClose}
     >
-      <MenuItem className={classes.root}>
+      <MenuItem className={classes.root} style={{ display: 'flex', justifyContent: 'center' }}>
         <Link to="/cart" className={classes.root}>
           View Cart
         </Link>
       </MenuItem>
       <Divider />
       <MenuItem className={classes.root}>
-        <ShopIcon color="primary" fontSize="small" />
+        <MonetizationOnIcon color="primary" fontSize="small" />
         &nbsp; Purchase
       </MenuItem>
       <MenuItem className={classes.root} onClick={emptyCart}>
