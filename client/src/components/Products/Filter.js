@@ -4,10 +4,19 @@ import { withApollo } from 'react-apollo';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
 
 const useStyles = makeStyles({
+  text: {
+    margin: '0 8px',
+  },
   gridItem: {
     maxHeight: '36px',
+    margin: '0 8px',
+  },
+  filter: {
+    display: 'inline',
+    float: 'right',
   },
 });
 
@@ -15,22 +24,21 @@ const Filter = ({ limit, client }) => {
   const classes = useStyles();
 
   return (
-    <>
-      <Typography display="inline" variant="button">
+    <div className={classes.filter}>
+      <Typography display="inline" variant="h6" color="textSecondary" className={classes.text}>
         Number of products:{' '}
       </Typography>
       <Select
         className={classes.gridItem}
-        variant="outlined"
         id="limit"
         value={limit}
         onChange={e => client.writeData({ data: { limit: e.target.value } })}
       >
-        <option value={4}>4</option>
-        <option value={16}>16</option>
-        <option value={64}>64</option>
+        <MenuItem value={4}>4</MenuItem>
+        <MenuItem value={16}>16</MenuItem>
+        <MenuItem value={64}>64</MenuItem>
       </Select>
-    </>
+    </div>
   );
 };
 

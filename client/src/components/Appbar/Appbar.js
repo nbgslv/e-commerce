@@ -122,11 +122,8 @@ const Appbar = () => {
     <div className={classes.root}>
       <AppBar position="fixed">
         <Toolbar>
-          <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h6" className={classes.title}>
-            Photos
+          <Typography variant="h6" className={classes.title} color="secondary">
+            Go Shopping!
           </Typography>
           <div>
             {state.user.guest && (

@@ -29,28 +29,26 @@ const SubHeader = ({ history }) => {
   const classes = useStyles();
 
   return (
-    <>
+    <Box display="inline">
       {history}
-      <Box>
-        <Query query={GET_CATEGORIES}>
-          {({ loading, error, data }) => {
-            if (loading || error) {
-              return loading ? 'Loading...' : error;
-            }
-            return data.categories.map(category => (
-              <Link
-                className={classes.root}
-                variant="body1"
-                href={`/category/${category._id}`}
-                key={category._id}
-              >
-                {category.title}
-              </Link>
-            ));
-          }}
-        </Query>
-      </Box>
-    </>
+      <Query query={GET_CATEGORIES}>
+        {({ loading, error, data }) => {
+          if (loading || error) {
+            return loading ? 'Loading...' : error;
+          }
+          return data.categories.map(category => (
+            <Link
+              className={classes.root}
+              variant="body1"
+              href={`/category/${category._id}`}
+              key={category._id}
+            >
+              {category.title}
+            </Link>
+          ));
+        }}
+      </Query>
+    </Box>
   );
 };
 
