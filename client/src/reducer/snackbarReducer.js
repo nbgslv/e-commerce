@@ -56,6 +56,20 @@ const snackbarReducer = (state, action) => {
           cartemptySuccessSnackbar: false,
         },
       };
+    case 'SET_ADD_RATING_SUCCESS_ON':
+      return {
+        snackbar: {
+          ...state.snackbar,
+          addRatingSuccessSnackbar: true,
+        },
+      };
+    case 'SET_ADD_RATING_SUCCESS_OFF':
+      return {
+        snackbar: {
+          ...state.snackbar,
+          addRatingSuccessSnackbar: false,
+        },
+      };
     default:
       return state;
   }

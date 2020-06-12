@@ -82,8 +82,9 @@ const ProductItem = ({ data }) => {
               onChange={value => {
                 if (!called) {
                   updateProductRating({
-                    variables: { id: data.id, rating: value },
+                    variables: { id: data._id, rating: value },
                   });
+                  snackbarDispatch({ type: 'SET_ADD_RATING_SUCCESS_ON' });
                 }
               }}
             />

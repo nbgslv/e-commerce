@@ -9,22 +9,6 @@ export const GET_CATEGORIES = gql`
   }
 `;
 
-export const GET_CATEGORY = gql`
-  query category($id: String!) {
-    category(id: $id) {
-      title
-    }
-  }
-`;
-
-export const ADD_CATEGORY = gql`
-  mutation category($title: String!) {
-    category(title: $title) {
-      title
-    }
-  }
-`;
-
 export const GET_CART = gql`
   query cart {
     cart {
@@ -35,27 +19,6 @@ export const GET_CART = gql`
         price
         quantity
       }
-    }
-  }
-`;
-
-export const ADD_USER = gql`
-  mutation user(
-    $firstName: String!
-    $lastName: String!
-    $birthDate: Date!
-    $email: String!
-    $password: String!
-  ) {
-    user(
-      firstName: $firstName
-      lastName: $lastName
-      birthDate: $birthDate
-      email: $email
-      password: $password
-    ) {
-      _id
-      email
     }
   }
 `;
@@ -172,21 +135,8 @@ export const GET_PRODUCTS = gql`
   }
 `;
 
-export const GET_PRODUCT = gql`
-  query getProduct($id: Int) {
-    product(id: $id) {
-      _id
-      title
-      thumbnail
-      price
-      rating
-      voters
-    }
-  }
-`;
-
 export const ADD_RATING = gql`
-  mutation updateProductRating($id: Int!, $rating: Int!) {
+  mutation updateProductRating($id: String!, $rating: Int!) {
     updateProductRating(id: $id, rating: $rating) {
       _id
       rating

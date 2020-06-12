@@ -106,6 +106,12 @@ const App = () => {
       setSeverity('success');
       dispatch({ type: 'SET_EMPTY_CART_SUCCESS_OFF' });
     }
+    if (state.snackbar.addRatingSuccessSnackbar) {
+      setOpen(true);
+      setMessage('Rating Added');
+      setSeverity('success');
+      dispatch({ type: 'SET_ADD_RATING_SUCCESS_OFF' });
+    }
   }, [state]);
 
   const handleUpdateCartTotal = total => {
