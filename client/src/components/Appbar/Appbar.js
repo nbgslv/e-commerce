@@ -44,13 +44,18 @@ const StyledBadge = withStyles(theme => ({
   },
 }))(Badge);
 
+/*
+ * Top app bar component
+ */
 const Appbar = () => {
+  const classes = useStyles();
   const { state, dispatch } = React.useContext(UserContext);
   const { dispatch: snackbarDispatch } = React.useContext(SnackbarContext);
   const { loading, data } = useQuery(GET_USER);
   const { data: updatedCart, loading: cartItemAddedLoading } = useSubscription(CART_CHANGED);
   const [dialogOpen, setDialogOpen] = React.useState(false);
 
+  // Apollo Graphql subscription to changes in cart
   React.useEffect(() => {
     if (getUser()) {
       if (!cartItemAddedLoading && updatedCart)
@@ -65,11 +70,10 @@ const Appbar = () => {
       Cookies.remove('signedin');
     }
   }, [data, loading, updatedCart, cartItemAddedLoading, state.user.guest]);
-  // TODO add loading figure to user appbar right side
 
+  // Sub-menus
   const [anchorElCart, setAnchorElCart] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
-  const classes = useStyles();
 
   const handleCartMenuOpen = e => {
     setAnchorElCart(e.currentTarget);
@@ -87,6 +91,7 @@ const Appbar = () => {
     setAnchorElUser(null);
   };
 
+  // Cart sub-menu actions
   const [emptyCart] = useMutation(EMPTY_CART);
 
   const handleEmptyCart = () => {
@@ -106,6 +111,7 @@ const Appbar = () => {
     }
   };
 
+  // User sub-menu actions
   const [logoutUser] = useMutation(LOGOUT_USER);
 
   const handleLogout = () => {
@@ -122,16 +128,11 @@ const Appbar = () => {
     <div className={classes.root}>
       <AppBar position="fixed">
         <Toolbar>
-          <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h6" className={classes.title}>
-            Photos
-          </Typography>
           <div>
             {state.user.guest && (
               <>
                 <Button
+                  name="loginButton"
                   href="/login/"
                   className={classes.button}
                   color="secondary"
@@ -139,7 +140,12 @@ const Appbar = () => {
                 >
                   Login
                 </Button>
-                <Button className={classes.button} variant="outlined" color="secondary">
+                <Button
+                  name="signupButton"
+                  className={classes.button}
+                  variant="outlined"
+                  color="secondary"
+                >
                   Sign Up
                 </Button>
               </>

@@ -22,6 +22,7 @@ import Login from '../components/Login/Login';
 import Checkout from '../components/Checkout/Checkout';
 import { getCart } from '../utils/localStorage';
 
+// Apollo client setup
 const cache = new InMemoryCache();
 
 const httpLink = new HttpLink({
@@ -29,6 +30,7 @@ const httpLink = new HttpLink({
   credentials: 'include',
 });
 
+// Setup web socker link for apollo to use graphql's subscribe
 const wsLink = new WebSocketLink({
   uri: `ws://localhost:4000/graphql`,
   options: {
@@ -36,6 +38,17 @@ const wsLink = new WebSocketLink({
   },
 });
 
+// Split link - queries to go to HTTP link and subscription to go to web socket
+const splitLink = split(
+  ({ query }) => {
+    const definition = getMainDefinition(query);
+    return definition.kind === 'OperationDefinition' && definition.operation === 'subscription';
+  },
+  wsLink,
+  httpLink
+);
+
+// Setup error link to handle Apollo errors
 const errorLink = onError(({ graphQLErrors, networkError, response }) => {
   if (graphQLErrors)
     graphQLErrors.map(({ message, locations, path, extensions }) => {
@@ -50,15 +63,7 @@ const errorLink = onError(({ graphQLErrors, networkError, response }) => {
     return <Error errorCode={networkError.code} errorMessage={networkError.message} />;
 });
 
-const splitLink = split(
-  ({ query }) => {
-    const definition = getMainDefinition(query);
-    return definition.kind === 'OperationDefinition' && definition.operation === 'subscription';
-  },
-  wsLink,
-  httpLink
-);
-
+// Setup Apollo client
 const client = new ApolloClient({
   link: errorLink.concat(splitLink),
   cache,
@@ -71,22 +76,26 @@ const client = new ApolloClient({
   connectToDevTools: true,
 });
 
+// Default limit of products number to be shown
 cache.writeData({
   data: {
     limit: 16,
   },
 });
 
+/*
+ * Main app component
+ */
+
 const App = () => {
   const location = useLocation();
   const { state, dispatch } = React.useContext(SnackbarContext);
-  const [cartTotal, setCartTotal] = React.useState();
-  const [itemsForCheckout, setItemsForCheckout] = React.useState();
-  const [totalForPayment, setTotalForPayment] = React.useState();
   const [open, setOpen] = React.useState(false);
   const [message, setMessage] = React.useState('');
   const [severity, setSeverity] = React.useState('');
 
+  /* --------------------- Snackbar ------------------------  */
+  // Snackbar operation
   React.useEffect(() => {
     if (state.snackbar.addItemSuccessSnackbar) {
       setOpen(true);
@@ -108,65 +117,24 @@ const App = () => {
     }
   }, [state]);
 
-  const handleUpdateCartTotal = total => {
-    setCartTotal(total);
-  };
-
-  const handleEmptyCart = () => handleUpdateCartTotal(0);
-
-  const handleChangeToLocalCart = () => handleUpdateCartTotal(getCart().total);
-
-  const handleSendItemsToCheckout = items => {
-    setItemsForCheckout(items);
-  };
-
-  const handleSetTotalForPayment = total => {
-    setTotalForPayment(total);
-  };
-
-  const handleLoginSuccess = () => {
-    setOpen(true);
-    setMessage('Logged-in successfully');
-    setSeverity('success');
-  };
-
   const handleSnackbarOnClose = () => setOpen(false);
+  /* ----------------- End of Snackbar -----------------  */
 
   return (
     <ApolloProvider client={client}>
       <CssBaseline />
       <ThemeProvider theme={Theme.default}>
-        <Appbar
-          updateEmptyLocalCart={handleEmptyCart}
-          changeToLocalCart={handleChangeToLocalCart}
-          cartTotal={cartTotal}
-        />
-        {location.pathname === '/' ? <Header /> : null}
+        <Appbar />
+        {
+          // Show header only in main page
+          location.pathname === '/' ? <Header /> : null
+        }
         <Switch>
           <Route exact path="/" component={Products} />
           <Route path="/category/:id" component={Products} />
-          <Route
-            path="/cart"
-            render={props => (
-              <Cart
-                updateCartTotal={handleUpdateCartTotal}
-                itemsForCheckout={handleSendItemsToCheckout}
-                totalForPayment={handleSetTotalForPayment}
-                {...props}
-              />
-            )}
-          />
-          <Route
-            path="/checkout"
-            // render={() => (getUser() ? <Cart /> : <Redirect to="/login/" />)}
-            render={props => (
-              <Checkout items={itemsForCheckout} totalForPayment={totalForPayment} {...props} />
-            )}
-          />
-          <Route
-            path="/login/"
-            render={props => <Login loginSuccess={handleLoginSuccess} {...props} />}
-          />
+          <Route path="/cart" component={Cart} />
+          <Route path="/checkout" component={Checkout} />
+          <Route path="/login/" component={Login} />
         </Switch>
         <CustomSnackbars
           message={message}
@@ -180,3 +148,5 @@ const App = () => {
 };
 
 export default App;
+
+// TODO add private routes
