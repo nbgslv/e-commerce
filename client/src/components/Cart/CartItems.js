@@ -1,8 +1,29 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import MaterialTable, { MTablePagination } from 'material-table';
+import Input from '@material-ui/core/Input';
 import RemoveShoppingCartOutlinedIcon from '@material-ui/icons/RemoveShoppingCartOutlined';
 import NumericInput from 'react-numeric-input';
+
+const CustomNumericInput = ({ inputRef, ...props }) => {
+  return (
+    <NumericInput
+      {...props}
+      style={{
+        'input:not(.form-control)': {
+          border: 0,
+          width: '70px',
+          textAlign: 'center',
+        },
+      }}
+      ref={ref => {
+        inputRef(ref ? ref.inputElement : null);
+      }}
+      min={1}
+      max={50}
+    />
+  );
+};
 
 const CartItems = ({ productsData, removeItem, changeQuantity }) => (
   <MaterialTable
@@ -30,11 +51,10 @@ const CartItems = ({ productsData, removeItem, changeQuantity }) => (
         title: 'Quantity',
         field: 'quantity',
         render: rowData => (
-          <NumericInput
-            min={1}
-            max={50}
+          <Input
             value={rowData.quantity}
             onChange={valueAsNumber => changeQuantity(rowData._id, valueAsNumber)}
+            inputComponent={CustomNumericInput}
           />
         ),
       },
