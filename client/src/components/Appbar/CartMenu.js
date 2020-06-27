@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import MenuItem from '@material-ui/core/MenuItem';
 import Divider from '@material-ui/core/Divider';
@@ -31,6 +31,7 @@ const useStyles = makeStyles(theme => ({
 
 const CartMenu = ({ anchorEl, open, onClose, emptyCart }) => {
   const classes = useStyles();
+  const history = useHistory();
 
   return (
     <Menu
@@ -49,7 +50,13 @@ const CartMenu = ({ anchorEl, open, onClose, emptyCart }) => {
         </Link>
       </MenuItem>
       <Divider />
-      <MenuItem className={classes.root}>
+      <MenuItem
+        className={classes.root}
+        onClick={() => {
+          onClose();
+          history.push('/checkout');
+        }}
+      >
         <MonetizationOnIcon color="primary" fontSize="small" />
         &nbsp; Purchase
       </MenuItem>
