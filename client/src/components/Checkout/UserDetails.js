@@ -1,13 +1,27 @@
+import Button from '@material-ui/core/Button';
+import PropTypes from 'prop-types';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
 import React from 'react';
-import PropTypes from 'prop-types';
 import TextField from '@material-ui/core/TextField';
 import { useForm } from 'react-hook-form';
 import { UserContext } from '../../context/UserContext';
 
-const UserDetails = () => {
-  const { state } = React.useContext(UserContext);
+const useStyles = makeStyles(theme => ({
+  buttons: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+  },
+  button: {
+    marginTop: theme.spacing(3),
+    marginRight: theme.spacing(1) - 2,
+  },
+}));
+
+const UserDetails = ({ handleNext, handleBack }) => {
+  const classes = useStyles();
+  const { state, dispatch } = React.useContext(UserContext);
   const { register, handleSubmit, errors } = useForm();
   const [firstName, setFirstName] = React.useState(state.user.firstName);
   const [lastName, setLastName] = React.useState(state.user.lastName);
@@ -17,7 +31,17 @@ const UserDetails = () => {
     setLastName(state.user.lastName);
     setEmail(state.user.email);
   }, [state.user.firstName, state.user.lastName, state.user.email]);
-  const onSubmit = () => {};
+  const onSubmit = () => {
+    dispatch({
+      type: 'SET_USER_DETAILS',
+      user: {
+        firstName,
+        lastName,
+        email,
+      },
+    });
+    handleNext();
+  };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -88,10 +112,21 @@ const UserDetails = () => {
           />
         </Grid>
       </Grid>
+      <div className={classes.buttons}>
+        <Button className={classes.button} onClick={() => handleBack()}>
+          Back
+        </Button>
+        <Button type="submit" variant="contained" color="primary" className={classes.button}>
+          Confirm and Continue
+        </Button>
+      </div>
     </form>
   );
 };
 
-UserDetails.propTypes = {};
+UserDetails.propTypes = {
+  handleNext: PropTypes.func.isRequired,
+  handleBack: PropTypes.func.isRequired,
+};
 
 export default UserDetails;

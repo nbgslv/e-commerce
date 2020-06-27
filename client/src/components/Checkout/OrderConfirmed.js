@@ -44,7 +44,7 @@ const OrderConfirmed = ({ history }) => {
       dispatch({ type: 'EMPTY_CART' });
       emptyCart();
     } else emptyUserCart();
-  }, []);
+  }, [dispatch, emptyUserCart, state.user.guest]);
 
   const classes = useStyles();
   return (

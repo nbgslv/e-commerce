@@ -1,4 +1,3 @@
-import { Observable } from 'apollo-client/util/Observable';
 import React from 'react';
 import { ThemeProvider } from '@material-ui/core';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -48,8 +47,7 @@ const errorLink = onError(({ graphQLErrors, networkError, response }) => {
       console.log(`[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`);
       response.errors = null;
     });
-  if (networkError)
-    return <Error errorCode={networkError.code} errorMessage={networkError.message} />;
+  if (networkError) console.log(networkError);
 });
 
 const splitLink = split(

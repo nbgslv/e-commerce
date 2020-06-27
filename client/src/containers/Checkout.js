@@ -60,7 +60,6 @@ const Checkout = ({ history }) => {
 
   const [activeStep, setActiveStep] = React.useState(0);
   const [guestForm, setGuestForm] = React.useState(false);
-  const [guestDetails, setGuestDetails] = React.useState({});
   const [address, setAddress] = React.useState({});
   const [hideButton, setHideButton] = React.useState(false);
   const [disableNext, setDisableNext] = React.useState(false);
@@ -78,10 +77,6 @@ const Checkout = ({ history }) => {
   };
 
   const handleGuest = () => setGuestForm(true);
-
-  const handleSetGuestDetails = guestDetails => {
-    setGuestDetails(guestDetails);
-  };
 
   const handleLogin = () => {
     history.push('/login');
@@ -146,10 +141,7 @@ const Checkout = ({ history }) => {
                 handleBack={() => {
                   setGuestForm(false);
                 }}
-                handleNext={guestDetails => {
-                  handleSetGuestDetails(guestDetails);
-                  handleNext();
-                }}
+                handleNext={() => handleNext()}
               />
             ) : (
               <Typography variant="subtitle2">
@@ -162,7 +154,7 @@ const Checkout = ({ history }) => {
             )}
           </>
         ) : (
-          <UserDetails />
+          <UserDetails handleNext={() => handleNext()} handleBack={() => handleBack()} />
         );
       case 1:
         return (

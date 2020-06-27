@@ -70,9 +70,9 @@ const resolvers = {
       user.cart.total += 1;
       user.cart.markModified('products');
       await pubsub.publish(CART_CHANGED, { cartChanged: user.cart });
-      user.save((res, err) => {
-        if (res) return productAdded;
-        throw new ApolloError(`Adding item to cart failed. ${err.message()}`);
+      user.save(err => {
+        if (err) throw new ApolloError(`Adding item to cart failed. ${err.message}`);
+        return productAdded;
       });
     },
     removeFromCart: async (_, { productId }, { id: userId }) => {

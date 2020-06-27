@@ -52,7 +52,7 @@ const DeliveryDetails = ({ handleNext, handleBack }) => {
       setZipcode(userState.user.address.zipcode);
       setCountry(userState.user.address.country);
     }
-  }, []);
+  }, [userState.user.address]);
 
   const onSubmit = () => {
     dispatch({

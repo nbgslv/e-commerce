@@ -61,6 +61,15 @@ const userReducer = (state, action) => {
           },
         },
       };
+    case 'SET_USER_DETAILS':
+      return {
+        user: {
+          ...state.user,
+          firstName: action.user.firstName,
+          lastName: action.user.lastName,
+          email: action.user.email,
+        },
+      };
     case 'SET_USER_ADDRESS':
       return {
         user: {

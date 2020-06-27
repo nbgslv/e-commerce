@@ -34,7 +34,7 @@ const OrderReview = ({ setNextButton }) => {
   React.useEffect(() => {
     if (terms) setNextButton(true);
     else setNextButton(false);
-  }, [terms, setTerms]);
+  }, [terms, setTerms, setNextButton]);
 
   const getTermsAndConditions = () => {
     const mdFile = require('./temsandconditions.md');
@@ -199,6 +199,10 @@ const OrderReview = ({ setNextButton }) => {
       </Grid>
     </>
   );
+};
+
+OrderReview.propTypes = {
+  setNextButton: PropTypes.func.isRequired,
 };
 
 export default OrderReview;
