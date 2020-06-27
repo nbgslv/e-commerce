@@ -1,15 +1,14 @@
 import React from 'react';
 import { useQuery } from 'react-apollo';
-import Box from '@material-ui/core/Box';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import { styled } from '@material-ui/core/styles';
-import SubHeader from '../Header/SubHeader';
-import ProductItem from './ProductItem';
-import SkeletonProducts from './SkeletonProducts';
-import Filter from './Filter';
-import { ProductsContext } from '../../context/ProductsContext';
-import { GET_PRODUCTS, GET_LIMIT } from '../../constants';
+import SubHeader from '../components/Header/SubHeader';
+import ProductItem from '../components/Products/ProductItem';
+import SkeletonProducts from '../components/Products/SkeletonProducts';
+import Filter from '../components/Products/Filter';
+import { ProductsContext } from '../context/ProductsContext';
+import { GET_PRODUCTS, GET_LIMIT } from '../constants/graphqlConstants';
 
 const Alert = styled('span')`
   width: 100%;
@@ -55,3 +54,5 @@ const Products = () => {
 };
 
 export default Products;
+
+// TODO limit items title to 25 chars

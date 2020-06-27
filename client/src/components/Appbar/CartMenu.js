@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -43,7 +44,7 @@ const CartMenu = ({ anchorEl, open, onClose, emptyCart }) => {
       onClose={onClose}
     >
       <MenuItem className={classes.root} style={{ display: 'flex', justifyContent: 'center' }}>
-        <Link to="/cart" className={classes.root}>
+        <Link to="/cart" className={classes.root} onClick={onClose}>
           View Cart
         </Link>
       </MenuItem>
@@ -58,6 +59,13 @@ const CartMenu = ({ anchorEl, open, onClose, emptyCart }) => {
       </MenuItem>
     </Menu>
   );
+};
+
+CartMenu.propTypes = {
+  anchorEl: PropTypes.node.isRequired,
+  open: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  emptyCart: PropTypes.func.isRequired,
 };
 
 export default CartMenu;

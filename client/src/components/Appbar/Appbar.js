@@ -11,7 +11,7 @@ import IconButton from '@material-ui/core/IconButton';
 import Badge from '@material-ui/core/Badge';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import ShoppingCart from '@material-ui/icons/ShoppingCart';
-import { EMPTY_CART, LOGOUT_USER, GET_USER, CART_CHANGED } from '../../constants';
+import { EMPTY_CART, LOGOUT_USER, GET_USER, CART_CHANGED } from '../../constants/graphqlConstants';
 import { SnackbarContext } from '../../context/snackbarContext';
 import { UserContext } from '../../context/UserContext';
 import { getUser, emptyCart as emptyLocalCart, getCart, setCart } from '../../utils/localStorage';
@@ -64,7 +64,7 @@ const Appbar = () => {
       dispatch({ type: 'SET_GUEST' });
       Cookies.remove('signedin');
     }
-  }, [data, loading, updatedCart, cartItemAddedLoading, state.user.guest]);
+  }, [data, loading, dispatch, updatedCart, cartItemAddedLoading, state.user.guest]);
   // TODO add loading figure to user appbar right side
 
   const [anchorElCart, setAnchorElCart] = React.useState(null);

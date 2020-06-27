@@ -27,6 +27,7 @@ export const GET_USER = gql`
   query getUser {
     getUser {
       _id
+      email
       firstName
       lastName
       cart {

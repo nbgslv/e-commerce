@@ -9,7 +9,7 @@ import IconButton from '@material-ui/core/IconButton';
 import Link from '@material-ui/core/Link';
 import Badge from '@material-ui/core/Badge';
 import CloseIcon from '@material-ui/icons/Close';
-import { GET_CATEGORIES } from '../../constants';
+import { GET_CATEGORIES } from '../../constants/graphqlConstants';
 
 const useStyles = makeStyles(theme => ({
   badge: {

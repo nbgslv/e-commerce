@@ -1,3 +1,4 @@
+import { Observable } from 'apollo-client/util/Observable';
 import React from 'react';
 import { ThemeProvider } from '@material-ui/core';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -10,16 +11,17 @@ import { onError } from 'apollo-link-error';
 import { getMainDefinition } from '@apollo/client/utilities';
 import { WebSocketLink } from '@apollo/link-ws';
 import { ApolloProvider } from 'react-apollo';
+import OrderConfirmed from '../components/Checkout/OrderConfirmed';
 import Error from '../components/Error/Error';
-import CustomSnackbars from '../components/Snackbar/CustomSnackbar';
+import CustomSnackbar from '../components/Snackbar/CustomSnackbar';
 import { SnackbarContext } from '../context/snackbarContext';
 import * as Theme from '../ui/theme';
-import Cart from '../components/Cart/Cart';
-import Products from '../components/Products/Products';
+import Cart from './Cart';
+import Products from './Products';
 import Appbar from '../components/Appbar/Appbar';
 import Header from '../components/Header/Header';
 import Login from '../components/Login/Login';
-import Checkout from '../components/Checkout/Checkout';
+import Checkout from './Checkout';
 import { getCart } from '../utils/localStorage';
 
 const cache = new InMemoryCache();
@@ -112,7 +114,7 @@ const App = () => {
       setSeverity('success');
       dispatch({ type: 'SET_ADD_RATING_SUCCESS_OFF' });
     }
-  }, [state]);
+  }, [state, dispatch]);
 
   const handleUpdateCartTotal = total => {
     setCartTotal(total);
@@ -169,12 +171,13 @@ const App = () => {
               <Checkout items={itemsForCheckout} totalForPayment={totalForPayment} {...props} />
             )}
           />
+          <Route path="/orderconfirmed" component={OrderConfirmed} />
           <Route
             path="/login/"
             render={props => <Login loginSuccess={handleLoginSuccess} {...props} />}
           />
         </Switch>
-        <CustomSnackbars
+        <CustomSnackbar
           message={message}
           severity={severity}
           open={open}

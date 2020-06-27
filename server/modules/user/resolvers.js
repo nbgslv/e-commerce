@@ -19,7 +19,7 @@ const decimalToString = products => {
 
 const resolvers = {
   Query: {
-    getUser: async (_, __, { id, res }) => {
+    getUser: async (_, __, { id }) => {
       console.log(id);
       if (id) {
         const user = await User.findById(id);
@@ -70,7 +70,7 @@ const resolvers = {
       user.cart.total += 1;
       user.cart.markModified('products');
       await pubsub.publish(CART_CHANGED, { cartChanged: user.cart });
-      user.save().exec((res, err) => {
+      user.save((res, err) => {
         if (res) return productAdded;
         throw new ApolloError(`Adding item to cart failed. ${err.message()}`);
       });

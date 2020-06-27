@@ -66,3 +66,5 @@ CartItems.propTypes = {
 };
 
 export default CartItems;
+
+// TODO add dollar sign to price
