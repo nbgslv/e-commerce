@@ -2,7 +2,7 @@ import React from 'react';
 import { useQuery } from 'react-apollo';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
-import { styled } from '@material-ui/core/styles';
+import { styled, makeStyles } from '@material-ui/core/styles';
 import SubHeader from '../components/Header/SubHeader';
 import ProductItem from '../components/Products/ProductItem';
 import SkeletonProducts from '../components/Products/SkeletonProducts';
@@ -10,12 +10,21 @@ import Filter from '../components/Products/Filter';
 import { ProductsContext } from '../context/ProductsContext';
 import { GET_PRODUCTS, GET_LIMIT } from '../constants/graphqlConstants';
 
+const useStyles = makeStyles({
+  subHeader: {
+    margin: '8px 40px',
+    display: 'flex',
+    justifyContent: 'center',
+  },
+});
+
 const Alert = styled('span')`
   width: 100%;
   text-align: center;
 `;
 
 const Products = () => {
+  const classes = useStyles();
   const { state, dispatch } = React.useContext(ProductsContext);
   const { data } = useQuery(GET_LIMIT);
   const { loading, error, data: productsData } = useQuery(GET_PRODUCTS, {
@@ -28,15 +37,17 @@ const Products = () => {
 
   if (loading)
     return (
-      <Grid container spacing={3}>
-        <SkeletonProducts limit={data.limit} />
-      </Grid>
+      <Container>
+        <Grid container spacing={3}>
+          <SkeletonProducts limit={data.limit} />
+        </Grid>
+      </Container>
     );
   if (error) return <Alert>{error}</Alert>;
 
   return (
     <>
-      <div style={{ margin: '8px 40px' }}>
+      <div>
         <SubHeader />
         <Filter limit={parseInt(data.limit, 10)} />
       </div>

@@ -23,9 +23,9 @@ const useStyles = makeStyles(theme => ({
   mainFeaturedPostContent: {
     position: 'relative',
     padding: theme.spacing(5),
-    [theme.breakpoints.up('md')]: {
+    [theme.breakpoints.down('sm')]: {
       padding: theme.spacing(6),
-      paddingRight: 0,
+      textAlign: 'center',
     },
   },
   buttonsContainer: {
