@@ -10,8 +10,9 @@ import { onError } from 'apollo-link-error';
 import { getMainDefinition } from '@apollo/client/utilities';
 import { WebSocketLink } from '@apollo/link-ws';
 import { ApolloProvider } from 'react-apollo';
+import Box from '@material-ui/core/Box';
+import Container from '@material-ui/core/Container';
 import OrderConfirmed from '../components/Checkout/OrderConfirmed';
-import Error from '../components/Error/Error';
 import CustomSnackbar from '../components/Snackbar/CustomSnackbar';
 import { SnackbarContext } from '../context/snackbarContext';
 import * as Theme from '../ui/theme';
@@ -147,34 +148,40 @@ const App = () => {
           changeToLocalCart={handleChangeToLocalCart}
           cartTotal={cartTotal}
         />
-        {location.pathname === '/' ? <Header /> : null}
-        <Switch>
-          <Route exact path="/" component={Products} />
-          <Route path="/category/:id" component={Products} />
-          <Route
-            path="/cart"
-            render={props => (
-              <Cart
-                updateCartTotal={handleUpdateCartTotal}
-                itemsForCheckout={handleSendItemsToCheckout}
-                totalForPayment={handleSetTotalForPayment}
-                {...props}
-              />
-            )}
-          />
-          <Route
-            path="/checkout"
-            // render={() => (getUser() ? <Cart /> : <Redirect to="/login/" />)}
-            render={props => (
-              <Checkout items={itemsForCheckout} totalForPayment={totalForPayment} {...props} />
-            )}
-          />
-          <Route path="/orderconfirmed" component={OrderConfirmed} />
-          <Route
-            path="/login/"
-            render={props => <Login loginSuccess={handleLoginSuccess} {...props} />}
-          />
-        </Switch>
+        {location.pathname === '/' ? (
+          <Header />
+        ) : (
+          <Box component="div" style={{ marginTop: '86px' }} />
+        )}
+        <Container>
+          <Switch>
+            <Route exact path="/" component={Products} />
+            <Route path="/category/:id" component={Products} />
+            <Route
+              path="/cart"
+              render={props => (
+                <Cart
+                  updateCartTotal={handleUpdateCartTotal}
+                  itemsForCheckout={handleSendItemsToCheckout}
+                  totalForPayment={handleSetTotalForPayment}
+                  {...props}
+                />
+              )}
+            />
+            <Route
+              path="/checkout"
+              // render={() => (getUser() ? <Cart /> : <Redirect to="/login/" />)}
+              render={props => (
+                <Checkout items={itemsForCheckout} totalForPayment={totalForPayment} {...props} />
+              )}
+            />
+            <Route path="/orderconfirmed" component={OrderConfirmed} />
+            <Route
+              path="/login/"
+              render={props => <Login loginSuccess={handleLoginSuccess} {...props} />}
+            />
+          </Switch>
+        </Container>
         <CustomSnackbar
           message={message}
           severity={severity}

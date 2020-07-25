@@ -112,7 +112,7 @@ const Filter = ({ limit, client }) => {
                   }
                   invisible={id !== category._id}
                 >
-                  <Hidden mdDown>
+                  <Hidden only={['sm', 'xs']}>
                     <Link
                       component={id === category._id ? 'span' : 'a'}
                       className={classes[activeClass]}

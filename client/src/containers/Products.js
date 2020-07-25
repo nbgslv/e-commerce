@@ -16,6 +16,9 @@ const useStyles = makeStyles({
     display: 'flex',
     justifyContent: 'center',
   },
+  container: {
+    justifyContent: 'center',
+  },
 });
 
 const Alert = styled('span')`
@@ -38,7 +41,7 @@ const Products = () => {
   if (loading)
     return (
       <Container>
-        <Grid container spacing={3}>
+        <Grid container spacing={3} className={classes.container}>
           <SkeletonProducts limit={data.limit} />
         </Grid>
       </Container>
@@ -52,7 +55,7 @@ const Products = () => {
         <Filter limit={parseInt(data.limit, 10)} />
       </div>
       <Container>
-        <Grid container spacing={3}>
+        <Grid container spacing={3} className={classes.container}>
           {state.products.map(product => (
             <Grid item md={3} key={product._id.toString()}>
               <ProductItem key={product._id.toString()} data={product} />

@@ -6,6 +6,7 @@ import Typography from '@material-ui/core/Typography';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import Grid from '@material-ui/core/Grid';
+import TableContainer from '@material-ui/core/TableContainer';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -52,7 +53,7 @@ const OrderReview = ({ setNextButton }) => {
   ]);
 
   return (
-    <>
+    <TableContainer>
       <Table aria-label="OrderReview Table">
         <TableHead>
           <TableCell>
@@ -197,7 +198,7 @@ const OrderReview = ({ setNextButton }) => {
           />
         </Grid>
       </Grid>
-    </>
+    </TableContainer>
   );
 };
 

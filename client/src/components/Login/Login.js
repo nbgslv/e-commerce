@@ -12,18 +12,21 @@ import { saveUser } from '../../utils/localStorage';
 import { GET_CART, GET_USER, LOGIN_USER } from '../../constants/graphqlConstants';
 import CustomSnackbar from '../Snackbar/CustomSnackbar';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
   form: {
+    [theme.breakpoints.down('sm')]: {
+      width: '70%',
+    },
     display: 'flex',
     justifyContent: 'space-between',
     flexDirection: 'column',
-    width: '30%',
+    width: '40%',
     margin: ' 2% auto',
   },
   input: {
     marginBottom: '8px',
   },
-});
+}));
 
 const Login = ({ history, loginSuccess }) => {
   const classes = useStyles();
@@ -113,3 +116,5 @@ Login.propTypes = {
 };
 
 export default Login;
+
+// TODO don't allow access after login

@@ -2,6 +2,7 @@ import React from 'react';
 import ReactRouterPropTypes from 'react-router-prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import Stepper from '@material-ui/core/Stepper';
+import MobileStepper from '@material-ui/core/MobileStepper';
 import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
 import Typography from '@material-ui/core/Typography';
@@ -9,6 +10,7 @@ import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
+import { Hidden } from '@material-ui/core';
 import { getUser } from '../utils/localStorage';
 import OrderReview from '../components/Checkout/OrderReview';
 import GuestDetails from '../components/Checkout/GuestDetails';
@@ -183,13 +185,43 @@ const Checkout = ({ history }) => {
     <Elements stripe={stripePromise}>
       <main className={classes.layout}>
         <Paper className={classes.paper}>
-          <Stepper activeStep={activeStep}>
-            {steps.map(label => (
-              <Step key={label}>
-                <StepLabel>{label}</StepLabel>
-              </Step>
-            ))}
-          </Stepper>
+          <MobileStepper
+            variant="dots"
+            steps={4}
+            position="static"
+            activeStep={activeStep}
+            className={classes.root}
+            nextButton={
+              <Button
+                size="small"
+                disabled={(activeStep === 2 && !disableNext) || hideButton}
+                color="primary"
+                onClick={stepButton(activeStep).functionRight}
+              >
+                {hideButton ? 'Next' : stepButton(activeStep).labelRight}
+              </Button>
+            }
+            backButton={
+              <Button
+                size="small"
+                disabled={
+                  (activeStep === 0 && stepButton(activeStep).labelLeft === 'Back') || hideButton
+                }
+                onClick={stepButton(activeStep).functionLeft}
+              >
+                {hideButton ? 'Back' : stepButton(activeStep).labelLeft}
+              </Button>
+            }
+          />
+          <Hidden xsDown>
+            <Stepper activeStep={activeStep}>
+              {steps.map(label => (
+                <Step key={label}>
+                  <StepLabel>{label}</StepLabel>
+                </Step>
+              ))}
+            </Stepper>
+          </Hidden>
           {activeStep === steps.length ? (
             <>
               <Typography>All steps completed - you&apos;re finished</Typography>
@@ -200,27 +232,59 @@ const Checkout = ({ history }) => {
           ) : (
             <>
               {stepsContent(activeStep)}
-              {!hideButton && (
-                <div className={classes.buttons}>
-                  <Button
-                    disabled={activeStep === 0 && stepButton(activeStep).labelLeft === 'Back'}
-                    onClick={stepButton(activeStep).functionLeft}
-                    className={classes.button}
-                  >
-                    {stepButton(activeStep).labelLeft}
-                  </Button>
-                  <Button
-                    disabled={activeStep === 2 && !disableNext}
-                    variant="contained"
-                    color="primary"
-                    onClick={stepButton(activeStep).functionRight}
-                    className={classes.button}
-                  >
-                    {stepButton(activeStep).labelRight}
-                  </Button>
-                </div>
-              )}
+              <Hidden xsDown>
+                {!hideButton && (
+                  <div className={classes.buttons}>
+                    <Button
+                      disabled={activeStep === 0 && stepButton(activeStep).labelLeft === 'Back'}
+                      onClick={stepButton(activeStep).functionLeft}
+                      className={classes.button}
+                    >
+                      {stepButton(activeStep).labelLeft}
+                    </Button>
+                    <Button
+                      disabled={activeStep === 2 && !disableNext}
+                      variant="contained"
+                      color="primary"
+                      onClick={stepButton(activeStep).functionRight}
+                      className={classes.button}
+                    >
+                      {stepButton(activeStep).labelRight}
+                    </Button>
+                  </div>
+                )}
+              </Hidden>
             </>
+          )}
+          {activeStep === 2 && (
+            <MobileStepper
+              variant="dots"
+              steps={4}
+              position="static"
+              activeStep={activeStep}
+              className={classes.root}
+              nextButton={
+                <Button
+                  size="small"
+                  disabled={(activeStep === 2 && !disableNext) || hideButton}
+                  color="primary"
+                  onClick={stepButton(activeStep).functionRight}
+                >
+                  {hideButton ? 'Next' : stepButton(activeStep).labelRight}
+                </Button>
+              }
+              backButton={
+                <Button
+                  size="small"
+                  disabled={
+                    (activeStep === 0 && stepButton(activeStep).labelLeft === 'Back') || hideButton
+                  }
+                  onClick={stepButton(activeStep).functionLeft}
+                >
+                  {hideButton ? 'Back' : stepButton(activeStep).labelLeft}
+                </Button>
+              }
+            />
           )}
         </Paper>
       </main>

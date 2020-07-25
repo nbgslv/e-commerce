@@ -34,14 +34,17 @@ const useStyles = makeStyles({
 });
 
 const ProductsTableWrapper = styled('div')({
+  '@media only screen and (max-width: 600px)': {
+    margin: '0',
+  },
   margin: '0 48px',
 });
 
 const Cart = ({ history }) => {
   const classes = useStyles();
-  const [totalForPayment, setTotalForPayment] = React.useState(0);
   const { state, dispatch } = React.useContext(UserContext);
   const { dispatch: snackbarDispatch } = React.useContext(SnackbarContext);
+  const [totalForPayment, setTotalForPayment] = React.useState(0);
   const [dialogOpen, setDialogOpen] = React.useState(false);
 
   React.useEffect(() => setTotalForPayment(computeTotal(state.user.cart.products)), [

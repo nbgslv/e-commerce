@@ -113,7 +113,7 @@ const GuestDetails = ({ handleBack, handleNext }) => {
                 required: 'Oops! This field is required.',
                 pattern: {
                   value: /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/,
-                  message: 'Oh oh! You must enter a valid email address',
+                  message: 'Oh oh! You must enter a valid email',
                 },
               }),
             }}
