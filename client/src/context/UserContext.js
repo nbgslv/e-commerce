@@ -6,6 +6,16 @@ export const UserContext = React.createContext();
 
 const initializeState = {
   user: {
+    address: {
+      firmName: 'Lodgin Ltd.',
+      recipientName: 'Nachman Boguslavski',
+      address1: '12 Harav Maymon st.',
+      address2: '',
+      city: 'Bat-Yam',
+      state: '',
+      zipcode: '5962627',
+      country: 'IL',
+    },
     guest: true,
     cart: {
       total: 0,

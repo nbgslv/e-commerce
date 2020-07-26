@@ -6,10 +6,10 @@ export const SnackbarContext = React.createContext();
 
 const initializeState = {
   snackbar: {
-    loginSuccessSnackbar: false,
     addItemSuccessSnackbar: false,
     logoutSuccessSnackbar: false,
     cartemptySuccessSnackbar: false,
+    addRatingSuccessSnackbar: false,
   },
 };
 

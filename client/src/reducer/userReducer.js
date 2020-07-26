@@ -61,6 +61,41 @@ const userReducer = (state, action) => {
           },
         },
       };
+    case 'SET_USER_DETAILS':
+      return {
+        user: {
+          ...state.user,
+          firstName: action.user.firstName,
+          lastName: action.user.lastName,
+          email: action.user.email,
+        },
+      };
+    case 'SET_USER_ADDRESS':
+      return {
+        user: {
+          ...state.user,
+          address: {
+            firmName: action.address.firmName,
+            recipientName: action.address.recipientName,
+            address1: action.address.address1,
+            address2: action.address.address2,
+            city: action.address.city,
+            state: action.address.state,
+            zipcode: action.address.zipcode,
+            country: action.address.country,
+          },
+        },
+      };
+    case 'SET_GUEST_DETAILS':
+      return {
+        user: {
+          ...state.user,
+          firstName: action.guest.firstName,
+          lastName: action.guest.lastName,
+          email: action.guest.email,
+          birthdate: action.guest.birthdate,
+        },
+      };
     default:
       return state;
   }

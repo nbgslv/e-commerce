@@ -11,10 +11,10 @@ import Fade from '@material-ui/core/Fade';
 import AddShoppingCartIcon from '@material-ui/icons/AddShoppingCart';
 import Typography from '@material-ui/core/Typography';
 import Rating from 'material-ui-rating';
-import { ADD_RATING, ADD_TO_CART } from '../../constants';
+import { ADD_RATING, ADD_TO_CART } from '../../constants/graphqlConstants';
 import { SnackbarContext } from '../../context/snackbarContext';
 import { UserContext } from '../../context/UserContext';
-import { getUser, addProductToCart } from '../../utils/localStorage';
+import { addProductToCart } from '../../utils/localStorage';
 
 const useStyles = makeStyles({
   root: {
@@ -82,8 +82,9 @@ const ProductItem = ({ data }) => {
               onChange={value => {
                 if (!called) {
                   updateProductRating({
-                    variables: { id: data.id, rating: value },
+                    variables: { id: data._id, rating: value },
                   });
+                  snackbarDispatch({ type: 'SET_ADD_RATING_SUCCESS_ON' });
                 }
               }}
             />

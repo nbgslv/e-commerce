@@ -13,7 +13,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const CustomSnackbars = ({ open, severity, message, onCloseHandler }) => {
+const CustomSnackbar = ({ open, severity, message, onCloseHandler, timeOut }) => {
   const [selfOpen, setSelfOpen] = React.useState(open);
   const classes = useStyles();
 
@@ -28,7 +28,7 @@ const CustomSnackbars = ({ open, severity, message, onCloseHandler }) => {
 
   return (
     <div className={classes.root}>
-      <Snackbar open={selfOpen} autoHideDuration={6000} onClose={handleOnClose}>
+      <Snackbar open={selfOpen} autoHideDuration={timeOut} onClose={handleOnClose}>
         <MuiAlert elevation={6} variant="filled" severity={severity} onClose={handleOnClose}>
           {message}
         </MuiAlert>
@@ -37,11 +37,16 @@ const CustomSnackbars = ({ open, severity, message, onCloseHandler }) => {
   );
 };
 
-CustomSnackbars.propTypes = {
+CustomSnackbar.propTypes = {
   open: PropTypes.bool.isRequired,
   severity: PropTypes.string.isRequired,
   message: PropTypes.string.isRequired,
   onCloseHandler: PropTypes.func.isRequired,
+  timeOut: PropTypes.number,
 };
 
-export default CustomSnackbars;
+CustomSnackbar.defaultProps = {
+  timeOut: 6000,
+};
+
+export default CustomSnackbar;

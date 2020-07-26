@@ -1,9 +1,9 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
+import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
-import Link from '@material-ui/core/Link';
 import HeaderBgImg from './header-bg.png';
 
 const useStyles = makeStyles(theme => ({
@@ -23,10 +23,19 @@ const useStyles = makeStyles(theme => ({
   mainFeaturedPostContent: {
     position: 'relative',
     padding: theme.spacing(5),
-    [theme.breakpoints.up('md')]: {
+    [theme.breakpoints.down('sm')]: {
       padding: theme.spacing(6),
-      paddingRight: 0,
+      textAlign: 'center',
     },
+  },
+  buttonsContainer: {
+    marginTop: '16px',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  button: {
+    margin: '0 8px',
   },
 }));
 
@@ -34,23 +43,29 @@ const HeaderBg = () => {
   return <img src={HeaderBgImg} alt="Header" style={{ width: '100%' }} />;
 };
 
-const Header = props => {
+const Header = () => {
   const classes = useStyles();
-  const { post } = props;
 
   return (
     <Grid container className={classes.mainFeaturedPost}>
       <Grid item md={6} classes={{ item: classes.gridItem }}>
         <div className={classes.mainFeaturedPostContent}>
-          <Typography component="h1" variant="h3" color="inherit" gutterBottom>
-            {post.title}
+          <Typography component="h1" variant="h3" color="primary" gutterBottom>
+            Summer Is Kicking
           </Typography>
           <Typography variant="h5" color="inherit" paragraph>
-            {post.description}
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
+            incididunt ut labore et dolore magna aliqua. In cursus turpis massa tincidunt dui ut
+            ornare.
           </Typography>
-          <Link variant="subtitle1" href="#">
-            {post.linkText}
-          </Link>
+          <Box className={classes.buttonsContainer}>
+            <Button className={classes.button} variant="contained" color="primary">
+              Go Shopping
+            </Button>
+            <Button className={classes.button} variant="outlined" color="primary">
+              New Comings
+            </Button>
+          </Box>
         </div>
       </Grid>
       <Grid item md={6}>
@@ -58,19 +73,6 @@ const Header = props => {
       </Grid>
     </Grid>
   );
-};
-
-Header.propTypes = {
-  post: PropTypes.object,
-};
-
-Header.defaultProps = {
-  post: {
-    imageText: HeaderBg,
-    title: 'shopping',
-    description: 'the place to shop',
-    linkText: '',
-  },
 };
 
 export default Header;

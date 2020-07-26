@@ -3,25 +3,30 @@ import PropTypes from 'prop-types';
 import ReactRouterPropTypes from 'react-router-prop-types';
 import { useMutation } from 'react-apollo';
 import { makeStyles } from '@material-ui/core/styles';
+import Box from '@material-ui/core/Box';
 import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import { useForm } from 'react-hook-form';
 import { saveUser } from '../../utils/localStorage';
-import { GET_CART, GET_USER, LOGIN_USER } from '../../constants';
-import CustomSnackbars from '../Snackbar/CustomSnackbar';
+import { GET_CART, GET_USER, LOGIN_USER } from '../../constants/graphqlConstants';
+import CustomSnackbar from '../Snackbar/CustomSnackbar';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
   form: {
+    [theme.breakpoints.down('sm')]: {
+      width: '70%',
+    },
     display: 'flex',
     justifyContent: 'space-between',
     flexDirection: 'column',
-    width: '30%',
+    width: '40%',
     margin: ' 2% auto',
   },
   input: {
     marginBottom: '8px',
   },
-});
+}));
 
 const Login = ({ history, loginSuccess }) => {
   const classes = useStyles();
@@ -91,7 +96,16 @@ const Login = ({ history, loginSuccess }) => {
       <Button variant="contained" color="primary" type="submit">
         Login
       </Button>
-      <CustomSnackbars message={message} severity={severity} open={open} />
+      <CustomSnackbar message={message} severity={severity} open={open} />
+      {/* Demo hint login details */}
+      <br />
+      <Box textAlign="center">
+        <Typography variant="body1" color="textSecondary" style={{ fontSize: '0.75rem' }}>
+          For demo purposes, use the following login details: <br />
+          Email: test@test.com <br />
+          Password: test
+        </Typography>
+      </Box>
     </form>
   );
 };
@@ -102,3 +116,5 @@ Login.propTypes = {
 };
 
 export default Login;
+
+// TODO don't allow access after login

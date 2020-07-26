@@ -1,9 +1,10 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import PropTypes from 'prop-types';
+import { Link, useHistory } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import MenuItem from '@material-ui/core/MenuItem';
 import Divider from '@material-ui/core/Divider';
-import ShopIcon from '@material-ui/icons/Shop';
+import MonetizationOnIcon from '@material-ui/icons/MonetizationOn';
 import RemoveShoppingCartOutlinedIcon from '@material-ui/icons/RemoveShoppingCartOutlined';
 import Menu from '@material-ui/core/Menu';
 
@@ -30,6 +31,7 @@ const useStyles = makeStyles(theme => ({
 
 const CartMenu = ({ anchorEl, open, onClose, emptyCart }) => {
   const classes = useStyles();
+  const history = useHistory();
 
   return (
     <Menu
@@ -42,14 +44,20 @@ const CartMenu = ({ anchorEl, open, onClose, emptyCart }) => {
       open={open}
       onClose={onClose}
     >
-      <MenuItem className={classes.root}>
-        <Link to="/cart" className={classes.root}>
+      <MenuItem className={classes.root} style={{ display: 'flex', justifyContent: 'center' }}>
+        <Link to="/cart" className={classes.root} onClick={onClose}>
           View Cart
         </Link>
       </MenuItem>
       <Divider />
-      <MenuItem className={classes.root}>
-        <ShopIcon color="primary" fontSize="small" />
+      <MenuItem
+        className={classes.root}
+        onClick={() => {
+          onClose();
+          history.push('/checkout');
+        }}
+      >
+        <MonetizationOnIcon color="primary" fontSize="small" />
         &nbsp; Purchase
       </MenuItem>
       <MenuItem className={classes.root} onClick={emptyCart}>
@@ -58,6 +66,13 @@ const CartMenu = ({ anchorEl, open, onClose, emptyCart }) => {
       </MenuItem>
     </Menu>
   );
+};
+
+CartMenu.propTypes = {
+  anchorEl: PropTypes.node.isRequired,
+  open: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  emptyCart: PropTypes.func.isRequired,
 };
 
 export default CartMenu;

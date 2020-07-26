@@ -2,16 +2,20 @@ import React from 'react';
 import { useQuery, useMutation, useSubscription } from 'react-apollo';
 import Cookies from 'js-cookie';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
-import MenuIcon from '@material-ui/icons/Menu';
 import Badge from '@material-ui/core/Badge';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import ShoppingCart from '@material-ui/icons/ShoppingCart';
-import { EMPTY_CART, LOGOUT_USER, GET_USER, CART_CHANGED } from '../../constants';
+import InputIcon from '@material-ui/icons/Input';
+import PersonAddIcon from '@material-ui/icons/PersonAdd';
+import { Hidden } from '@material-ui/core';
+import { EMPTY_CART, LOGOUT_USER, GET_USER, CART_CHANGED } from '../../constants/graphqlConstants';
 import { SnackbarContext } from '../../context/snackbarContext';
 import { UserContext } from '../../context/UserContext';
 import { getUser, emptyCart as emptyLocalCart, getCart, setCart } from '../../utils/localStorage';
@@ -31,6 +35,9 @@ const useStyles = makeStyles(theme => ({
     marginRight: theme.spacing(2),
   },
   title: {
+    [theme.breakpoints.down('sm')]: {
+      fontSize: '0.9rem',
+    },
     flexGrow: 1,
   },
 }));
@@ -64,7 +71,7 @@ const Appbar = () => {
       dispatch({ type: 'SET_GUEST' });
       Cookies.remove('signedin');
     }
-  }, [data, loading, updatedCart, cartItemAddedLoading, state.user.guest]);
+  }, [data, loading, dispatch, updatedCart, cartItemAddedLoading, state.user.guest]);
   // TODO add loading figure to user appbar right side
 
   const [anchorElCart, setAnchorElCart] = React.useState(null);
@@ -118,30 +125,45 @@ const Appbar = () => {
     }
   };
 
+  const match = useMediaQuery(theme => theme.breakpoints.up('sm'));
+
+  if (loading) return <CircularProgress color="primary" />;
+
   return (
     <div className={classes.root}>
       <AppBar position="fixed">
         <Toolbar>
-          <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h6" className={classes.title}>
-            Photos
+          <Typography variant="h6" className={classes.title} color="secondary">
+            Go Shopping!
           </Typography>
           <div>
             {state.user.guest && (
               <>
-                <Button
-                  href="/login/"
-                  className={classes.button}
-                  color="secondary"
-                  disableElevation
-                >
-                  Login
-                </Button>
-                <Button className={classes.button} variant="outlined" color="secondary">
-                  Sign Up
-                </Button>
+                <Hidden xsDown>
+                  <Button
+                    href="/login/"
+                    className={classes.button}
+                    color="secondary"
+                    disableElevation
+                  >
+                    Login
+                  </Button>
+                </Hidden>
+                <Hidden only={['sm', 'md', 'lg', 'xl']}>
+                  <IconButton href="/login/" color="secondary">
+                    <InputIcon />
+                  </IconButton>
+                </Hidden>
+                <Hidden xsDown>
+                  <Button className={classes.button} variant="outlined" color="secondary">
+                    Sign Up
+                  </Button>
+                </Hidden>
+                <Hidden only={['sm', 'md', 'lg', 'xl']}>
+                  <IconButton variant="outlined" color="secondary">
+                    <PersonAddIcon />
+                  </IconButton>
+                </Hidden>
               </>
             )}
             {!state.user.guest && (
@@ -170,7 +192,7 @@ const Appbar = () => {
               onClick={handleCartMenuOpen}
             >
               <StyledBadge badgeContent={state.user.cart.total} color="secondary">
-                <ShoppingCart fontSize="large" color="secondary" />
+                <ShoppingCart fontSize={match ? 'large' : 'small'} color="secondary" />
               </StyledBadge>
             </IconButton>
             <CartMenu
